@@ -9,9 +9,10 @@ class ClockThemeList {
 
     fun loadThemes(): List<ClockTheme> {
         return listOf(
-            ClockTheme(AppTheme.Light, R.drawable.thumbnail_light, "Light theme"),
-            ClockTheme(AppTheme.Dark, R.drawable.thumbnail_dark, "Dark theme"),
-            ClockTheme(AppTheme.Red, R.drawable.thumbnail_red, "Red theme")
+//            ClockTheme(AppTheme.Default, R.drawable.thumbnail_light, AppTheme.Default.themeName),
+            ClockTheme(AppTheme.Light, R.drawable.thumbnail_light, AppTheme.Light.themeName),
+            ClockTheme(AppTheme.Dark, R.drawable.thumbnail_dark, AppTheme.Dark.themeName),
+            ClockTheme(AppTheme.Red, R.drawable.thumbnail_red, AppTheme.Red.themeName)
         )
     }
 }

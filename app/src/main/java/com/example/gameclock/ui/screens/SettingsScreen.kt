@@ -1,5 +1,6 @@
 package com.example.gameclock.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,6 +43,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gameclock.R
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.ui.AppScreen
@@ -50,6 +52,7 @@ import com.example.gameclock.ui.theme.GameClockTheme
 
 @Composable
 fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
+    BackHandler(onBack = onBackClick)
     val settingsTextWeight = 0.35f
     val uiState by clockViewModel.uiState.collectAsState()
     var clockScaleSlider by remember { mutableFloatStateOf(uiState.clockScale) }
@@ -297,7 +300,7 @@ fun ToggleRow(
 fun SettingsScreenPreviewPT() {
     GameClockTheme(AppTheme.Red) {
         SettingsScreen(
-            clockViewModel = ClockViewModel(),
+            clockViewModel = viewModel(factory = ClockViewModel.Factory),
             onBackClick = {}
         )
     }
@@ -312,7 +315,7 @@ fun SettingsScreenPreviewPT() {
 fun SettingsScreenPreviewLS() {
     GameClockTheme(AppTheme.Red) {
         SettingsScreen(
-            clockViewModel = ClockViewModel(),
+            clockViewModel = viewModel(factory = ClockViewModel.Factory),
             onBackClick = {}
         )
     }
