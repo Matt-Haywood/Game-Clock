@@ -20,8 +20,8 @@ class ClockThemePreferences (
     val showAlarmButton: Boolean = true,
     val showTimerButton: Boolean = true,
 
-    //TODO should be in user preferences as it applies to the whole app, not just per clock theme
-    val isFullScreen: Boolean = false,
+//    //TODO should be in user preferences as it applies to the whole app, not just per clock theme
+//    val isFullScreen: Boolean = false,
 )
 
 class ClockTheme (

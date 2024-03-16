@@ -59,6 +59,7 @@ import com.example.gameclock.R
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.ui.ClockUiState
 import com.example.gameclock.ui.ClockViewModel
+import com.example.gameclock.ui.screens.backgrounds.LightBackground
 import com.example.gameclock.ui.theme.GameClockTheme
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
@@ -76,7 +77,7 @@ fun BaseClockScreen(
     BackHandler(onBack = onBackClick)
     val uiState by clockViewModel.uiState.collectAsState()
     val timePickerState = rememberTimePickerState(is24Hour = !uiState.clockFormatIsTwelveHour)
-
+LightBackground(clockUiState = uiState)
 
     if (isLandscape) {
         LandscapeBaseClock(
