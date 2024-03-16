@@ -50,6 +50,8 @@ import com.example.gameclock.ui.AppScreen
 import com.example.gameclock.ui.ClockViewModel
 import com.example.gameclock.ui.theme.GameClockTheme
 
+
+//TODO: add button to reset to defaults
 @Composable
 fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
     BackHandler(onBack = onBackClick)
@@ -108,7 +110,7 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 settingsTextWeight = settingsTextWeight,
                 rowText = R.string.animations,
                 settingEnabled = uiState.showAnimations,
-                onClick = {})
+                onClick = {clockViewModel.toggleShowAnimations()})
 
             ToggleRow(
                 settingsTextWeight = settingsTextWeight,
@@ -127,7 +129,7 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 rowText = R.string.full_screen,
                 settingEnabled = uiState.isFullScreen,
                 onClick = { clockViewModel.toggleFullScreen() })
-
+//TODO: Change clock format from toggle row to selection.
             ToggleRow(
                 settingsTextWeight = settingsTextWeight,
                 rowText = R.string.clock_format,
@@ -135,6 +137,8 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 onClick = { clockViewModel.toggleClockTwelveHourFormat() },
                 toggleOptions = listOf("24hr", "12hr")
             )
+
+            //TODO: GIVE OPTION OF FONT OVERRIDE
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.clock_font_override),

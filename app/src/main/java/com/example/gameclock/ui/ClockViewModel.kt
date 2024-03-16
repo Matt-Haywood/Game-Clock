@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gameclock.ClockApplication
 import com.example.gameclock.data.ClockThemeList
 import com.example.gameclock.data.ClockThemePreferencesRepository
+import com.example.gameclock.data.UserPreferencesRepository
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockThemePreferences
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +21,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ClockViewModel(
-    private val clockThemePreferencesRepository: ClockThemePreferencesRepository
+    private val clockThemePreferencesRepository: ClockThemePreferencesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ClockUiState())
 
@@ -61,6 +63,13 @@ class ClockViewModel(
                         AppTheme.Default
                     )
                 )
+            }
+            userPreferencesRepository.fullscreen.collect() { fullscreen ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isFullScreen = fullscreen
+                    )
+                }
             }
         }
     }
@@ -104,8 +113,7 @@ class ClockViewModel(
                     clockScale = uiState.value.clockScale,
                     buttonsScale = uiState.value.buttonsScale,
                     showAlarmButton = uiState.value.showAlarmButton,
-                    showTimerButton = uiState.value.showTimerButton,
-                    isFullScreen = uiState.value.isFullScreen
+                    showTimerButton = uiState.value.showTimerButton
 
                 )
             )
@@ -125,8 +133,7 @@ class ClockViewModel(
                         clockScale = themesPreferencesList.first { it.appTheme == event.theme }.clockScale,
                         buttonsScale = themesPreferencesList.first { it.appTheme == event.theme }.buttonsScale,
                         showAlarmButton = themesPreferencesList.first { it.appTheme == event.theme }.showAlarmButton,
-                        showTimerButton = themesPreferencesList.first { it.appTheme == event.theme }.showTimerButton,
-                        isFullScreen = themesPreferencesList.first { it.appTheme == event.theme }.isFullScreen
+                        showTimerButton = themesPreferencesList.first { it.appTheme == event.theme }.showTimerButton
 
                     )
                 }
@@ -139,6 +146,15 @@ class ClockViewModel(
         _uiState.update { currentState ->
             currentState.copy(
                 showSeconds = !uiState.value.showSeconds
+            )
+        }
+
+    }
+
+    fun toggleShowAnimations() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                showAnimations = !uiState.value.showAnimations
             )
         }
 
@@ -173,7 +189,10 @@ class ClockViewModel(
             currentState.copy(
                 isFullScreen = !uiState.value.isFullScreen
             )
+
         }
+        viewModelScope.launch { userPreferencesRepository.setFullscreen(uiState.value.isFullScreen) }
+
     }
 
     fun updateClockScale(clockScale: Float) {
@@ -227,7 +246,7 @@ class ClockViewModel(
             initializer {
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ClockApplication)
-                ClockViewModel(application.container.clockThemePreferencesRepository)
+                ClockViewModel(application.container.clockThemePreferencesRepository, application.userPreferencesRepository)
             }
         }
     }

@@ -10,7 +10,7 @@ import com.example.gameclock.model.ClockThemePreferences
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [ClockThemePreferences::class], version = 2, exportSchema = false)
+@Database(entities = [ClockThemePreferences::class], version = 3, exportSchema = false)
 //@TypeConverters(AppThemeConverter::class)
 abstract class ClockPreferencesDatabase : RoomDatabase() {
 
