@@ -1,4 +1,4 @@
-package com.example.gameclock.data
+package com.example.gameclock.data.clockthemes
 
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.room.Dao
@@ -13,15 +13,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ClockDao {
 
-    @Query("SELECT * from clock_preferences_database")
+    @Query("SELECT * from clock_preferences_table")
     fun getAllThemePreferences(): Flow<List<ClockThemePreferences>>
 
-    @Query("SELECT * from clock_preferences_database WHERE appTheme = :appTheme")
+    @Query("SELECT * from clock_preferences_table WHERE appTheme = :appTheme")
     fun getPreferencesForTheme(appTheme: AppTheme): Flow<ClockThemePreferences>
 
-    @Update
+    @Update(entity = ClockThemePreferences::class)
     suspend fun update(clockThemePreferences: ClockThemePreferences)
 
-    @Insert
+    @Insert(entity = ClockThemePreferences::class)
     suspend fun writeClockTheme(clockThemePreferences: ClockThemePreferences)
 }

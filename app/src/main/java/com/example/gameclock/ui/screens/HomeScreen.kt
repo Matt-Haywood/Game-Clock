@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gameclock.R
-import com.example.gameclock.data.ClockThemeList
+import com.example.gameclock.data.clockthemes.ClockThemeList
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockTheme
 import com.example.gameclock.ui.theme.GameClockTheme
@@ -52,8 +51,7 @@ fun HomeScreen(
             Text(
                 text = stringResource(id = R.string.app_name),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
-
+                style = MaterialTheme.typography.titleLarge,
             )
 
             if (isLandscape) {

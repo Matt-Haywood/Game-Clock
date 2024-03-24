@@ -21,6 +21,7 @@ class ClockApplication : Application() {
 
     lateinit var userPreferencesRepository: UserPreferencesRepository
 
+
     override fun onCreate() {
         super.onCreate()
         container = AppDataContainer(this)

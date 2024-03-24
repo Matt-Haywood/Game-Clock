@@ -7,5 +7,6 @@ enum class AppTheme(
     Default("Default"),
     Light("Light"),
     Dark("Dark"),
-    Red("Red")
+    Red("Red"),
+    CodeFall("CodeFall"),
 }

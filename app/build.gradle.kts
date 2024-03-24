@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.gameclock"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -41,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.5"
     }
     packaging {
         resources {
@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
 
     // Testing
     testImplementation(libs.junit)
@@ -93,5 +94,5 @@ dependencies {
     implementation(libs.room.ktx)
 
 
-
 }
+

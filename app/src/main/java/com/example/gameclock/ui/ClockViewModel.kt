@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.gameclock.ClockApplication
-import com.example.gameclock.data.ClockThemeList
-import com.example.gameclock.data.ClockThemePreferencesRepository
 import com.example.gameclock.data.UserPreferencesRepository
+import com.example.gameclock.data.clockthemes.ClockThemeList
+import com.example.gameclock.data.clockthemes.ClockThemePreferencesRepository
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockThemePreferences
 import kotlinx.coroutines.CoroutineScope
@@ -20,20 +20,27 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+
+/**
+ * Main ViewModel for the Clock screen.
+ * This ViewModel is responsible for managing the state of the Clock screen and the settings of the clock/app.
+ * The Fullscreen state is managed by the UserPreferencesRepository (DataStore) as this is an app-wide setting.
+ * The Theming and per theme settings are managed from here and saved in the ClockThemePreferencesRepository (Room).
+ */
 class ClockViewModel(
     private val clockThemePreferencesRepository: ClockThemePreferencesRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ClockUiState())
 
-    val uiState: StateFlow<ClockUiState> = _uiState
+    val clockUiState: StateFlow<ClockUiState> = _uiState
 
     private val backgroundCoroutineScope = CoroutineScope(Job() + Dispatchers.IO)
 //    var stateApp by mutableStateOf(MainState())
 
     private var themesPreferencesList = mutableListOf<ClockThemePreferences>()
 
-
+    // pre-loads the themes and fullscreen settings
     init {
         firstLoad()
         loadThemes()
@@ -43,6 +50,7 @@ class ClockViewModel(
         viewModelScope.launch {
             val clockThemeList = ClockThemeList().loadThemes()
             clockThemeList.forEach { theme ->
+                // check if the theme preferences exist, if not create them as defaults. This should only run on the first start up or if the app has been updated to include more themes.
                 val themePreferences =
                     clockThemePreferencesRepository.getClockThemePreferences(theme.appTheme)
                         .firstOrNull()
@@ -54,16 +62,17 @@ class ClockViewModel(
                     )
                 }
             }
-            val themePreferences =
-                clockThemePreferencesRepository.getClockThemePreferences(AppTheme.Default)
-                    .firstOrNull()
-            if (themePreferences == null) {
-                clockThemePreferencesRepository.writeClockThemePreferences(
-                    ClockThemePreferences(
-                        AppTheme.Default
-                    )
-                )
-            }
+//            val themePreferences =
+//                clockThemePreferencesRepository.getClockThemePreferences(AppTheme.Default)
+//                    .firstOrNull()
+////            if (themePreferences == null) {
+////                clockThemePreferencesRepository.writeClockThemePreferences(
+////                    ClockThemePreferences(
+////                        AppTheme.Default
+////                    )
+////                )
+////            }
+
             userPreferencesRepository.fullscreen.collect() { fullscreen ->
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -73,20 +82,28 @@ class ClockViewModel(
             }
         }
     }
-//    private fun firstLoad() {
-//        viewModelScope.launch {
-//            if (clockThemePreferencesRepository.isDatabaseEmpty()) {
-//                val clockThemeList = ClockThemeList().loadThemes()
-//                clockThemeList.forEach { theme ->
-//                    clockThemePreferencesRepository.writeClockThemePreferences(
-//                        ClockThemePreferences(
-//                            theme.appTheme
-//                        )
-//                    )
-//                }
-//            }
-//        }
-//    }
+
+    fun resetThemeToDefaults() {
+        viewModelScope.launch {
+            clockThemePreferencesRepository.updateClockThemePreferences(
+                ClockThemePreferences(
+                    _uiState.value.theme,
+                )
+            )
+            _uiState.update {
+                it.copy(
+                    showSeconds = false,
+                    showAnimations = true,
+                    clockFormatIsTwelveHour = false,
+                    isFullScreen = false,
+                    clockScale = 1f,
+                    buttonsScale = 1f,
+                    showAlarmButton = true,
+                    showTimerButton = true,
+                )
+            }
+        }
+    }
 
     fun loadThemes() {
         viewModelScope.launch {
@@ -101,19 +118,19 @@ class ClockViewModel(
         }
     }
 
-    //TODO - Add logic to save theme preferences
+
     fun saveThemePreferences() {
         viewModelScope.launch {
             clockThemePreferencesRepository.updateClockThemePreferences(
                 ClockThemePreferences(
-                    appTheme = uiState.value.theme,
-                    showSeconds = uiState.value.showSeconds,
-                    showAnimations = uiState.value.showAnimations,
-                    clockFormatIsTwelveHour = uiState.value.clockFormatIsTwelveHour,
-                    clockScale = uiState.value.clockScale,
-                    buttonsScale = uiState.value.buttonsScale,
-                    showAlarmButton = uiState.value.showAlarmButton,
-                    showTimerButton = uiState.value.showTimerButton
+                    appTheme = clockUiState.value.theme,
+                    showSeconds = clockUiState.value.showSeconds,
+                    showAnimations = clockUiState.value.showAnimations,
+                    clockFormatIsTwelveHour = clockUiState.value.clockFormatIsTwelveHour,
+                    clockScale = clockUiState.value.clockScale,
+                    buttonsScale = clockUiState.value.buttonsScale,
+                    showAlarmButton = clockUiState.value.showAlarmButton,
+                    showTimerButton = clockUiState.value.showTimerButton
 
                 )
             )
@@ -142,10 +159,11 @@ class ClockViewModel(
     }
 
 
+    // Change settings
     fun toggleSeconds() {
         _uiState.update { currentState ->
             currentState.copy(
-                showSeconds = !uiState.value.showSeconds
+                showSeconds = !clockUiState.value.showSeconds
             )
         }
 
@@ -154,7 +172,7 @@ class ClockViewModel(
     fun toggleShowAnimations() {
         _uiState.update { currentState ->
             currentState.copy(
-                showAnimations = !uiState.value.showAnimations
+                showAnimations = !clockUiState.value.showAnimations
             )
         }
 
@@ -163,7 +181,7 @@ class ClockViewModel(
     fun toggleAlarmButton() {
         _uiState.update { currentState ->
             currentState.copy(
-                showAlarmButton = !uiState.value.showAlarmButton
+                showAlarmButton = !clockUiState.value.showAlarmButton
             )
         }
     }
@@ -171,7 +189,7 @@ class ClockViewModel(
     fun toggleTimerButton() {
         _uiState.update { currentState ->
             currentState.copy(
-                showTimerButton = !uiState.value.showTimerButton
+                showTimerButton = !clockUiState.value.showTimerButton
             )
         }
     }
@@ -179,7 +197,7 @@ class ClockViewModel(
     fun toggleClockTwelveHourFormat() {
         _uiState.update { currentState ->
             currentState.copy(
-                clockFormatIsTwelveHour = !uiState.value.clockFormatIsTwelveHour
+                clockFormatIsTwelveHour = !clockUiState.value.clockFormatIsTwelveHour
             )
         }
     }
@@ -187,11 +205,11 @@ class ClockViewModel(
     fun toggleFullScreen() {
         _uiState.update { currentState ->
             currentState.copy(
-                isFullScreen = !uiState.value.isFullScreen
+                isFullScreen = !clockUiState.value.isFullScreen
             )
 
         }
-        viewModelScope.launch { userPreferencesRepository.setFullscreen(uiState.value.isFullScreen) }
+        viewModelScope.launch { userPreferencesRepository.setFullscreen(clockUiState.value.isFullScreen) }
 
     }
 
@@ -210,7 +228,7 @@ class ClockViewModel(
     fun toggleAlarmPickerPopup() {
         _uiState.update { currentState ->
             currentState.copy(
-                showAlarmPickerPopup = !uiState.value.showAlarmPickerPopup,
+                showAlarmPickerPopup = !clockUiState.value.showAlarmPickerPopup,
                 showTimerPickerPopup = false
             )
         }
@@ -227,7 +245,7 @@ class ClockViewModel(
     fun toggleTimerPickerPopup() {
         _uiState.update { currentState ->
             currentState.copy(
-                showTimerPickerPopup = !uiState.value.showTimerPickerPopup,
+                showTimerPickerPopup = !clockUiState.value.showTimerPickerPopup,
                 showAlarmPickerPopup = false
             )
         }
@@ -246,7 +264,10 @@ class ClockViewModel(
             initializer {
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ClockApplication)
-                ClockViewModel(application.container.clockThemePreferencesRepository, application.userPreferencesRepository)
+                ClockViewModel(
+                    application.container.clockThemePreferencesRepository,
+                    application.userPreferencesRepository
+                )
             }
         }
     }
@@ -262,9 +283,9 @@ sealed class ThemeChangeEvent {
 data class ClockUiState(
     val themesPreferencesList: List<ClockThemePreferences> = emptyList(),
     val theme: AppTheme = AppTheme.Default,
-    val showSeconds: Boolean = true,
+    val showSeconds: Boolean = false,
     val showAnimations: Boolean = true,
-    val clockFormatIsTwelveHour: Boolean = true,
+    val clockFormatIsTwelveHour: Boolean = false,
     val isFullScreen: Boolean = false,
     val clockScale: Float = 1f,
     val buttonsScale: Float = 1f,

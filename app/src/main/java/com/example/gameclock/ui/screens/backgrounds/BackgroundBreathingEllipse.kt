@@ -14,10 +14,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
@@ -27,13 +27,13 @@ import com.example.gameclock.ui.ClockUiState
 
 
 @Composable
-fun LightBackground(clockUiState: ClockUiState) {
+fun BackgroundBreathingEllipse(clockUiState: ClockUiState) {
     // Get the screen dimensions
     val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
     val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
 
     // Calculate the max of the screen width and height
-    val maxScreenSize: Float = maxOf(screenWidth, screenHeight) * 1.5f
+    val maxScreenSize: Float = maxOf(screenWidth, screenHeight) * 1f
 
     // Create an infinite transition that oscillates the radius between 0 and maxScreenSize
     val infiniteTransition =
@@ -51,12 +51,15 @@ fun LightBackground(clockUiState: ClockUiState) {
     } else {
         maxScreenSize
     }
+    val aspectRatio = screenWidth / screenHeight
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .scale(maxOf(aspectRatio, 1f), maxOf(1 / aspectRatio, 1f))
             .background(
-                brush = Brush.radialGradient(
+                brush =
+                Brush.radialGradient(
                     0.0f to MaterialTheme.colorScheme.background,
                     1f to Color.Black,
                     radius = radius,
@@ -73,6 +76,6 @@ fun LightBackgroundPreview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        LightBackground(ClockUiState())
+        BackgroundBreathingEllipse(ClockUiState())
     }
 }

@@ -1,7 +1,6 @@
-package com.example.gameclock.data
+package com.example.gameclock.data.clockthemes
 
 import com.example.gameclock.model.AppTheme
-import com.example.gameclock.model.ClockTheme
 import com.example.gameclock.model.ClockThemePreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first

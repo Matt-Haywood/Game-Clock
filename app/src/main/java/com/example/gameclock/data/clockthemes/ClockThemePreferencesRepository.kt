@@ -1,4 +1,4 @@
-package com.example.gameclock.data
+package com.example.gameclock.data.clockthemes
 
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockTheme

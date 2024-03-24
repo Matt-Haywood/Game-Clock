@@ -15,4 +15,8 @@
     <string name="clock_format">Clock Format</string>
     <string name="clock_scale">Clock Scale</string>
     <string name="buttons_scale">Buttons Scale</string>
+    <string name="reset_settings">Reset Theme Settings</string>
+    <string name="reset_settings_confirmation">Are you sure you want to reset this theme\'s settings?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 </resources>

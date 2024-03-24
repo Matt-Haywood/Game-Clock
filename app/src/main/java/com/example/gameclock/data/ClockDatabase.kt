@@ -4,29 +4,34 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.gameclock.data.alarms.AlarmDao
+import com.example.gameclock.data.clockthemes.ClockDao
+import com.example.gameclock.model.Alarm
 import com.example.gameclock.model.ClockThemePreferences
 
 
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [ClockThemePreferences::class], version = 3, exportSchema = false)
+@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 4, exportSchema = false)
 //@TypeConverters(AppThemeConverter::class)
-abstract class ClockPreferencesDatabase : RoomDatabase() {
+abstract class ClockDatabase : RoomDatabase() {
 
     abstract fun clockDao(): ClockDao
 
+    abstract fun alarmDao(): AlarmDao
+
     companion object {
         @Volatile
-        private var Instance: ClockPreferencesDatabase? = null
+        private var Instance: ClockDatabase? = null
 
-        fun getDatabase(context: Context): ClockPreferencesDatabase {
+        fun getDatabase(context: Context): ClockDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context,
-                    ClockPreferencesDatabase::class.java,
-                    "clock_preferences_database"
+                    ClockDatabase::class.java,
+                    "clock_database"
                 )
                     /**
                      * Setting this option in your app's database builder means that Room

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 
 
 
-@Entity(tableName = "clock_preferences_database")
+@Entity(tableName = "clock_preferences_table")
 class ClockThemePreferences (
     @PrimaryKey
     val appTheme: AppTheme,
@@ -20,13 +20,13 @@ class ClockThemePreferences (
     val showAlarmButton: Boolean = true,
     val showTimerButton: Boolean = true,
 
-//    //TODO should be in user preferences as it applies to the whole app, not just per clock theme
-//    val isFullScreen: Boolean = false,
+
 )
 
 class ClockTheme (
     val appTheme: AppTheme,
     @DrawableRes val thumbnail: Int,
     val themeTitle: String,
+
 )
 

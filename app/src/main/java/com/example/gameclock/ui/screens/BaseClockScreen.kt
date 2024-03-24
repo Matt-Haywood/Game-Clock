@@ -3,12 +3,9 @@ package com.example.gameclock.ui.screens
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
@@ -25,43 +23,43 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gameclock.R
+import com.example.gameclock.data.alarms.SetAlarm
+import com.example.gameclock.model.Alarm
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.ui.ClockUiState
 import com.example.gameclock.ui.ClockViewModel
-import com.example.gameclock.ui.screens.backgrounds.LightBackground
+import com.example.gameclock.ui.alarm.AlarmPickerDialog
+import com.example.gameclock.ui.alarm.AlarmViewModel
+import com.example.gameclock.ui.screens.backgrounds.BackgroundBreathingEllipse
+import com.example.gameclock.ui.screens.backgrounds.BackgroundGreenNumbers
+import com.example.gameclock.ui.screens.backgrounds.BackgroundPixelFire
 import com.example.gameclock.ui.theme.GameClockTheme
+import com.example.gameclock.ui.theme.Roboto
+import com.example.gameclock.ui.theme.SplineSansMono
 import kotlinx.coroutines.delay
+import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
 //TODO make a background for one theme.
@@ -70,44 +68,78 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun BaseClockScreen(
     clockViewModel: ClockViewModel,
+    alarmViewModel: AlarmViewModel,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
     isLandscape: Boolean = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
 ) {
     BackHandler(onBack = onBackClick)
-    val uiState by clockViewModel.uiState.collectAsState()
-    val timePickerState = rememberTimePickerState(is24Hour = !uiState.clockFormatIsTwelveHour)
-LightBackground(clockUiState = uiState)
+    val clockUiState by clockViewModel.clockUiState.collectAsState()
+    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
+    val alarmList = alarmUiState.alarmsList
+    val alarmTimePickerState = rememberTimePickerState(initialHour = LocalTime.now().hour, initialMinute = (LocalTime.now().minute + 1) % 60, is24Hour = !clockUiState.clockFormatIsTwelveHour)
+    val context = LocalContext.current
+
+    when (clockUiState.theme) {
+        AppTheme.Default -> {
+            BackgroundBreathingEllipse(clockUiState = clockUiState)
+        }
+
+        AppTheme.Red -> {
+            BackgroundPixelFire()
+        }
+
+        AppTheme.Light -> {
+            BackgroundBreathingEllipse(clockUiState = clockUiState)
+        }
+
+        AppTheme.Dark -> {
+            BackgroundBreathingEllipse(clockUiState = clockUiState)
+        }
+
+        AppTheme.CodeFall -> {
+            BackgroundGreenNumbers(clockUiState = clockUiState)
+        }
+
+        else -> {
+            BackgroundBreathingEllipse(clockUiState = clockUiState)
+
+        }
+
+    }
+//    TextRatioTest()
+//    BackgroundBreathingEllipse(clockUiState = uiState)
+//    BackgroundGreenNumbers(clockUiState = uiState)
 
     if (isLandscape) {
         LandscapeBaseClock(
-            uiState = uiState,
-            showAlarmPopup = uiState.showAlarmPickerPopup,
-            timePickerState = timePickerState,
-            showTimerPopup = uiState.showTimerPickerPopup,
-            alarmButtonOnClick = {clockViewModel.toggleAlarmPickerPopup()},
-            timerButtonOnClick = {clockViewModel.toggleTimerPickerPopup()},
+            clockViewModel = clockViewModel,
+            alarmViewModel = alarmViewModel,
+            clockUiState = clockUiState,
+            timePickerState = alarmTimePickerState,
             onBackClick = onBackClick,
             onSettingsClick = onSettingsClick,
-            alarmTimePickerOnConfirm = { clockViewModel.dismissAlarmPickerPopup() },
-            alarmTimePickerOnCancel = { clockViewModel.dismissAlarmPickerPopup()},
+            alarmList = alarmList,
+            alarmTimePickerOnConfirm = {
+                SetAlarm(context = context, hour = alarmTimePickerState.hour, minute = alarmTimePickerState.minute )
+                clockViewModel.dismissAlarmPickerPopup()
+            },
             timerTimePickerOnConfirm = { clockViewModel.dismissTimerPickerPopup() },
-            timerTimePickerOnCancel = { clockViewModel.dismissTimerPickerPopup() }
         )
     } else {
         PortraitBaseClock(
-            uiState = uiState,
-            showAlarmPopup = uiState.showAlarmPickerPopup,
-            timePickerState = timePickerState,
-            showTimerPopup = uiState.showTimerPickerPopup,
-            alarmButtonOnClick = {clockViewModel.toggleAlarmPickerPopup()},
-            timerButtonOnClick = {clockViewModel.toggleTimerPickerPopup()},
+            clockViewModel = clockViewModel,
+            alarmViewModel = alarmViewModel,
+            clockUiState = clockUiState,
+            timePickerState = alarmTimePickerState,
             onBackClick = onBackClick,
             onSettingsClick = onSettingsClick,
-            alarmTimePickerOnConfirm = { clockViewModel.dismissAlarmPickerPopup() },
-            alarmTimePickerOnCancel = { clockViewModel.dismissAlarmPickerPopup()},
+            alarmList = alarmList,
+            alarmTimePickerOnConfirm = {
+                SetAlarm(context = context, hour = alarmTimePickerState.hour, minute = alarmTimePickerState.minute )
+                clockViewModel.dismissAlarmPickerPopup()
+            },
             timerTimePickerOnConfirm = { clockViewModel.dismissTimerPickerPopup() },
-            timerTimePickerOnCancel = { clockViewModel.dismissTimerPickerPopup() }
         )
     }
 }
@@ -116,77 +148,95 @@ LightBackground(clockUiState = uiState)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LandscapeBaseClock(
-    uiState: ClockUiState,
+    clockViewModel: ClockViewModel,
+    alarmViewModel: AlarmViewModel,
+    clockUiState: ClockUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    showAlarmPopup: Boolean,
+    alarmList: List<Alarm>,
     timePickerState: TimePickerState,
-    showTimerPopup: Boolean,
-    alarmButtonOnClick: () -> Unit,
-    timerButtonOnClick: () -> Unit,
     alarmTimePickerOnConfirm: () -> Unit,
-    alarmTimePickerOnCancel: () -> Unit,
     timerTimePickerOnConfirm: () -> Unit,
-    timerTimePickerOnCancel: () -> Unit,
 ) {
-    val showSeconds = uiState.showSeconds
-    val clockFormatIsTwelveHour = uiState.clockFormatIsTwelveHour
-    val clockScale = uiState.clockScale
-    val buttonScale = uiState.buttonsScale
-    val showAlarmButton = uiState.showAlarmButton
-    val showTimerButton = uiState.showTimerButton
+    val showSeconds = clockUiState.showSeconds
+    val clockFormatIsTwelveHour = clockUiState.clockFormatIsTwelveHour
+    val clockScale = clockUiState.clockScale
+    val buttonScale = clockUiState.buttonsScale
+    val showAlarmButton = clockUiState.showAlarmButton
+    val showTimerButton = clockUiState.showTimerButton
+    val showAlarmPopup = clockUiState.showAlarmPickerPopup
+    val showTimerPopup = clockUiState.showTimerPickerPopup
 
     Text(text = "L")
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(visible = showAlarmPopup) {
-            TimePickerDialog(
-                onCancel = alarmTimePickerOnCancel,
-                onConfirm = alarmTimePickerOnConfirm
-            ) {
-                TimePicker(state = timePickerState, layoutType = TimePickerLayoutType.Horizontal)
-            }
+            AlarmPickerDialog(
+                alarmViewModel = alarmViewModel,
+                onCancel = { clockViewModel.dismissAlarmPickerPopup() },
+                onConfirm = alarmTimePickerOnConfirm,
+                alarmTimePickerState = timePickerState
+            )
         }
         AnimatedVisibility(visible = showTimerPopup) {
 
         }
-        Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxHeight()) {
-            Row(verticalAlignment = Alignment.Top, modifier = Modifier.weight(0.5f)) {
-                BackButton(onBackClick = onBackClick)
-            }
-            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.weight(0.5f)) {
-                SettingsButton(onSettingsClick = onSettingsClick)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+
+        ) {
+            ClockText(
+                showSeconds = showSeconds,
+                clockFormatIsTwelveHour = clockFormatIsTwelveHour,
+                clockSize = clockScale,
+                isLandscape = true
+            )
+            LazyColumn {
+
+                items(alarmList) { alarm ->
+                    Text(text = alarm.title)
+                }
             }
         }
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize()
         ) {
-
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(0.8f)
+                    .padding(
+                        start = (30 / buttonScale).dp,
+                        top = (30 / buttonScale).dp,
+                        bottom = (30 / buttonScale).dp
+                    )
             ) {
-                ClockText(
-                    showSeconds = showSeconds, clockFormatIsTwelveHour = clockFormatIsTwelveHour,
-                    clockSize = clockScale,
-                    isLandscape = true
-                )
+                BackButton(onBackClick = onBackClick, buttonScale = buttonScale)
+                SettingsButton(onSettingsClick = onSettingsClick, buttonScale = buttonScale)
             }
+
             Column(
-                verticalArrangement = Arrangement.SpaceEvenly,
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.End,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(30.dp)
+                    .padding(
+                        end = (30 / buttonScale).dp,
+                        top = (30 / buttonScale).dp,
+                        bottom = (30 / buttonScale).dp
+                    )
             ) {
                 AnimatedVisibility(visible = showTimerButton) {
-                    AlarmButton(alarmButtonOnClick = alarmButtonOnClick, buttonScale = buttonScale)
+                    AlarmButton(alarmButtonOnClick = { clockViewModel.toggleAlarmPickerPopup() }, buttonScale = buttonScale)
                 }
                 AnimatedVisibility(visible = showAlarmButton) {
-                    TimerButton(buttonScale = buttonScale)
+                    TimerButton(timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() }, buttonScale = buttonScale)
                 }
             }
         }
@@ -197,25 +247,24 @@ fun LandscapeBaseClock(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortraitBaseClock(
-    uiState: ClockUiState,
+    clockViewModel: ClockViewModel,
+    alarmViewModel: AlarmViewModel,
+    clockUiState: ClockUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    showAlarmPopup: Boolean,
+    alarmList: List<Alarm>,
     timePickerState: TimePickerState,
-    showTimerPopup: Boolean,
-    alarmButtonOnClick: () -> Unit,
-    timerButtonOnClick: () -> Unit,
     alarmTimePickerOnConfirm: () -> Unit,
-    alarmTimePickerOnCancel: () -> Unit,
     timerTimePickerOnConfirm: () -> Unit,
-    timerTimePickerOnCancel: () -> Unit,
 ) {
-    val showSeconds = uiState.showSeconds
-    val clockFormatIsTwelveHour = uiState.clockFormatIsTwelveHour
-    val clockScale = uiState.clockScale
-    val buttonScale = uiState.buttonsScale
-    val showAlarmButton = uiState.showAlarmButton
-    val showTimerButton = uiState.showTimerButton
+    val showSeconds = clockUiState.showSeconds
+    val clockFormatIsTwelveHour = clockUiState.clockFormatIsTwelveHour
+    val clockScale = clockUiState.clockScale
+    val buttonScale = clockUiState.buttonsScale
+    val showAlarmButton = clockUiState.showAlarmButton
+    val showTimerButton = clockUiState.showTimerButton
+    val showAlarmPopup = clockUiState.showAlarmPickerPopup
+    val showTimerPopup = clockUiState.showTimerPickerPopup
 
     Text(text = "P")
     Box(
@@ -224,12 +273,12 @@ fun PortraitBaseClock(
             .padding(10.dp)
     ) {
         AnimatedVisibility(visible = showAlarmPopup) {
-            TimePickerDialog(
-                onCancel = alarmTimePickerOnCancel,
-                onConfirm = alarmTimePickerOnConfirm
-            ) {
-                TimePicker(state = timePickerState)
-            }
+            AlarmPickerDialog(
+                alarmViewModel = alarmViewModel,
+                onCancel = { clockViewModel.dismissAlarmPickerPopup() },
+                onConfirm = alarmTimePickerOnConfirm,
+                alarmTimePickerState = timePickerState
+            )
         }
         AnimatedVisibility(visible = showTimerPopup) {
 
@@ -237,7 +286,9 @@ fun PortraitBaseClock(
         Row(
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp * buttonScale.toInt())
         ) {
             BackButton(onBackClick = onBackClick)
             SettingsButton(onSettingsClick = onSettingsClick)
@@ -247,21 +298,28 @@ fun PortraitBaseClock(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(0.8f)
-            ) {
+//
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .weight(0.8f)
+//            ) {
                 ClockText(
                     showSeconds = showSeconds,
                     clockFormatIsTwelveHour = clockFormatIsTwelveHour,
                     clockSize = clockScale,
                     isLandscape = false
                 )
+
+            LazyColumn {
+
+                items(alarmList) { alarm ->
+                    Text(text = alarm.title)
+                }
             }
+
         }
         Column(
             verticalArrangement = Arrangement.Bottom,
@@ -277,10 +335,10 @@ fun PortraitBaseClock(
                     .padding(30.dp)
             ) {
                 AnimatedVisibility(visible = showTimerButton) {
-                    AlarmButton(alarmButtonOnClick = alarmButtonOnClick, buttonScale = buttonScale)
+                    AlarmButton(alarmButtonOnClick = { clockViewModel.toggleAlarmPickerPopup() }, buttonScale = buttonScale)
                 }
                 AnimatedVisibility(visible = showAlarmButton) {
-                    TimerButton(buttonScale = buttonScale)
+                    TimerButton(timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() }, buttonScale = buttonScale)
                 }
             }
         }
@@ -293,6 +351,7 @@ fun BaseClockPreviewPT() {
     GameClockTheme(AppTheme.Red) {
         BaseClockScreen(
             clockViewModel = viewModel(factory = ClockViewModel.Factory),
+            alarmViewModel = viewModel(factory = AlarmViewModel.Factory),
             onBackClick = {},
             onSettingsClick = {}
         )
@@ -309,6 +368,7 @@ fun BaseClockPreviewLS() {
     GameClockTheme(AppTheme.Red) {
         BaseClockScreen(
             clockViewModel = viewModel(factory = ClockViewModel.Factory),
+            alarmViewModel = viewModel(factory = AlarmViewModel.Factory),
             onBackClick = {},
             onSettingsClick = {}
         )
@@ -324,6 +384,7 @@ fun ClockText(
     isLandscape: Boolean
 
 ) {
+    val TAG = "ClockText"
     val currentTimeMillis = remember {
         mutableLongStateOf(System.currentTimeMillis())
     }
@@ -356,15 +417,16 @@ fun ClockText(
         } else ""
     }${
         if (clockFormatIsTwelveHour) {
-            " $timeSuffix"
+            timeSuffix
         } else ""
     }"
     // Estimate the maximum text size based on the screen width and the number of characters in the text
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val estimatedMaxTextSize = screenWidth * clockSize * (if (isLandscape) {
         0.65
-    } else 0.8) / text.length
+    } else 0.7) / text.length
 
+//    Log.i(TAG, "ClockText: $estimatedMaxTextSize")
     Text(
         text = text,
 
@@ -374,12 +436,11 @@ fun ClockText(
 //            )
         letterSpacing = 2.sp,
         modifier = Modifier
-            .padding(8.dp, 8.dp)
-            .fillMaxWidth(),
+            .padding(8.dp, 8.dp),
         color = MaterialTheme.colorScheme.onBackground,
         fontSize = estimatedMaxTextSize.sp,
-        style = MaterialTheme.typography.bodyMedium,
-        maxLines = 2,
+        style = MaterialTheme.typography.displayLarge,
+        maxLines = if (isLandscape) 1 else 2,
         lineHeight = estimatedMaxTextSize.sp,
         textAlign = TextAlign.Center
     )
@@ -387,15 +448,19 @@ fun ClockText(
 }
 
 @Composable
-fun BackButton(onBackClick: () -> Unit) {
+fun BackButton(
+    onBackClick: () -> Unit,
+    buttonScale: Float = 1f
+) {
     IconButton(
         onClick = onBackClick,
-
-        ) {
+        modifier = Modifier.size(60.dp * buttonScale)
+    ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = stringResource(R.string.back_button),
-            tint = MaterialTheme.colorScheme.onBackground
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(42.dp * buttonScale)
         )
     }
 }
@@ -403,12 +468,17 @@ fun BackButton(onBackClick: () -> Unit) {
 @Composable
 fun SettingsButton(
     onSettingsClick: () -> Unit,
+    buttonScale: Float = 1f
 ) {
-    IconButton(onClick = onSettingsClick) {
+    IconButton(
+        onClick = onSettingsClick,
+        modifier = Modifier.size(60.dp * buttonScale)
+    ) {
         Icon(
             imageVector = Icons.Default.Settings,
             contentDescription = stringResource(R.string.settings_button),
-            tint = MaterialTheme.colorScheme.onBackground
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(42.dp * buttonScale)
         )
     }
 }
@@ -429,9 +499,9 @@ fun AlarmButton(alarmButtonOnClick: () -> Unit, buttonScale: Float) {
 }
 
 @Composable
-fun TimerButton(buttonScale: Float) {
+fun TimerButton(timerButtonOnClick: () -> Unit, buttonScale: Float) {
     IconButton(
-        onClick = { /*TODO*/ },
+        onClick = timerButtonOnClick,
         modifier = Modifier.size(80.dp * buttonScale)
     ) {
         Icon(
@@ -445,134 +515,100 @@ fun TimerButton(buttonScale: Float) {
 }
 
 
-/**
- * TODO - Set up alarm time picker with quick buttons to add set times.
- * TODO - Animate popup from clock button.
- * TODO - duplicate for timer picker
- */
-@Composable
-fun PopupWindowDialog() {
-    // on below line we are creating variable for button title
-    // and open dialog.
-    // on below line we are specifying height and width
-    val popupWidth = 300.dp
-    val popupHeight = 100.dp
-
-    // on below line we are creating a box to display box.
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
 
 
-        // on below line we are adding pop up
-        Popup(
-            // on below line we are adding
-            // alignment and properties.
-            alignment = Alignment.Center,
-            properties = PopupProperties()
-        ) {
 
-            // on the below line we are creating a box.
-            Box(
-                // adding modifier to it.
-                Modifier
-                    .size(popupWidth, popupHeight)
-                    .padding(top = 5.dp)
-                    // on below line we are adding background color
-                    .background(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        RoundedCornerShape(10.dp)
-                    )
-                    // on below line we are adding border.
-                    .border(1.dp, color = Color.Black, RoundedCornerShape(10.dp))
-            ) {
-
-                // on below line we are adding column
-                Column(
-                    // on below line we are adding modifier to it.
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 20.dp),
-                    // on below line we are adding horizontal and vertical
-                    // arrangement to it.
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    // on below line we are adding text for our pop up
-                    Text(
-                        // on below line we are specifying text
-                        text = "Welcome to Geeks for Geeks",
-                        // on below line we are specifying color.
-
-                        // on below line we are adding padding to it
-                        modifier = Modifier.padding(vertical = 5.dp),
-                        // on below line we are adding font size.
-                        fontSize = 16.sp
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
-fun TimePickerDialog(
-    title: String = "Select Time",
-    onCancel: () -> Unit,
-    onConfirm: () -> Unit,
-    toggle: @Composable () -> Unit = {},
-    content: @Composable () -> Unit,
-) {
-    Dialog(
-        onDismissRequest = onCancel,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
-        Surface(
-            shape = MaterialTheme.shapes.extraLarge,
-            tonalElevation = 6.dp,
-            modifier = Modifier
-                .width(IntrinsicSize.Min)
-                .height(IntrinsicSize.Min)
-                .background(
-                    shape = MaterialTheme.shapes.extraLarge,
-                    color = MaterialTheme.colorScheme.surface
-                ),
-        ) {
-            Box(
-                modifier = Modifier.padding(24.dp),
-                contentAlignment = Alignment.Center
+fun TextRatioTest() {
+    val singleDigit = "1"
+    val doubleDigit = "12"
+    val tripleDigit = "123"
+    val time = "12:34"
+    val timeWithSeconds = "12:34:56"
+    val timeWithAmPm = "12:34 PM"
+    val timeWithSecondsAmPm = "12:34:56 PM"
+
+    val textList = listOf(
+        singleDigit,
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "0",
+        doubleDigit,
+        tripleDigit,
+        time,
+        timeWithSeconds,
+        timeWithAmPm,
+        timeWithSecondsAmPm
+    )
+
+    val fontFamilyList = mapOf<FontFamily, String>(
+
+        Pair(Roboto, "Roboto"),
+
+//        Pair(Wellfleet, "Wellfleet"),
+        Pair(SplineSansMono, "Spline San"),
+//        Pair(RobotoFlex, "Roboto Flex"),
+//        Pair(Anek, "Anek"),
+    )
+
+    Row {
+        fontFamilyList.forEach() { (fontFamily, string) ->
+            Column(
+                modifier = Modifier,
             ) {
-                Row(
-                    verticalAlignment = Alignment.Top,
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                Row {
                     Text(
-                        modifier = Modifier,
-//                            .fillMaxWidth()
-//                            .padding(bottom = 5.dp),
-                        text = title,
-                        style = MaterialTheme.typography.labelMedium
+                        text = string,
+                        fontFamily = fontFamily,
+                        fontSize = 10.sp,
+                        modifier = Modifier
+                            .height(10.dp)
+                            .width(40.dp)
+//                        lineHeight = 10.sp,
+
                     )
                 }
+                textList.forEach() {
+                    Row {
+                        Text(
+                            text = it,
+                            fontFamily = fontFamily,
+                            fontSize = 10.sp,
+//                            lineHeight = 10.sp,
 
-                content()
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom,
-                    modifier = Modifier
-
-                        .fillMaxSize()
-                ) {
-                    TextButton(onClick = onCancel) {
-                        Text("Cancel")
+                        )
                     }
-                    TextButton(onClick = onConfirm) {
-                        Text("Set Alarm")
+                }
+                Row {
+                    Text(
+                        text = string,
+                        fontFamily = fontFamily,
+                        fontSize = 20.sp,
+//                        lineHeight = 20.sp,
+
+                    )
+                }
+                textList.forEach() {
+                    Row {
+                        Text(
+                            text = it,
+                            fontFamily = fontFamily,
+                            fontSize = 20.sp,
+//                            lineHeight = 20.sp,
+
+                        )
                     }
                 }
             }
         }
     }
-}
 
+
+}

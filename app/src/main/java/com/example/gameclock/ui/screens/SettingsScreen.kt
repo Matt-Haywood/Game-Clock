@@ -6,14 +6,18 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,15 +26,19 @@ import androidx.compose.material3.CaretProperties
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Label
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +51,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gameclock.R
 import com.example.gameclock.model.AppTheme
@@ -56,7 +66,7 @@ import com.example.gameclock.ui.theme.GameClockTheme
 fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
     BackHandler(onBack = onBackClick)
     val settingsTextWeight = 0.35f
-    val uiState by clockViewModel.uiState.collectAsState()
+    val uiState by clockViewModel.clockUiState.collectAsState()
     var clockScaleSlider by remember { mutableFloatStateOf(uiState.clockScale) }
     var buttonScaleSlider by remember { mutableFloatStateOf(uiState.buttonsScale) }
     val scrollState = rememberScrollState()
@@ -68,8 +78,15 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 BackButton(onBackClick = onBackClick)
-                Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(id = AppScreen.Settings.title))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = AppScreen.Settings.title),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
         }
@@ -80,11 +97,9 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-
-
             SliderRow(
                 sliderThumb = painterResource(id = R.drawable.baseline_access_time_filled_24),
-                sliderValue = clockScaleSlider,
+                sliderValue = uiState.clockScale,
                 onValueChange = { clockScaleSlider = it },
                 onValueChangeFinished = { clockViewModel.updateClockScale(clockScaleSlider) },
                 rowText = R.string.clock_scale,
@@ -94,7 +109,7 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
             SliderRow(
                 rowText = R.string.buttons_scale,
                 sliderThumb = painterResource(id = R.drawable.buttons_24),
-                sliderValue = buttonScaleSlider,
+                sliderValue = uiState.buttonsScale,
                 onValueChange = { buttonScaleSlider = it },
                 onValueChangeFinished = { clockViewModel.updateButtonsScale(buttonScaleSlider) },
                 settingsTextWeight = settingsTextWeight
@@ -110,7 +125,7 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 settingsTextWeight = settingsTextWeight,
                 rowText = R.string.animations,
                 settingEnabled = uiState.showAnimations,
-                onClick = {clockViewModel.toggleShowAnimations()})
+                onClick = { clockViewModel.toggleShowAnimations() })
 
             ToggleRow(
                 settingsTextWeight = settingsTextWeight,
@@ -133,9 +148,15 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
             ToggleRow(
                 settingsTextWeight = settingsTextWeight,
                 rowText = R.string.clock_format,
-                settingEnabled = uiState.clockFormatIsTwelveHour,
+                settingEnabled = !uiState.clockFormatIsTwelveHour,
                 onClick = { clockViewModel.toggleClockTwelveHourFormat() },
-                toggleOptions = listOf("24hr", "12hr")
+                toggleOptions = Pair("12hr", "24hr")
+            )
+
+            ResetSettingsButton(
+                settingsTextWeight = settingsTextWeight,
+                rowText = R.string.reset_settings,
+                onClick = { clockViewModel.resetThemeToDefaults() }
             )
 
             //TODO: GIVE OPTION OF FONT OVERRIDE
@@ -166,6 +187,7 @@ fun SliderRow(
         Text(
             text = stringResource(rowText),
             textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(settingsTextWeight)
                 .padding(end = 8.dp)
@@ -219,7 +241,7 @@ fun SliderRow(
 
 @Composable
 fun ToggleRow(
-    toggleOptions: List<String> = listOf("Off", "On"),
+    toggleOptions: Pair<String, String> = Pair("Off", "On"),
     settingsTextWeight: Float,
     rowText: Int,
     settingEnabled: Boolean,
@@ -231,6 +253,7 @@ fun ToggleRow(
         Text(
             text = stringResource(rowText),
             textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(settingsTextWeight)
                 .padding(end = 8.dp)
@@ -252,7 +275,10 @@ fun ToggleRow(
                         enter = slideInHorizontally(initialOffsetX = { it / 2 }) + fadeIn(),
                         exit = slideOutHorizontally(targetOffsetX = { it / 2 }) + fadeOut()
                     ) {
-                        Text(text = toggleOptions[0])
+                        Text(
+                            text = toggleOptions.first,
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
                 Column(
@@ -270,7 +296,10 @@ fun ToggleRow(
                         enter = slideInHorizontally() + fadeIn(),
                         exit = slideOutHorizontally() + fadeOut()
                     ) {
-                        Text(text = toggleOptions[1])
+                        Text(
+                            text = toggleOptions.second,
+                            style = MaterialTheme.typography.labelMedium
+                        )
                     }
                 }
             }
@@ -291,6 +320,89 @@ fun ToggleRow(
 //
 //            }
 
+        }
+    }
+}
+
+@Composable
+fun ResetSettingsButton(
+    settingsTextWeight: Float,
+    rowText: Int,
+    onClick: () -> Unit
+) {
+    var isSettingsResetDialogVisible = remember { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(rowText),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .weight(settingsTextWeight)
+                .padding(end = 8.dp)
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1f - settingsTextWeight)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = { isSettingsResetDialogVisible.value = true }) {
+                    Text(text = stringResource(R.string.reset_settings))
+                }
+            }
+        }
+    }
+    AnimatedVisibility(visible = isSettingsResetDialogVisible.value) {
+        Dialog(
+            onDismissRequest = { isSettingsResetDialogVisible.value = false },
+            properties = DialogProperties(
+                dismissOnClickOutside = true,
+                dismissOnBackPress = true,
+                usePlatformDefaultWidth = true
+            )
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                tonalElevation = 6.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        shape = MaterialTheme.shapes.large,
+                        color = MaterialTheme.colorScheme.surface
+                    ),
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.reset_settings_confirmation),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier.fillMaxWidth()
+                    ){
+                        TextButton(onClick = {
+                            onClick(); isSettingsResetDialogVisible.value = false
+                        }) {
+                            Text(text = stringResource(R.string.confirm))
+                        }
+                        TextButton(onClick = { isSettingsResetDialogVisible.value = false }) {
+                            Text(text = stringResource(R.string.cancel))
+                        }
+                    }
+                }
+            }
         }
     }
 }

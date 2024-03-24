@@ -26,8 +26,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.gameclock.R
-import com.example.gameclock.data.ClockThemeList
+import com.example.gameclock.data.clockthemes.ClockThemeList
 import com.example.gameclock.model.AppTheme
+import com.example.gameclock.ui.alarm.AlarmViewModel
 import com.example.gameclock.ui.screens.BaseClockScreen
 import com.example.gameclock.ui.screens.HomeScreen
 import com.example.gameclock.ui.screens.SettingsScreen
@@ -45,11 +46,12 @@ enum class AppScreen(@StringRes val title: Int) {
 @Composable
 fun AppNavigation(
     clockViewModel: ClockViewModel = viewModel(factory = ClockViewModel.Factory),
+    alarmViewModel: AlarmViewModel = viewModel(factory = AlarmViewModel.Factory),
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
     val window = remember { (context as Activity).window }
-    val isFullscreen = clockViewModel.uiState.collectAsState().value.isFullScreen
+    val isFullscreen = clockViewModel.clockUiState.collectAsState().value.isFullScreen
 
     LaunchedEffect(isFullscreen) {
         WindowCompat.setDecorFitsSystemWindows(window, !isFullscreen)
@@ -64,7 +66,7 @@ fun AppNavigation(
     }
 
 
-    GameClockTheme(appTheme = clockViewModel.uiState.collectAsState().value.theme) {
+    GameClockTheme(appTheme = clockViewModel.clockUiState.collectAsState().value.theme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -104,6 +106,7 @@ fun AppNavigation(
                     ) {
                     BaseClockScreen(
                         clockViewModel = clockViewModel,
+                        alarmViewModel = alarmViewModel,
                         onBackClick = {
                             navController.navigateUp()
                             //changes the app theme back to default before displaying the home screen
