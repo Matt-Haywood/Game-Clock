@@ -62,17 +62,6 @@ class ClockViewModel(
                     )
                 }
             }
-//            val themePreferences =
-//                clockThemePreferencesRepository.getClockThemePreferences(AppTheme.Default)
-//                    .firstOrNull()
-////            if (themePreferences == null) {
-////                clockThemePreferencesRepository.writeClockThemePreferences(
-////                    ClockThemePreferences(
-////                        AppTheme.Default
-////                    )
-////                )
-////            }
-
             userPreferencesRepository.fullscreen.collect() { fullscreen ->
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -85,19 +74,18 @@ class ClockViewModel(
 
     fun resetThemeToDefaults() {
         viewModelScope.launch {
-            clockThemePreferencesRepository.updateClockThemePreferences(
-                ClockThemePreferences(
-                    _uiState.value.theme,
-                )
-            )
+//            clockThemePreferencesRepository.updateClockThemePreferences(
+//                ClockThemePreferences(
+//                    _uiState.value.theme,
+//                )
+//            )
             _uiState.update {
                 it.copy(
                     showSeconds = false,
                     showAnimations = true,
                     clockFormatIsTwelveHour = false,
-                    isFullScreen = false,
-                    clockScale = 1f,
-                    buttonsScale = 1f,
+                    clockScale = 1.8f,
+                    buttonsScale = 1.2f,
                     showAlarmButton = true,
                     showTimerButton = true,
                 )
@@ -105,7 +93,7 @@ class ClockViewModel(
         }
     }
 
-    fun loadThemes() {
+    private fun loadThemes() {
         viewModelScope.launch {
             clockThemePreferencesRepository.getAllClockThemePreferences().collect { list ->
                 themesPreferencesList = list.filterNotNull().toMutableList()
@@ -287,8 +275,8 @@ data class ClockUiState(
     val showAnimations: Boolean = true,
     val clockFormatIsTwelveHour: Boolean = false,
     val isFullScreen: Boolean = false,
-    val clockScale: Float = 1f,
-    val buttonsScale: Float = 1f,
+    val clockScale: Float = 1.8f,
+    val buttonsScale: Float = 1.2f,
     val showAlarmButton: Boolean = true,
     val showTimerButton: Boolean = true,
     val showAlarmPickerPopup: Boolean = false,

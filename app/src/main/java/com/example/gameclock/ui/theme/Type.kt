@@ -30,6 +30,17 @@ val Teko = FontFamily(
     Font(R.font.teko, FontWeight.Normal, FontStyle.Normal)
 )
 
+@OptIn(ExperimentalTextApi::class)
+val Honk = FontFamily(
+    Font(
+        R.font.honk, FontWeight.Normal, FontStyle.Normal,
+        variationSettings = FontVariation.Settings(
+            FontVariation.Setting("MORF", 10f),
+            FontVariation.Setting("SHLN", 50f)
+        )
+    )
+)
+
 
 //@OptIn(ExperimentalTextApi::class)
 //val Anek = FontFamily(
@@ -52,7 +63,7 @@ val SplineSansMono = FontFamily(
             FontVariation.width(100f),
             counterWidth(324)
 
-            )
+        )
     )
 )
 
@@ -67,34 +78,36 @@ val RobotoFlex = FontFamily(
         variationSettings = FontVariation.Settings(
             FontVariation.width(100f),
             counterWidth(324)
-            ),
+        ),
 
         )
 )
 
-// Set of Material typography styles to start with
+// default typography for the app
 val defaultTypography = Typography(
     //App Title
     titleLarge = TextStyle(
-        fontFamily = Roboto,
+        fontFamily = Honk,
         fontWeight = FontWeight.Normal,
-        fontSize = 48.sp,
-        lineHeight = 56.sp,
-        letterSpacing = 0.15.sp,
+        fontSize = 80.sp,
+        lineHeight = 80.sp,
+
         shadow = Shadow(offset = Offset(10.0f, 10.0f), blurRadius = 10f)
     ),
-    //Clock Face/ timer picker numbers
+    // timer picker numbers
     displayLarge = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 52.sp,
         letterSpacing = 0.sp
     ),
+    //Clock Face
     headlineLarge = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
-        fontSize = 96.sp,
-        letterSpacing = 2.sp
+        fontSize = 52.sp,
+        letterSpacing = 2.sp,
+
     ),
     //Settings Title
     titleMedium = TextStyle(
@@ -108,9 +121,9 @@ val defaultTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.15.sp
+
     ),
     //Settings on/off
     labelMedium = TextStyle(

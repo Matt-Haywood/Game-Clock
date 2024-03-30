@@ -77,7 +77,11 @@ fun BaseClockScreen(
     val clockUiState by clockViewModel.clockUiState.collectAsState()
     val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
     val alarmList = alarmUiState.alarmsList
-    val alarmTimePickerState = rememberTimePickerState(initialHour = LocalTime.now().hour, initialMinute = (LocalTime.now().minute + 1) % 60, is24Hour = !clockUiState.clockFormatIsTwelveHour)
+    val alarmTimePickerState = rememberTimePickerState(
+        initialHour = LocalTime.now().hour,
+        initialMinute = (LocalTime.now().minute + 1) % 60,
+        is24Hour = !clockUiState.clockFormatIsTwelveHour
+    )
     val context = LocalContext.current
 
     when (clockUiState.theme) {
@@ -121,7 +125,11 @@ fun BaseClockScreen(
             onSettingsClick = onSettingsClick,
             alarmList = alarmList,
             alarmTimePickerOnConfirm = {
-                SetAlarm(context = context, hour = alarmTimePickerState.hour, minute = alarmTimePickerState.minute )
+                SetAlarm(
+                    context = context,
+                    hour = alarmTimePickerState.hour,
+                    minute = alarmTimePickerState.minute
+                )
                 clockViewModel.dismissAlarmPickerPopup()
             },
             timerTimePickerOnConfirm = { clockViewModel.dismissTimerPickerPopup() },
@@ -136,7 +144,11 @@ fun BaseClockScreen(
             onSettingsClick = onSettingsClick,
             alarmList = alarmList,
             alarmTimePickerOnConfirm = {
-                SetAlarm(context = context, hour = alarmTimePickerState.hour, minute = alarmTimePickerState.minute )
+                SetAlarm(
+                    context = context,
+                    hour = alarmTimePickerState.hour,
+                    minute = alarmTimePickerState.minute
+                )
                 clockViewModel.dismissAlarmPickerPopup()
             },
             timerTimePickerOnConfirm = { clockViewModel.dismissTimerPickerPopup() },
@@ -233,10 +245,16 @@ fun LandscapeBaseClock(
                     )
             ) {
                 AnimatedVisibility(visible = showTimerButton) {
-                    AlarmButton(alarmButtonOnClick = { clockViewModel.toggleAlarmPickerPopup() }, buttonScale = buttonScale)
+                    AlarmButton(
+                        alarmButtonOnClick = { clockViewModel.toggleAlarmPickerPopup() },
+                        buttonScale = buttonScale
+                    )
                 }
                 AnimatedVisibility(visible = showAlarmButton) {
-                    TimerButton(timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() }, buttonScale = buttonScale)
+                    TimerButton(
+                        timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
+                        buttonScale = buttonScale
+                    )
                 }
             }
         }
@@ -306,12 +324,12 @@ fun PortraitBaseClock(
 //                    .fillMaxSize()
 //                    .weight(0.8f)
 //            ) {
-                ClockText(
-                    showSeconds = showSeconds,
-                    clockFormatIsTwelveHour = clockFormatIsTwelveHour,
-                    clockSize = clockScale,
-                    isLandscape = false
-                )
+            ClockText(
+                showSeconds = showSeconds,
+                clockFormatIsTwelveHour = clockFormatIsTwelveHour,
+                clockSize = clockScale,
+                isLandscape = false
+            )
 
             LazyColumn {
 
@@ -335,10 +353,16 @@ fun PortraitBaseClock(
                     .padding(30.dp)
             ) {
                 AnimatedVisibility(visible = showTimerButton) {
-                    AlarmButton(alarmButtonOnClick = { clockViewModel.toggleAlarmPickerPopup() }, buttonScale = buttonScale)
+                    AlarmButton(
+                        alarmButtonOnClick = { clockViewModel.toggleAlarmPickerPopup() },
+                        buttonScale = buttonScale
+                    )
                 }
                 AnimatedVisibility(visible = showAlarmButton) {
-                    TimerButton(timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() }, buttonScale = buttonScale)
+                    TimerButton(
+                        timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
+                        buttonScale = buttonScale
+                    )
                 }
             }
         }
@@ -439,10 +463,24 @@ fun ClockText(
             .padding(8.dp, 8.dp),
         color = MaterialTheme.colorScheme.onBackground,
         fontSize = estimatedMaxTextSize.sp,
-        style = MaterialTheme.typography.displayLarge,
+        style = MaterialTheme.typography.headlineLarge,
+//            .plus(
+//                TextStyle(
+//                    shadow = Shadow(
+//                        color = Color.Cyan,
+////                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+//                        blurRadius = 100f
+//                    )
+//                )
+//            ),
         maxLines = if (isLandscape) 1 else 2,
         lineHeight = estimatedMaxTextSize.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+
+//        shadow = Shadow(
+//            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+//            blurRadius = 5f
+//        ),
     )
 
 }
@@ -513,10 +551,6 @@ fun TimerButton(timerButtonOnClick: () -> Unit, buttonScale: Float) {
 
     }
 }
-
-
-
-
 
 
 @Composable

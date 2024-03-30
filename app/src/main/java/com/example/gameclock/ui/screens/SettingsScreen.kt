@@ -7,17 +7,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -61,7 +59,6 @@ import com.example.gameclock.ui.ClockViewModel
 import com.example.gameclock.ui.theme.GameClockTheme
 
 
-//TODO: add button to reset to defaults
 @Composable
 fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
     BackHandler(onBack = onBackClick)
@@ -261,6 +258,7 @@ fun ToggleRow(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f - settingsTextWeight)
+                .clickable { onClick }
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -330,7 +328,7 @@ fun ResetSettingsButton(
     rowText: Int,
     onClick: () -> Unit
 ) {
-    var isSettingsResetDialogVisible = remember { mutableStateOf(false) }
+    val isSettingsResetDialogVisible = remember { mutableStateOf(false) }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = stringResource(rowText),
@@ -348,7 +346,12 @@ fun ResetSettingsButton(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = { isSettingsResetDialogVisible.value = true }) {
+                TextButton(
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    onClick = { isSettingsResetDialogVisible.value = true }) {
                     Text(text = stringResource(R.string.reset_settings))
                 }
             }

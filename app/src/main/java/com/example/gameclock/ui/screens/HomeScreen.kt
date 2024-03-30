@@ -2,9 +2,14 @@
 
 package com.example.gameclock.ui.screens
 
+import GlitchShader
 import android.content.res.Configuration
+import android.graphics.RuntimeShader
+import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +25,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +44,8 @@ import com.example.gameclock.R
 import com.example.gameclock.data.clockthemes.ClockThemeList
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockTheme
+import com.example.gameclock.ui.screens.backgrounds.HomeBackground
+import com.example.gameclock.ui.screens.backgrounds.codefall_model.MatrixShader
 import com.example.gameclock.ui.theme.GameClockTheme
 
 
@@ -43,7 +56,15 @@ fun HomeScreen(
 ) {
     val isLandscape: Boolean =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    Surface(modifier = Modifier.fillMaxSize().padding(10.dp)) {
+
+
+    HomeBackground()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
@@ -53,6 +74,7 @@ fun HomeScreen(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
             )
+
 
             if (isLandscape) {
 
@@ -64,17 +86,16 @@ fun HomeScreen(
                 ) {
                     items(clockThemeList) { clockTheme ->
                         UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
-
                     }
 
                 }
             } else
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(200.dp),
+                    columns = GridCells.Adaptive(160.dp),
 //                    GridCells.Adaptive(130.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    contentPadding = PaddingValues(20.dp)
+                    contentPadding = PaddingValues(10.dp)
                 ) {
                     items(clockThemeList) { clockTheme ->
                         UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
@@ -94,7 +115,9 @@ fun UiCard(
 ) {
     Card(
         elevation = CardDefaults.cardElevation(),
-        onClick = onThemeClick
+        onClick = onThemeClick,
+        modifier = modifier
+            .size(200.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -105,8 +128,8 @@ fun UiCard(
                 painter = painterResource(clockTheme.thumbnail),
                 contentDescription = clockTheme.themeTitle,
                 modifier = modifier
-                    .size(200.dp)
-                    .padding(4.dp),
+                    .fillMaxSize(),
+
                 contentScale = ContentScale.Crop
             )
 

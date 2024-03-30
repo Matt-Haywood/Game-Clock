@@ -3,8 +3,6 @@ package com.example.gameclock.ui.theme
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -226,6 +224,7 @@ private val CodeFallDarkColorScheme = darkColorScheme(
     surfaceTint = md_theme_codefall_dark_surfaceTint,
     outlineVariant = md_theme_codefall_dark_outlineVariant,
     scrim = md_theme_codefall_dark_scrim,
+    surfaceDim = md_theme_codefall_dark_shadow,
 )
 
 private val CodeFallLightColorScheme = lightColorScheme(
@@ -258,6 +257,7 @@ private val CodeFallLightColorScheme = lightColorScheme(
     surfaceTint = md_theme_codefall_light_surfaceTint,
     outlineVariant = md_theme_codefall_light_outlineVariant,
     scrim = md_theme_codefall_light_scrim,
+    surfaceDim = md_theme_codefall_light_shadow,
 )
 //private val red_lightColorScheme = lightColorScheme(
 //    primary = md_theme_CHANGETHIS_primary,

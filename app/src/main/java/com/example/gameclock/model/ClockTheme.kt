@@ -15,8 +15,8 @@ class ClockThemePreferences (
     val showSeconds: Boolean = true,
     val showAnimations: Boolean = true,
     val clockFormatIsTwelveHour: Boolean = true,
-    val clockScale: Float = 1f,
-    val buttonsScale: Float = 1f,
+    val clockScale: Float = 1.8f,
+    val buttonsScale: Float = 1.2f,
     val showAlarmButton: Boolean = true,
     val showTimerButton: Boolean = true,
 

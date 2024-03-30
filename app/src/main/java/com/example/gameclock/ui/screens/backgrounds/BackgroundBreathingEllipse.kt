@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,7 +60,7 @@ fun BackgroundBreathingEllipse(clockUiState: ClockUiState) {
                 brush =
                 Brush.radialGradient(
                     0.0f to MaterialTheme.colorScheme.background,
-                    1f to Color.Black,
+                    1f to MaterialTheme.colorScheme.scrim,
                     radius = radius,
                     tileMode = TileMode.Clamp
                 )
