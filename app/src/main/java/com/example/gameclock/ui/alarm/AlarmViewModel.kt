@@ -1,19 +1,21 @@
 package com.example.gameclock.ui.alarm
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.gameclock.ClockApplication
 import com.example.gameclock.data.alarms.AlarmRepository
+import com.example.gameclock.data.alarms.SetAlarm
 import com.example.gameclock.model.Alarm
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AlarmViewModel(
+@HiltViewModel
+class AlarmViewModel
+    @Inject constructor(
     private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
@@ -28,23 +30,28 @@ class AlarmViewModel(
     fun getAlarmsList() {
         viewModelScope.launch {
             alarmRepository.getAlarmsList().collect { alarmsList ->
+                alarmsList.forEach {
+                    if (!it.isEnabled) {
+                        deleteAlarm(it)
+                    }
+                }
+                val filteredAlarmsList = alarmsList.filter { alarm -> alarm.isEnabled }
                 _uiState.update { currentState ->
                     currentState.copy(
-                        alarmsList = alarmsList
+                        alarmsList = filteredAlarmsList
                     )
                 }
             }
         }
-
     }
 
 
-
-
-    fun insertAlarm(alarm: Alarm) {
+    fun setAlarm(alarm: Alarm, context: Context) {
         viewModelScope.launch {
             alarmRepository.insertAlarm(alarm)
+            SetAlarm(context, alarm)
         }
+
     }
 
     fun deleteAlarm(alarm: Alarm) {
@@ -75,18 +82,6 @@ class AlarmViewModel(
 //        }
 //    }
 
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ClockApplication)
-                AlarmViewModel(
-                    application.container.alarmRepository
-                )
-            }
-        }
-    }
 }
 
 data class AlarmUiState(

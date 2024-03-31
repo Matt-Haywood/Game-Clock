@@ -4,8 +4,9 @@ import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockThemePreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class OfflineClockThemePreferencesRepository(private val clockDao: ClockDao) :
+class OfflineClockThemePreferencesRepository @Inject constructor(private val clockDao: ClockDao) :
     ClockThemePreferencesRepository {
 
     override suspend fun isDatabaseEmpty(): Boolean =

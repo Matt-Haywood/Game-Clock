@@ -1,16 +1,13 @@
 package com.example.gameclock.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.gameclock.ClockApplication
 import com.example.gameclock.data.UserPreferencesRepository
 import com.example.gameclock.data.clockthemes.ClockThemeList
 import com.example.gameclock.data.clockthemes.ClockThemePreferencesRepository
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockThemePreferences
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 /**
@@ -27,7 +25,8 @@ import kotlinx.coroutines.launch
  * The Fullscreen state is managed by the UserPreferencesRepository (DataStore) as this is an app-wide setting.
  * The Theming and per theme settings are managed from here and saved in the ClockThemePreferencesRepository (Room).
  */
-class ClockViewModel(
+@HiltViewModel
+class ClockViewModel @Inject constructor(
     private val clockThemePreferencesRepository: ClockThemePreferencesRepository,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
@@ -246,21 +245,6 @@ class ClockViewModel(
             )
         }
     }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ClockApplication)
-                ClockViewModel(
-                    application.container.clockThemePreferencesRepository,
-                    application.userPreferencesRepository
-                )
-            }
-        }
-    }
-
-
 }
 
 sealed class ThemeChangeEvent {

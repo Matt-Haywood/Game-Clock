@@ -65,11 +65,11 @@ fun BackgroundGreenNumbers(clockUiState: ClockUiState) {
         while (true) {
             withInfiniteAnimationFrameMillis {
                 launch {
-                    if (clockUiState.showAnimations) {
-                        value = it / 1000f
+                    value = if (clockUiState.showAnimations) {
+                        it / 1000f
                     } else {
                         delay(1000)
-                        value = 1000f
+                        1000f
                     }
                 }
 
@@ -91,11 +91,11 @@ fun BackgroundGreenNumbers(clockUiState: ClockUiState) {
         .fillMaxSize()
         .onSizeChanged { size ->
             matrixShader.setFloatUniform(
-                "iResolution", size.width.toFloat(), size.height.toFloat()
+                "resolution", size.width.toFloat(), size.height.toFloat()
             )
         }
         .graphicsLayer {
-            matrixShader.setFloatUniform("iTime", time)
+            matrixShader.setFloatUniform("time", time)
             renderEffect = RenderEffect
                 .createRuntimeShaderEffect(
                     matrixShader,

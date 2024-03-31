@@ -14,6 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.gameclock.model.Alarm
 
 
 private const val MY_PERMISSIONS_REQUEST_SET_ALARM = 1
@@ -21,19 +22,20 @@ private const val MY_PERMISSIONS_REQUEST_ACCESS_NOTIFICATION_POLICY = 1
 private const val MY_PERMISSIONS_REQUEST_SCHEDULE_EXACT_ALARM = 1
 
 
-fun SetAlarm(context: Context, hour: Int, minute: Int) {
+fun SetAlarm(context: Context, alarm: Alarm) {
     val TAG = "SetAlarm"
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val alarmIntent = Intent(context, AlarmReceiver::class.java). let { intent ->
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+    val alarmIntent = Intent(context, AlarmReceiver::class.java)
+        .let { intent ->
+        PendingIntent.getBroadcast(context, alarm.id, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 //    val pendingAlarmIntent =
 //        PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_IMMUTABLE)
 
     val calendar: Calendar = Calendar.getInstance()
 
-    calendar.set(Calendar.HOUR_OF_DAY, hour)
-    calendar.set(Calendar.MINUTE, minute)
+    calendar.set(Calendar.HOUR_OF_DAY, alarm.hour.toInt())
+    calendar.set(Calendar.MINUTE, alarm.minute.toInt())
     calendar.set(Calendar.SECOND, 0)
 
 
@@ -133,7 +135,7 @@ fun SetAlarm(context: Context, hour: Int, minute: Int) {
                     ),
                     alarmIntent
                 )
-                Log.i(TAG, "Alarm set for $hour:$minute")
+                Log.i(TAG, "Alarm set for $alarm.hour:$alarm.minute")
             }
         }
     }

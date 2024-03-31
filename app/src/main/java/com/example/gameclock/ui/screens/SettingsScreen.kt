@@ -258,6 +258,7 @@ fun ToggleRow(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f - settingsTextWeight)
+                //TODO: Fix clickable not working
                 .clickable { onClick }
         ) {
             Row(
@@ -419,7 +420,7 @@ fun ResetSettingsButton(
 fun SettingsScreenPreviewPT() {
     GameClockTheme(AppTheme.Red) {
         SettingsScreen(
-            clockViewModel = viewModel(factory = ClockViewModel.Factory),
+            clockViewModel = viewModel(),
             onBackClick = {}
         )
     }
@@ -434,7 +435,7 @@ fun SettingsScreenPreviewPT() {
 fun SettingsScreenPreviewLS() {
     GameClockTheme(AppTheme.Red) {
         SettingsScreen(
-            clockViewModel = viewModel(factory = ClockViewModel.Factory),
+            clockViewModel = viewModel(),
             onBackClick = {}
         )
     }

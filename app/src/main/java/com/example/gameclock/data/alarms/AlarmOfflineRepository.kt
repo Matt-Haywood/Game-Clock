@@ -2,9 +2,12 @@ package com.example.gameclock.data.alarms
 
 import com.example.gameclock.model.Alarm
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class AlarmOfflineRepository(private val alarmDao: AlarmDao):
-    AlarmRepository {
+
+class AlarmOfflineRepository @Inject constructor(
+    private val alarmDao: AlarmDao
+): AlarmRepository {
 
     override suspend fun isDatabaseEmpty(): Boolean =
         alarmDao.getAlarmsList().first().isEmpty()

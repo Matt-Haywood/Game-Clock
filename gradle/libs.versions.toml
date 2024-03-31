@@ -16,6 +16,9 @@ navigationCompose = "2.7.7"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
 kspVersion = "1.9.20-1.0.14"
+hilt = "2.51"
+androidxHiltNavigationCompose = "1.2.0"
+
 
 
 
@@ -26,6 +29,7 @@ androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents"
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-material3-window-size = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClass" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -43,9 +47,15 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "navigationCompose"}
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
 

@@ -103,7 +103,7 @@ fun HomeBackground() {
         contentDescription = "Home Background Canvas"
     ) {
         for (i in 0 until dotCountHorizontal + 1) {
-            for (j in 0 until dotCountVertical + 1) {
+            for (j in 0 until dotCountVertical + 3) {
                 val color = if ((i + j) % 2 == 0) Color(243, 187, 145, alpha1)
                 else Color(245, 228, 149, alpha2)
                 drawCircle(

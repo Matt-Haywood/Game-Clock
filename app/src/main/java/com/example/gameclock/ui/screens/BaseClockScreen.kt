@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gameclock.R
-import com.example.gameclock.data.alarms.SetAlarm
 import com.example.gameclock.model.Alarm
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.ui.ClockUiState
@@ -112,8 +111,7 @@ fun BaseClockScreen(
 
     }
 //    TextRatioTest()
-//    BackgroundBreathingEllipse(clockUiState = uiState)
-//    BackgroundGreenNumbers(clockUiState = uiState)
+
 
     if (isLandscape) {
         LandscapeBaseClock(
@@ -124,14 +122,7 @@ fun BaseClockScreen(
             onBackClick = onBackClick,
             onSettingsClick = onSettingsClick,
             alarmList = alarmList,
-            alarmTimePickerOnConfirm = {
-                SetAlarm(
-                    context = context,
-                    hour = alarmTimePickerState.hour,
-                    minute = alarmTimePickerState.minute
-                )
-                clockViewModel.dismissAlarmPickerPopup()
-            },
+            alarmTimePickerOnConfirm = { clockViewModel.dismissAlarmPickerPopup() },
             timerTimePickerOnConfirm = { clockViewModel.dismissTimerPickerPopup() },
         )
     } else {
@@ -143,14 +134,7 @@ fun BaseClockScreen(
             onBackClick = onBackClick,
             onSettingsClick = onSettingsClick,
             alarmList = alarmList,
-            alarmTimePickerOnConfirm = {
-                SetAlarm(
-                    context = context,
-                    hour = alarmTimePickerState.hour,
-                    minute = alarmTimePickerState.minute
-                )
-                clockViewModel.dismissAlarmPickerPopup()
-            },
+            alarmTimePickerOnConfirm = { clockViewModel.dismissAlarmPickerPopup() },
             timerTimePickerOnConfirm = { clockViewModel.dismissTimerPickerPopup() },
         )
     }
@@ -316,14 +300,6 @@ fun PortraitBaseClock(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-//
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.Center,
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .weight(0.8f)
-//            ) {
             ClockText(
                 showSeconds = showSeconds,
                 clockFormatIsTwelveHour = clockFormatIsTwelveHour,
@@ -374,8 +350,8 @@ fun PortraitBaseClock(
 fun BaseClockPreviewPT() {
     GameClockTheme(AppTheme.Red) {
         BaseClockScreen(
-            clockViewModel = viewModel(factory = ClockViewModel.Factory),
-            alarmViewModel = viewModel(factory = AlarmViewModel.Factory),
+            clockViewModel = viewModel(),
+            alarmViewModel = viewModel(),
             onBackClick = {},
             onSettingsClick = {}
         )
@@ -391,8 +367,8 @@ fun BaseClockPreviewPT() {
 fun BaseClockPreviewLS() {
     GameClockTheme(AppTheme.Red) {
         BaseClockScreen(
-            clockViewModel = viewModel(factory = ClockViewModel.Factory),
-            alarmViewModel = viewModel(factory = AlarmViewModel.Factory),
+            clockViewModel = viewModel(),
+            alarmViewModel = viewModel(),
             onBackClick = {},
             onSettingsClick = {}
         )

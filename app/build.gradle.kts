@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+
+
 }
 
 android {
@@ -77,6 +80,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
+    kspTest(libs.hilt.compiler)
+
+
     //View Model
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
@@ -92,6 +98,15 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.room.ktx)
+
+    //Dagger
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    androidTestImplementation(libs.hilt.android.testing)
+
+
 
 
 }

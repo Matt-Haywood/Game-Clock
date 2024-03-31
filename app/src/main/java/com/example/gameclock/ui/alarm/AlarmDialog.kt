@@ -2,10 +2,11 @@ package com.example.gameclock.ui.alarm
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,9 +20,11 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.gameclock.model.Alarm
 
 /**
  * TODO - Set up alarm time picker with quick buttons to add set times.
@@ -37,13 +40,15 @@ fun AlarmPickerDialog(
     onConfirm: () -> Unit,
     alarmTimePickerState: TimePickerState,
 ) {
+    val context = LocalContext.current
     Dialog(
         onDismissRequest = onCancel,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Surface(
-            shape = MaterialTheme.shapes.extraLarge,
+            shape = MaterialTheme.shapes.large,
             tonalElevation = 6.dp,
+            shadowElevation = 6.dp,
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .height(IntrinsicSize.Min)
@@ -52,13 +57,14 @@ fun AlarmPickerDialog(
                     color = MaterialTheme.colorScheme.surface
                 ),
         ) {
-            Box(
+            Column(
                 modifier = Modifier.padding(24.dp),
-                contentAlignment = Alignment.Center
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Row(
                     verticalAlignment = Alignment.Top,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
                         modifier = Modifier,
@@ -79,7 +85,18 @@ fun AlarmPickerDialog(
                     TextButton(onClick = onCancel) {
                         Text("Cancel")
                     }
-                    TextButton(onClick = onConfirm) {
+                    TextButton(onClick = {
+                        alarmViewModel.setAlarm(
+                            context = context,
+                            alarm = Alarm(
+                                minute = alarmTimePickerState.minute.toString(),
+                                hour = alarmTimePickerState.hour.toString(),
+                                title = "${alarmTimePickerState.hour}:${alarmTimePickerState.minute}",
+                                isEnabled = true
+                            )
+                        )
+                        onConfirm()
+                    }) {
                         Text("Set Alarm")
                     }
                 }
@@ -87,3 +104,21 @@ fun AlarmPickerDialog(
         }
     }
 }
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//@Preview
+//fun AlarmPickerDialogPreview() {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(MaterialTheme.colorScheme.background)
+//    ) {
+//        AlarmPickerDialog(
+//            alarmViewModel = ViewModel(),
+//            alarmTimePickerState = TimePickerState,
+//            onCancel = {},
+//            onConfirm = {}
+//        )
+//    }
+//}

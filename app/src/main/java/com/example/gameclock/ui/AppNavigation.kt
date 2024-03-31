@@ -43,12 +43,15 @@ enum class AppScreen(@StringRes val title: Int) {
 
 //TODO: Sort out animation from clock screen to home screen suddenly popping
 //TODO: Add navigation tests + testTags
+
+
 @Composable
 fun AppNavigation(
-    clockViewModel: ClockViewModel = viewModel(factory = ClockViewModel.Factory),
-    alarmViewModel: AlarmViewModel = viewModel(factory = AlarmViewModel.Factory),
     navController: NavHostController = rememberNavController()
 ) {
+    val clockViewModel: ClockViewModel = viewModel()
+    val alarmViewModel: AlarmViewModel = viewModel()
+
     val context = LocalContext.current
     val window = remember { (context as Activity).window }
     val isFullscreen = clockViewModel.clockUiState.collectAsState().value.isFullScreen

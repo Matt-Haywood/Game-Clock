@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -24,8 +25,8 @@ import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.heigh
 import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.pixelSize
 import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.tallerThanWide
 import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.widthPixel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -102,12 +103,15 @@ fun SetupArtView(
 
     val pixelArray = IntArray(arraySize) { 0 }
         .apply { createArtSource(this, pixelBackgroundMeasurements) }
+    val scope  = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        while (true) {
-            calculateArtPropagation(pixelArray, pixelBackgroundMeasurements)
-            pixelBackgroundViewModel.updatePixels(pixelArray.toList())
-            delay(16) // delay to match approximately 60 FPS
+        scope.launch {
+            while (true) {
+                calculateArtPropagation(pixelArray, pixelBackgroundMeasurements)
+                pixelBackgroundViewModel.updatePixels(pixelArray.toList())
+                delay(16) // delay to match approximately 60 FPS
+            }
         }
     }
 }

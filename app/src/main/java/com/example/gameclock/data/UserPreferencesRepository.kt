@@ -10,12 +10,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import javax.inject.Inject
 
 /**
  * Repository for managing app-wide preferences using DataStore.
  * Currently only manages the fullscreen preference.
  */
-class UserPreferencesRepository(private val dataStore: DataStore<Preferences> ) {
+class UserPreferencesRepository @Inject constructor(
+    private val dataStore: DataStore<Preferences>
+) {
     companion object {
         private val FULLSCREEN_KEY = booleanPreferencesKey("fullscreen")
         private const val TAG = "UserPreferencesRepo"
