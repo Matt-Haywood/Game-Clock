@@ -1,15 +1,22 @@
 package com.example.gameclock
 
 import android.app.Application
+import androidx.work.Configuration
+import com.example.gameclock.data.workManager.factory.WrapperWorkerFactory
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 
 @HiltAndroidApp
-class ClockApplication : Application() {
+class ClockApplication : Application(), Configuration.Provider {
 
-    /**
-     * AppContainer instance used by the rest of classes to obtain dependencies
-     * Hilt provides the AppContainer instance
-     */
+    @Inject
+    lateinit var workerFactory: WrapperWorkerFactory
 
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(android.util.Log.DEBUG)
+            .build()
 }
+

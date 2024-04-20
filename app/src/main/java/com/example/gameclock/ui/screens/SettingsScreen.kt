@@ -21,6 +21,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CaretProperties
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Label
@@ -46,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,8 +57,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gameclock.R
 import com.example.gameclock.model.AppTheme
+import com.example.gameclock.model.ClockFormat
 import com.example.gameclock.ui.AppScreen
 import com.example.gameclock.ui.ClockViewModel
+import com.example.gameclock.ui.theme.ClockFont
 import com.example.gameclock.ui.theme.GameClockTheme
 
 
@@ -112,11 +117,22 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 settingsTextWeight = settingsTextWeight
             )
 
-            ToggleRow(
+//            ToggleRow(
+//                settingsTextWeight = settingsTextWeight,
+//                rowText = R.string.show_seconds,
+//                settingEnabled = uiState.showSeconds,
+//                onClick = { clockViewModel.toggleSeconds() })
+            ChoiceRow(
                 settingsTextWeight = settingsTextWeight,
-                rowText = R.string.show_seconds,
-                settingEnabled = uiState.showSeconds,
-                onClick = { clockViewModel.toggleSeconds() })
+                rowText = R.string.clock_format,
+                currentChoice = uiState.clockFormat,
+                choices = ClockFormat.entries.toList(),
+                onChoiceChange = { choice ->
+                    if (choice is ClockFormat) {
+                        clockViewModel.updateClockFormat(choice)
+                    }
+                }
+            )
 
             ToggleRow(
                 settingsTextWeight = settingsTextWeight,
@@ -141,13 +157,17 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 rowText = R.string.full_screen,
                 settingEnabled = uiState.isFullScreen,
                 onClick = { clockViewModel.toggleFullScreen() })
-//TODO: Change clock format from toggle row to selection.
-            ToggleRow(
+
+            ChoiceRow(
                 settingsTextWeight = settingsTextWeight,
-                rowText = R.string.clock_format,
-                settingEnabled = !uiState.clockFormatIsTwelveHour,
-                onClick = { clockViewModel.toggleClockTwelveHourFormat() },
-                toggleOptions = Pair("12hr", "24hr")
+                rowText = R.string.clock_font,
+                currentChoice = uiState.clockFont,
+                choices = ClockFont.entries.toList(),
+                onChoiceChange = { choice ->
+                    if (choice is ClockFont) {
+                        clockViewModel.updateClockFont(choice)
+                    }
+                }
             )
 
             ResetSettingsButton(
@@ -156,13 +176,6 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 onClick = { clockViewModel.resetThemeToDefaults() }
             )
 
-            //TODO: GIVE OPTION OF FONT OVERRIDE
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.clock_font_override),
-                    modifier = Modifier.weight(settingsTextWeight)
-                )
-            }
 
         }
     }
@@ -257,9 +270,9 @@ fun ToggleRow(
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1f - settingsTextWeight)
-                //TODO: Fix clickable not working
-                .clickable { onClick }
+            modifier = Modifier
+                .weight(1f - settingsTextWeight)
+                .clickable { onClick(settingEnabled) }
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -319,6 +332,62 @@ fun ToggleRow(
 //
 //            }
 
+        }
+    }
+}
+
+@Composable
+fun ChoiceRow(
+    settingsTextWeight: Float,
+    rowText: Int,
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    currentChoice: Any,
+    choices: List<Any>,
+    onChoiceChange: (Any) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(rowText),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .weight(settingsTextWeight)
+                .padding(end = 8.dp)
+        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1f - settingsTextWeight)
+        ) {
+            Box {
+                TextButton(onClick = { expanded = true }) {
+                    Text(text = when (currentChoice) {
+                        is ClockFormat -> currentChoice.formatTitle
+                        is ClockFont -> currentChoice.fontName
+                        else -> ""
+                    },
+                         style = if (currentChoice is ClockFont) { currentChoice.textStyle } else textStyle)
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    choices.forEach { choice ->
+                        DropdownMenuItem(text = {
+                            Text(text = when (choice) {
+                                is ClockFormat -> choice.formatTitle
+                                is ClockFont -> choice.fontName
+                                else -> ""
+                            },
+                                style = if (choice is ClockFont) { choice.textStyle } else textStyle)
+                        }, onClick = {
+                            onChoiceChange(choice)
+                            expanded = false
+                        })
+                    }
+                }
+            }
         }
     }
 }
@@ -395,7 +464,7 @@ fun ResetSettingsButton(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier.fillMaxWidth()
-                    ){
+                    ) {
                         TextButton(onClick = {
                             onClick(); isSettingsResetDialogVisible.value = false
                         }) {

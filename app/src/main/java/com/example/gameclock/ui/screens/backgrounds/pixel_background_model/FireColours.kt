@@ -3,7 +3,7 @@ package com.example.gameclock.ui.screens.backgrounds.pixel_background_model
 import androidx.compose.ui.graphics.Color
 
 
-val fireColors = arrayOf(
+val fireColors = listOf(
     Color(7, 7, 7),
     Color(31, 7, 7),
     Color(47, 15, 7),

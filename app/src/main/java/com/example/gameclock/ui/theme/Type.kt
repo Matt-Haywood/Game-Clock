@@ -13,11 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.gameclock.R
 
-fun counterWidth(counterWidth: Int): FontVariation.Setting {
-    require(counterWidth in 323..603) { "'Counter width' must be in 323..603" }
-    return FontVariation.Setting("XTRA", counterWidth.toFloat())
-}
-
+// Fonts
 val Doppio = FontFamily(
     Font(R.font.doppio_one, FontWeight.Normal, FontStyle.Normal)
 )
@@ -42,28 +38,18 @@ val Honk = FontFamily(
 )
 
 
-//@OptIn(ExperimentalTextApi::class)
-//val Anek = FontFamily(
-//    Font(
-//        R.font.anek_devanagari,
-//        variationSettings = FontVariation.Settings(
-//            FontVariation.width(100f),
-//            counterWidth(324)
-//
-//        )
-//    )
-//)
+val Anek = FontFamily(
+    Font(
+        R.font.anek_devanagari,
 
-// (10.sp, 7.dp, 11.dp) (20.sp, 12.dp, 24.dp)
-@OptIn(ExperimentalTextApi::class)
+    )
+)
+
+
 val SplineSansMono = FontFamily(
     Font(
         R.font.spline_sans_mono,
-        variationSettings = FontVariation.Settings(
-            FontVariation.width(100f),
-            counterWidth(324)
 
-        )
     )
 )
 
@@ -71,17 +57,39 @@ val Wellfleet = FontFamily(
     Font(R.font.wellfleet_regular, FontWeight.Normal, FontStyle.Normal)
 )
 
-@OptIn(ExperimentalTextApi::class)
-val RobotoFlex = FontFamily(
-    Font(
-        R.font.roboto_flex_variablefont,
-        variationSettings = FontVariation.Settings(
-            FontVariation.width(100f),
-            counterWidth(324)
-        ),
-
-        )
+val BlackOpsOne = FontFamily(
+    Font(R.font.black_ops_one, FontWeight.Normal, FontStyle.Normal)
 )
+
+val Caveat = FontFamily(
+    Font(R.font.caveat_regular, FontWeight.Normal, FontStyle.Normal)
+)
+
+val GermaniaOne = FontFamily(
+    Font(R.font.germania_one, FontWeight.Normal, FontStyle.Normal)
+)
+
+val MonotonRegular = FontFamily(
+    Font(R.font.monoton_regular, FontWeight.Normal, FontStyle.Normal)
+)
+
+val PixelifySans = FontFamily(
+    Font(R.font.pixelify_sans_regular_fixed5, FontWeight.Normal, FontStyle.Normal)
+)
+
+val PoiretOne = FontFamily(
+    Font(R.font.poiret_one, FontWeight.Normal, FontStyle.Normal)
+)
+
+val SairaVariable = FontFamily(
+    Font(R.font.saira_variable, FontWeight.Normal, FontStyle.Normal)
+)
+
+val TacOne = FontFamily(
+    Font(R.font.tac_one_regular, FontWeight.Normal, FontStyle.Normal)
+)
+
+
 
 // default typography for the app
 val defaultTypography = Typography(
@@ -106,9 +114,9 @@ val defaultTypography = Typography(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
         fontSize = 52.sp,
-        letterSpacing = 2.sp,
-
+        letterSpacing = 1.sp,
     ),
+
     //Settings Title
     titleMedium = TextStyle(
         fontFamily = Roboto,
@@ -141,20 +149,4 @@ val defaultTypography = Typography(
         letterSpacing = 0.5.sp
     )
 
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
 )

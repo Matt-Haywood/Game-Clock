@@ -12,5 +12,12 @@ data class Alarm(
     var hour: String = "00",
     var title: String = "",
     var isEnabled: Boolean = false,
-
+    var isRecurring: Boolean = false,
+    var daySetMon: Boolean = false,
+    var daySetTue: Boolean = false,
+    var daySetWed: Boolean = false,
+    var daySetThu: Boolean = false,
+    var daySetFri: Boolean = false,
+    var daySetSat: Boolean = false,
+    var daySetSun: Boolean = false
 )

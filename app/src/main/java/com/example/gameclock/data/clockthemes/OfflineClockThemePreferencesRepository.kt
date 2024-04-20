@@ -9,6 +9,7 @@ import javax.inject.Inject
 class OfflineClockThemePreferencesRepository @Inject constructor(private val clockDao: ClockDao) :
     ClockThemePreferencesRepository {
 
+
     override suspend fun isDatabaseEmpty(): Boolean =
         clockDao.getAllThemePreferences().first().isEmpty()
 

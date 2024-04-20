@@ -62,7 +62,11 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.compose.animation)
+
     implementation(libs.androidx.material3)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout.compose)
 
 
     // Testing
@@ -99,12 +103,16 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.room.ktx)
 
-    //Dagger
+    //Hilt
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     androidTestImplementation(libs.hilt.android.testing)
+
+    // work-manager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.hilt.work)
 
 
 

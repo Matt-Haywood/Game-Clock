@@ -11,7 +11,7 @@ import com.example.gameclock.model.ClockThemePreferences
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 4, exportSchema = false)
+@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 9, exportSchema = false)
 abstract class ClockDatabase : RoomDatabase() {
 
     abstract fun clockDao(): ClockDao

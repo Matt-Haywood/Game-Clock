@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.example.gameclock.data.ClockDatabase
 import com.example.gameclock.data.alarms.AlarmDao
-import com.example.gameclock.data.alarms.AlarmOfflineRepository
 import com.example.gameclock.data.alarms.AlarmRepository
 import com.example.gameclock.data.clockthemes.ClockDao
 import com.example.gameclock.data.clockthemes.ClockThemePreferencesRepository
@@ -43,7 +42,7 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideAlarmRepository(alarmDao: AlarmDao): AlarmRepository {
-        return AlarmOfflineRepository(alarmDao)
+        return AlarmRepository(alarmDao)
     }
 
     @Singleton

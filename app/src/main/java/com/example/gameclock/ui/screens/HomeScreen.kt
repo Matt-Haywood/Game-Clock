@@ -2,11 +2,7 @@
 
 package com.example.gameclock.ui.screens
 
-import GlitchShader
 import android.content.res.Configuration
-import android.graphics.RuntimeShader
-import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,35 +18,26 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gameclock.R
-import com.example.gameclock.data.clockthemes.ClockThemeList
 import com.example.gameclock.model.AppTheme
 import com.example.gameclock.model.ClockTheme
+import com.example.gameclock.ui.ClockViewModel
 import com.example.gameclock.ui.screens.backgrounds.HomeBackground
-import com.example.gameclock.ui.screens.backgrounds.codefall_model.MatrixShader
-import com.example.gameclock.ui.theme.GameClockTheme
 
 
 @Composable
 fun HomeScreen(
+//    clockViewModel: ClockViewModel,
     clockThemeList: List<ClockTheme>,
     onThemeClick: (AppTheme) -> Unit
 ) {
@@ -147,6 +134,7 @@ fun UiCard(
     }
 }
 
+/*
 @Preview(
     showSystemUi = true,
 )
@@ -168,4 +156,4 @@ fun LandscapePreview() {
         HomeScreen(clockThemeList = ClockThemeList().loadThemes()) {}
     }
 
-}
+}*/

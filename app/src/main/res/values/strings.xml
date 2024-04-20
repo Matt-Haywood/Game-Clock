@@ -19,4 +19,12 @@
     <string name="reset_settings_confirmation">Are you sure you want to reset this theme\'s settings?</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="alarm_worker_channel_name">Alarm worker channel</string>
+    <string name="alarm_worker_channel_description">Shows an alert notification at scheduled time</string>
+    <string name="alarm_checker_channel_name">Alarm checker channel</string>
+    <string name="alarm_checker_channel_description">Shows a notification  when any alarm is scheduled</string>
+    <string name="updateAlarm">Update Alarm</string>
+    <string name="clock_font">Clock Font</string>
+    <string name="alarms">Alarms</string>
+    <string name="DaysOfWeek">mtwtfss</string>
 </resources>

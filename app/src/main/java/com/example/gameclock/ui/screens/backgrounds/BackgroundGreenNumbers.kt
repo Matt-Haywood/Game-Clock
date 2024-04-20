@@ -72,7 +72,6 @@ fun BackgroundGreenNumbers(clockUiState: ClockUiState) {
                         1000f
                     }
                 }
-
             }
         }
     }
@@ -95,7 +94,7 @@ fun BackgroundGreenNumbers(clockUiState: ClockUiState) {
             )
         }
         .graphicsLayer {
-            matrixShader.setFloatUniform("time", time)
+            matrixShader.setFloatUniform("iTime", time)
             renderEffect = RenderEffect
                 .createRuntimeShaderEffect(
                     matrixShader,
@@ -125,9 +124,9 @@ fun BackgroundGreenNumbers(clockUiState: ClockUiState) {
             var columnSpaceCounter = 0
             while (columnSpaceCounter < screenWidth) {
                 val delay = Random.nextInt(0..5000)
-                val duration = Random.nextInt(8000..20000)
-                val spacing = Random.nextInt(-5..20) // -10 to 15 works well.
-                val fontSize = Random.nextInt(10..18)
+                val duration = Random.nextInt(20000..30000)
+                val spacing = Random.nextInt(3..25) // -10 to 15 works well.
+                val fontSize = Random.nextInt(1..10)
                 columnSpaceCounter += (spacing * 2) + 5
                 val noAnimationY = (0..maxScreenSize.toInt()).random().toFloat()
                 Spacer(
@@ -182,7 +181,7 @@ fun ColumnOfText(
     var yLocation by remember { mutableFloatStateOf(0f) }
     yLocation = if (clockUiState.showAnimations) {
         infiniteTransition.animateFloat(
-            initialValue = -maxScreenSize * 3,
+            initialValue = -maxScreenSize * 2.3f,
             targetValue = screenHeight,
             animationSpec = infiniteRepeatable(
                 animation = tween(duration, delay, easing = LinearEasing),
@@ -201,7 +200,7 @@ fun ColumnOfText(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .height((maxScreenSize * 2).dp)
-            .width(5.dp)
+            .width(3.dp)
             .absoluteOffset(y = yLocation.dp)
 
 
@@ -216,9 +215,9 @@ fun ColumnOfText(
 //                ),
                 brush = Brush.linearGradient(
                     0.0f to Color.Transparent,
-                    0.2f to Color.Green,
-                    0.8f to Color.Green,
-                    1f to Color.White,
+                    0.2f to Color(102, 177, 102, 120),
+                    0.8f to Color(101, 216, 101, 150),
+                    1f to Color(255, 255, 255, 120),
                     start = Offset(0f, 0f),
                     ),
 

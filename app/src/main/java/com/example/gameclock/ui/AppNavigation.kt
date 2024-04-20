@@ -6,6 +6,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +71,8 @@ fun AppNavigation(
     }
 
 
+
+
     GameClockTheme(appTheme = clockViewModel.clockUiState.collectAsState().value.theme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -76,23 +80,23 @@ fun AppNavigation(
         ) {
             NavHost(
                 navController = navController,
-                startDestination = AppScreen.Home.name,
+                startDestination = AppScreen.Clock.name,
                 enterTransition = {
-                    expandIn(
-                        expandFrom = Alignment.Center,
-                    )
+                    scaleIn()
                     fadeIn()
                 },
                 exitTransition = {
-                    shrinkOut(
-                        shrinkTowards = Alignment.Center,
-                    )
-                    fadeOut(animationSpec =  tween( durationMillis = 10) )
+//                    shrinkOut(
+//                        shrinkTowards = Alignment.Center,
+//                    )
+                    scaleOut()
+                    fadeOut(animationSpec =  tween(durationMillis = 500) )
                 }
                 ) {
                 composable(AppScreen.Home.name) {
 
                     HomeScreen(
+//                        clockViewModel = clockViewModel,
                         clockThemeList = ClockThemeList().loadThemes(),
                         onThemeClick = { appTheme: AppTheme ->
                             clockViewModel.onThemeChange(
@@ -100,25 +104,19 @@ fun AppNavigation(
                                     appTheme
                                 )
                             )
+                            clockViewModel.resetHideButtonsTimer()
                             navController.navigate(AppScreen.Clock.name)
                         }
                     )
                 }
-                composable(route = AppScreen.Clock.name,
-
-                    ) {
+                composable(route = AppScreen.Clock.name) {
                     BaseClockScreen(
                         clockViewModel = clockViewModel,
                         alarmViewModel = alarmViewModel,
                         onBackClick = {
-                            navController.navigateUp()
+                            navController.navigate(AppScreen.Home.name)
                             //changes the app theme back to default before displaying the home screen
-                            clockViewModel.onThemeChange(
-                                ThemeChangeEvent.ThemeChange(
-                                    AppTheme.Default
-                                )
-                            )
-
+//                            clockViewModel.returnToDefaultTheme()
                         },
                         onSettingsClick = { navController.navigate(AppScreen.Settings.name) }
                     )
@@ -129,6 +127,7 @@ fun AppNavigation(
                         clockViewModel = clockViewModel,
                         onBackClick = {
                             clockViewModel.saveThemePreferences()
+                            clockViewModel.resetHideButtonsTimer()
                             navController.navigateUp() }
                     )
                 }

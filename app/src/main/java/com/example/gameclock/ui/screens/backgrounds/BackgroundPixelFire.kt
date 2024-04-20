@@ -1,234 +1,138 @@
 package com.example.gameclock.ui.screens.backgrounds
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.currentCompositionLocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.PixelBackgroundMeasurements
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.PixelBackgroundState
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.PixelBackgroundViewModel
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.WindDirection
+import androidx.compose.ui.util.lerp
+import com.example.gameclock.MainActivity
 import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.fireColors
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.heightPixel
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.pixelSize
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.tallerThanWide
-import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.widthPixel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.random.Random
 
+/**
+ * This is a Composable function that creates a pixel fire animation.
+ * @param showAnimations A boolean value to control whether animations should be shown or not. Default is true.
+ */
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun BackgroundPixelFire(
-    pixelBackgroundViewModel: PixelBackgroundViewModel = viewModel(factory = PixelBackgroundViewModel.Factory)
-) {
-    val pixelBackgroundState = pixelBackgroundViewModel.state.collectAsState().value
-    val configuration = LocalConfiguration.current
-    val pixelBackgroundMeasurements = PixelBackgroundMeasurements(
-        configuration.screenWidthDp,
-        configuration.screenHeightDp
-    )
+fun PixelFireBackground(showAnimations: Boolean = true, isFullscreen: Boolean = false) {
 
-SetupArtView(
-    pixelBackgroundMeasurements = pixelBackgroundMeasurements,
-    pixelBackgroundViewModel = pixelBackgroundViewModel)
-    PixelArtDrawer(pixelBackgroundMeasurements, pixelBackgroundState)
-}
 
-@Composable
-fun PixelArtDrawer(
-    pixelBackgroundMeasurements: PixelBackgroundMeasurements,
-    pixelBackgroundState: PixelBackgroundState,
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (pixelBackgroundState.pixels.isNotEmpty()) {
-            RenderPixelArt(
-                pixelBackgroundState.pixels,
-                pixelBackgroundMeasurements.heightPixel,
-                pixelBackgroundMeasurements.widthPixel,
-                pixelBackgroundMeasurements.pixelSize
-            )
-        }
+    val density = LocalDensity.current
+    val screenWidth = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val screenHeight = with(density) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+
+    val isLandscape = screenWidth >= screenHeight
+
+    // Set the pixel size of the fire
+    val pixelSize = Size(
+        width = if (isLandscape) floor(screenWidth / 60f) else floor(screenWidth / 35f),
+        height = if (isLandscape) floor(screenWidth / 60f) else floor(screenWidth / 35f))
+
+    // Calculate the number of pixels in width and height
+    val pixelsNumberWidth = ceil(screenWidth / pixelSize.width).toInt() + if (isFullscreen && isLandscape) 6 else 0
+    val pixelsNumberHeight = ceil(screenHeight / pixelSize.height).toInt() + if (isFullscreen && !isLandscape) 6 else 0
+
+    // Set the fire speed, 0.01f is a good value
+    val fireSpeed = 0.008f
+
+    // Create an infinite animation for the fire
+    val infiniteAnimation = rememberInfiniteTransition(label = "Fire animation")
+    val firePixelOffsetY by if (showAnimations) {
+        infiniteAnimation.animateValue(
+            initialValue = pixelsNumberHeight,
+            targetValue = 0,
+            typeConverter = Int.VectorConverter,
+            animationSpec = infiniteRepeatable(
+                animation = tween((pixelsNumberHeight / fireSpeed).toInt(), easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ), label = "Y Axis pixel fire animation"
+        )
+    } else {
+        remember { mutableIntStateOf(0) }
     }
-}
 
-@Composable
-fun RenderPixelArt(
-    artPixels: List<Int>,
-    heightPixelsNumber: Int,
-    widthPixelsNumber: Int,
-    pixelSize: Int
-) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        for (column in 0 until widthPixelsNumber) {
-            Column(modifier = Modifier
-                .width(pixelSize.dp)
-                .fillMaxHeight()) {
-                for (row in 0 until heightPixelsNumber - 1) {
-                    val currentPixelIndex = column + (widthPixelsNumber * row)
-                    val currentPixel = artPixels[currentPixelIndex]
-                    Row(
-                        modifier = Modifier
-                            .size(pixelSize.dp)
-                            .background(fireColors[currentPixel])
-                    ) {
+    // Create a random array of points to use as a point from the top of screen at which each pixel will finish its interpolation to black
+    val randomPoint = Array(pixelsNumberWidth * pixelsNumberHeight) { Random.nextFloat() * 0.26f * pixelsNumberHeight }
 
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.linearGradient(
+                    fireColors,
+                    start = Offset(0f, screenHeight * 0.1f),
+                    end = Offset(0f, screenHeight)
+                )
+            )
+    ) {
+        for (i in 0 until pixelsNumberWidth) {
+            for (y in 0 until pixelsNumberHeight) {
+                val firePixelY = if ((firePixelOffsetY + y - pixelsNumberHeight) < 0f) {
+                    (firePixelOffsetY + y)
+                } else firePixelOffsetY + y - pixelsNumberHeight
+                val colorIndex =
+                    if (firePixelY < randomPoint[i + y * pixelsNumberWidth]) {
+                        0
+                    } else {
+                        val index = lerp(
+                            start = 0,
+                            stop = fireColors.size,
+                            fraction = (firePixelY - randomPoint[i + y * pixelsNumberWidth]) / pixelsNumberHeight.toFloat()
+                        )
+                        // Ensure the index is always less than the size of the array
+                        if (index >= fireColors.size) fireColors.size - 1 else index
                     }
-                }
+                /*val colorIndex =
+                    if (firePixelY < randomPoint[i + y * pixelsNumberWidth]) {
+                        0
+                    } else {
+                        lerp(
+                            start = 0,
+                            stop = fireColors.size,
+                            fraction = (firePixelY - randomPoint[i + y * pixelsNumberWidth]) / pixelsNumberHeight.toFloat()
+                        ).toInt()
+                    }*/
+
+                val yOffset = firePixelY * pixelSize.height
+
+                // Get the color for this rectangle
+                val pixelColor = fireColors[colorIndex]
+                drawRect(
+                    color = pixelColor,
+                    topLeft = Offset(
+                        x = (i * pixelSize.width),
+                        y = yOffset
+                    ),
+
+                    size = pixelSize
+                )
             }
-
         }
     }
-}
-
-@Composable
-fun SetupArtView(
-    pixelBackgroundMeasurements: PixelBackgroundMeasurements,
-    pixelBackgroundViewModel: PixelBackgroundViewModel
-) {
-    val arraySize = pixelBackgroundMeasurements.widthPixel * pixelBackgroundMeasurements.heightPixel
-
-    val pixelArray = IntArray(arraySize) { 0 }
-        .apply { createArtSource(this, pixelBackgroundMeasurements) }
-    val scope  = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) {
-        scope.launch {
-            while (true) {
-                calculateArtPropagation(pixelArray, pixelBackgroundMeasurements)
-                pixelBackgroundViewModel.updatePixels(pixelArray.toList())
-                delay(16) // delay to match approximately 60 FPS
-            }
-        }
-    }
-}
-
-fun createArtSource(pixelArray: IntArray, pixelBackgroundMeasurements: PixelBackgroundMeasurements) {
-    val overFlowPixelIndex = pixelBackgroundMeasurements.widthPixel * pixelBackgroundMeasurements.heightPixel
-
-    for (column in 0 until pixelBackgroundMeasurements.widthPixel) {
-        val pixelIndex = (overFlowPixelIndex - pixelBackgroundMeasurements.widthPixel) + column
-        pixelArray[pixelIndex] = fireColors.size - 1
-    }
-}
-
-fun calculateArtPropagation(
-    pixelArray: IntArray,
-    pixelBackgroundMeasurements: PixelBackgroundMeasurements
-) {
-    for (column in 0 until pixelBackgroundMeasurements.widthPixel) {
-        for (row in 1 until pixelBackgroundMeasurements.heightPixel) {
-            val currentPixelIndex = column + (pixelBackgroundMeasurements.widthPixel * row)
-            updateArtPerPixel(
-                currentPixelIndex,
-                pixelArray,
-                pixelBackgroundMeasurements
-            )
-        }
-    }
-}
-
-private fun updateArtPerPixel(
-    currentPixelIndex: Int,
-    pixelArray: IntArray,
-    measurements: PixelBackgroundMeasurements
-) {
-    val bellowPixelIndex = currentPixelIndex + measurements.widthPixel
-    if (bellowPixelIndex >= measurements.widthPixel * measurements.heightPixel) return
-
-    val offset = if (measurements.tallerThanWide) 2 else 3
-    val decay = floor(Random.nextDouble() * offset).toInt()
-    val bellowPixelArtIntensity = pixelArray[bellowPixelIndex]
-    val newArtIntensity = when {
-        bellowPixelArtIntensity - decay >= 0 -> bellowPixelArtIntensity - decay
-        else -> 0
-    }
-
-    pixelArray[currentPixelIndex] = newArtIntensity
-}
-
-@Composable
-fun SetupFireView(
-    canvas: PixelBackgroundMeasurements,
-    pixelBackgroundViewModel: PixelBackgroundViewModel,
-    windDirection: WindDirection = WindDirection.Left
-) {
-    val arraySize = canvas.widthPixel * canvas.heightPixel
-
-    val pixelArray = IntArray(arraySize) { 0 }
-        .apply { createFireSource(this, canvas) }
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            calculateFirePropagation(pixelArray, canvas, windDirection)
-            pixelBackgroundViewModel.updatePixels(pixelArray.toList())
-            delay(16) // delay to match approximately 60 FPS
-        }
-    }
-}
-
-fun createFireSource(firePixels: IntArray, canvas: PixelBackgroundMeasurements) {
-    val overFlowFireIndex = canvas.widthPixel * canvas.heightPixel
-
-    for (column in 0 until canvas.widthPixel) {
-        val pixelIndex = (overFlowFireIndex - canvas.widthPixel) + column
-        firePixels[pixelIndex] = fireColors.size - 1
-    }
-}
-
-fun calculateFirePropagation(
-    firePixels: IntArray,
-    pixelBackgroundMeasurements: PixelBackgroundMeasurements,
-    windDirection: WindDirection
-) {
-    for (column in 0 until pixelBackgroundMeasurements.widthPixel) {
-        for (row in 1 until pixelBackgroundMeasurements.heightPixel) {
-            val currentPixelIndex = column + (pixelBackgroundMeasurements.widthPixel * row)
-            updateFireIntensityPerPixel(
-                currentPixelIndex,
-                firePixels,
-                pixelBackgroundMeasurements,
-                windDirection
-            )
-        }
-    }
-}
-
-private fun updateFireIntensityPerPixel(
-    currentPixelIndex: Int,
-    firePixels: IntArray,
-    measurements: PixelBackgroundMeasurements,
-    windDirection: WindDirection
-) {
-    val bellowPixelIndex = currentPixelIndex + measurements.widthPixel
-    if (bellowPixelIndex >= measurements.widthPixel * measurements.heightPixel) return
-
-    val offset = if (measurements.tallerThanWide) 2 else 3
-    val decay = floor(Random.nextDouble() * offset).toInt()
-    val bellowPixelFireIntensity = firePixels[bellowPixelIndex]
-    val newFireIntensity = when {
-        bellowPixelFireIntensity - decay >= 0 -> bellowPixelFireIntensity - decay
-        else -> 0
-    }
-
-    val newPosition = when (windDirection) {
-        WindDirection.Right -> if (currentPixelIndex - decay >= 0) currentPixelIndex - decay else currentPixelIndex
-        WindDirection.Left -> if (currentPixelIndex + decay >= 0) currentPixelIndex + decay else currentPixelIndex
-        WindDirection.None -> currentPixelIndex
-    }
-
-    firePixels[newPosition] = newFireIntensity
 }
