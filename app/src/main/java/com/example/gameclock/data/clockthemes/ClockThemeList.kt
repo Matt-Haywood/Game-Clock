@@ -24,29 +24,29 @@ class ClockThemeList {
             ),
             ClockThemePreferences(
                 appTheme = AppTheme.Red,
-                thumbnail = R.drawable.thumbnail_red,
+                thumbnail = R.drawable.thumbnail_pixel_fire,
                 clockFont = ClockFont.PIXELIFY_SANS,
             ),
             ClockThemePreferences(
                 appTheme = AppTheme.CodeFall,
-                thumbnail = R.drawable.thumbnail_red,
+                thumbnail = R.drawable.thumbnail_codefall,
                 clockFont = ClockFont.TEKO,
                 clockFormat = ClockFormat.TWENTY_FOUR_HOUR_WITH_SECONDS
             ),
             ClockThemePreferences(
                 appTheme = AppTheme.Space,
-                thumbnail = R.drawable.thumbnail_red,
+                thumbnail = R.drawable.thumbnail_space,
                 clockFont = ClockFont.POIRET_ONE,
                 clockFormat = ClockFormat.VERTICAL_TWENTY_FOUR_HOUR
             ),
             ClockThemePreferences(
                 appTheme = AppTheme.DvdDark,
-                thumbnail = R.drawable.thumbnail_red,
+                thumbnail = R.drawable.thumbnail_gmc_dark,
                 clockFont = ClockFont.DOPPIO
             ),
             ClockThemePreferences(
                 appTheme = AppTheme.DvdLight,
-                thumbnail = R.drawable.thumbnail_light,
+                thumbnail = R.drawable.thumbnail_gmc_light,
                 clockFont = ClockFont.DOPPIO
             ),
         )
