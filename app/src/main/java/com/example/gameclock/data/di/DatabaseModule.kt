@@ -16,8 +16,8 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     @Singleton
@@ -29,6 +29,7 @@ object DatabaseModule {
         ClockDatabase::class.java,
         "clock_database"
     )
+        //TODO: Change fallback and migration method for room database
         .fallbackToDestructiveMigration()
         .build(
     )

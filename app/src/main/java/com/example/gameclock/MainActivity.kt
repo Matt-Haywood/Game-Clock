@@ -10,6 +10,7 @@ import dagger.hilt.android.qualifiers.ActivityContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     @ActivityContext val activityContext = this
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,161 +1,101 @@
 package com.example.gameclock.data.alarms
 
-import android.app.Activity
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent.FLAG_IMMUTABLE
-import android.app.PendingIntent.getActivity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
-import android.os.Bundle
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import com.example.gameclock.R
+import android.util.Log
+import androidx.work.Data
+import com.example.gameclock.data.workManager.WorkRequestManager
+import com.example.gameclock.data.workManager.worker.AlarmWorker
+import com.example.gameclock.data.workManager.worker.RESCHEDULE_ALARM_TAG
+import com.example.gameclock.data.workManager.worker.RescheduleAlarmWorker
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+/**
+ * A BroadcastReceiver that receives alarm events and performs appropriate actions.
+ *
+ * @property gameClockAlarmManager The manager for game clock alarms.
+ * @property workRequestManager The manager for work requests.
+ */
+@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
+    @Inject
+    lateinit var gameClockAlarmManager: GameClockAlarmManager
 
-    val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+    @Inject
+    lateinit var workRequestManager: WorkRequestManager
 
-    // If there is no alarm set, set the notification sound as backup
-    val ringtoneUri = alarmUri ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+    private val alarmBroadcastReceiverScope = CoroutineScope(SupervisorJob())
 
+    private val TAG = "AlarmBroadcastReceiver"
 
-    private val broadcastReceiverScope = CoroutineScope(SupervisorJob())
-
-    private var notificationManager: NotificationManagerCompat? = null
-
-    /*    override fun onReceive(context: Context?, p1: Intent?) {
-            val taskInfo = p1?.getSerializableExtra("task_info") as TaskInfo?
-            // tapResultIntent gets executed when user taps the notification
-            val tapResultIntent = Intent(context, MainActivity::class.java)
-            tapResultIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            val pendingIntent: PendingIntent =
-                getActivity(context, 0, tapResultIntent, FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE)
-
-            val notification = context?.let {
-                NotificationCompat.Builder(it, "AlarmChannel")
-                    .setContentTitle("Alarm")
-                    .setContentText("Tap to dismiss the alarm")
-                    .setSmallIcon(R.drawable.baseline_alarm_24)
-                    .setContentIntent(pendingIntent)
-                    .addAction(R.drawable.baseline_alarm_24, "Dismiss", pendingIntent)
-                    .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setCategory(NotificationCompat.CATEGORY_ALARM)
-                    .build()
-            }
-            notificationManager = context?.let { NotificationManagerCompat.from(it) }
-            notification?.let { taskInfo?.let { it1 -> notificationManager?.notify(it1.id, it) } }
-        }*/
-
-
-    // Create a new Ringtone
 
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult: PendingResult = goAsync()
-        broadcastReceiverScope.launch(Dispatchers.Default) {
+        alarmBroadcastReceiverScope.launch(Dispatchers.Default) {
             try {
-                if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+                intent.let { intent ->
+                    when (intent.action) {
+                        "android.intent.action.BOOT_COMPLETED" -> {
+                            // Enqueue a worker to reschedule alarms after boot completed
+                            workRequestManager.enqueueWorker<RescheduleAlarmWorker>(
+                                RESCHEDULE_ALARM_TAG,
+                            )
+                        }
 
-                    /**
-                     * This is where I would reset all alarms on reboot, however this is a considerable amount of work
-                     * and there are other more important features to implement first.
-                     * TODO Implement resetting all alarms on reboot
-                     */
-                    /*// reset all alarms
-                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    val alarms =  // replace this with your method to get all alarms
+                        ACTION_DISMISS -> {
+                            // Cancel the alarm worker and remove the notification when the alarm is dismissed
+                            workRequestManager.cancelWorker(ALARM_TAG)
+//                            alarmNotificationHelper.removeScheduledAlarmNotification()  // Remove the AlarmCheckerWorker notification
+                        }
 
-                    for (alarm in alarms) {
-                        val alarmIntent = Intent(context, AlarmReceiver::class.java)
-                        val pendingIntent = PendingIntent.getBroadcast(context, alarm.id, alarmIntent,
-                            PendingIntent.FLAG_MUTABLE)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent)
+                        ACTION_SNOOZE -> {
+                            // Snooze the alarm and cancel the alarm worker when the snooze action is received
+                            gameClockAlarmManager.snooze()
+                            workRequestManager.cancelWorker(ALARM_TAG)
+                        }
+
+                        else -> {
+//                            val shouldStartWorker = alarmIsToday(intent)
+                            val inputData = Data.Builder()
+                                .putInt(ID, intent.getIntExtra(ID, 0))
+                                .putString(TITLE, intent.getStringExtra(TITLE))
+                                .putLong(DATE, intent.getLongExtra(DATE, 1L))
+                                .build()
+                            Log.i(
+                                TAG,
+                                "onReceive: ${intent.getIntExtra(ID, 0)} ${
+                                    intent.getStringExtra(TITLE)
+                                } date: ${intent.getLongExtra(DATE, 1L)}"
+                            )
+//                            if (shouldStartWorker) {
+                            workRequestManager.enqueueWorker<AlarmWorker>(
+                                ALARM_TAG,
+                                inputData,
+                            )
+//                            }
+                        }
                     }
-*/
-                } else {
-                    // Get the default alarm ringtone
-                    val ringtone = RingtoneManager.getRingtone(context, ringtoneUri)
-
-                    // If the Ringtone is not null, then play the Ringtone
-                    ringtone?.play()
-
-                    // Create a notification
-                    createNotification(context)
                 }
             } finally {
                 pendingResult.finish()
+                alarmBroadcastReceiverScope.cancel()
             }
         }
-
-    }
-    // This method is called when the alarm goes off
-//        if ((Intent.ACTION_BOOT_COMPLETED) == intent.getAction()) {
-//            // reset all alarms
-//        } else {
-//
-//            // Get the default alarm ringtone
-//            ringtone = RingtoneManager.getRingtone(context, ringtoneUri)
-//
-//            // If the Ringtone is not null, then play the Ringtone
-//            ringtone?.play()
-//
-//            // Create a notification
-//            createNotification(context)
-//        }
-//    }
-
-    private fun createNotification(context: Context) {
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Create a notification channel
-        val channel = NotificationChannel(
-            "AlarmChannel",
-            "Alarm Channel",
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        notificationManager.createNotificationChannel(channel)
-
-        // Create an intent to start the DismissAlarmActivity when the notification is tapped
-        val intent = Intent(context, DismissAlarmActivity::class.java)
-        val pendingIntent =
-            getActivity(context, 0, intent, FLAG_IMMUTABLE)
-
-        // Create a separate PendingIntent for the dismiss action
-        val dismissIntent = Intent(context, DismissAlarmActivity::class.java)
-        val pendingDismissIntent =
-            getActivity(context, 1, dismissIntent, FLAG_IMMUTABLE)
-
-//TODO: Fix this
-
-        // Create a notification
-        val notification = NotificationCompat
-            .Builder(context, "AlarmChannel")
-            .setContentTitle("Alarm")
-            .setContentText("Tap to dismiss the alarm")
-            .setSmallIcon(R.drawable.baseline_alarm_24)
-            .setContentIntent(pendingIntent)
-            .addAction(R.drawable.baseline_alarm_24, "Dismiss", pendingDismissIntent)
-            .setAutoCancel(true)
-            .build()
-
-        // Show the notification
-        notificationManager.notify(1, notification)
     }
 }
 
-class DismissAlarmActivity : Activity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        AlarmReceiver.ringtone?.stop()
+const val ID = "ID"
+const val TITLE = "TITLE"
+const val DATE = "DATE"
+const val ACTION_DISMISS = "ACTION_DISMISS"
+const val ACTION_SNOOZE = "ACTION_SNOOZE"
+const val ALARM_TAG = "alarmTag"
 
-    }
-}

@@ -71,6 +71,10 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.androidx.navigation.testing)
+    testImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -84,7 +88,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
-    kspTest(libs.hilt.compiler)
+
 
 
     //View Model
@@ -109,6 +113,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     androidTestImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.compiler)
+    testImplementation(libs.hilt.android.testing)
 
     // work-manager
     implementation(libs.androidx.work.runtime.ktx)
