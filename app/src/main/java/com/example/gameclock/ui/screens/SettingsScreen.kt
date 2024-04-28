@@ -146,11 +146,11 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 settingEnabled = uiState.showAlarmButton,
                 onClick = { clockViewModel.toggleAlarmButton() })
 
-            ToggleRow(
-                settingsTextWeight = settingsTextWeight,
-                rowText = R.string.timer_button,
-                settingEnabled = uiState.showTimerButton,
-                onClick = { clockViewModel.toggleTimerButton() })
+//            ToggleRow(
+//                settingsTextWeight = settingsTextWeight,
+//                rowText = R.string.timer_button,
+//                settingEnabled = uiState.showTimerButton,
+//                onClick = { clockViewModel.toggleTimerButton() })
 
             ToggleRow(
                 settingsTextWeight = settingsTextWeight,
