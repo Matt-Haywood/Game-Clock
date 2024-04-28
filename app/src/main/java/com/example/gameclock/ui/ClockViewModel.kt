@@ -62,8 +62,14 @@ class ClockViewModel @Inject constructor(
                     clockThemePreferencesRepository.writeClockThemePreferences(
                         ClockThemePreferences(
                             appTheme = theme.appTheme,
-                            clockFont = theme.clockFont
-
+                            clockFont = theme.clockFont,
+                            thumbnail = theme.thumbnail,
+                            showAnimations = theme.showAnimations,
+                            clockFormat = theme.clockFormat,
+                            clockScale = theme.clockScale,
+                            buttonsScale = theme.buttonsScale,
+                            showAlarmButton = theme.showAlarmButton,
+                            showTimerButton = theme.showTimerButton
                         )
                     )
                 }
@@ -110,6 +116,7 @@ class ClockViewModel @Inject constructor(
                     showAlarmButton = clockUiState.value.showAlarmButton,
                     showTimerButton = clockUiState.value.showTimerButton,
                     clockFont = clockUiState.value.clockFont,
+                    thumbnail = themesPreferencesList.first { it.appTheme == clockUiState.value.theme }.thumbnail
 
                     )
             )
@@ -194,19 +201,19 @@ class ClockViewModel @Inject constructor(
     // Create a job to hold the coroutine that hides the buttons
     private var hideButtonsJob: Job? = null
 
-//    init {
-//        // Call resetTimer initially to start the timer
-//        resetTimer()
-//    }
+    init {
+        // Call resetTimer initially to start the timer
+        showButtons()
+    }
 
     // Function to reset the timer
     fun resetHideButtonsTimer() {
         // Cancel the existing job if it's not null
         hideButtonsJob?.cancel()
 
-        // Start a new job to hide the buttons after 10 seconds
+        // Start a new job to hide the buttons after 7 seconds
         hideButtonsJob = viewModelScope.launch {
-            delay(10000)  // Wait for 10 seconds
+            delay(7000)  // Wait for 7 seconds
             _uiState.update { currentState ->
                 currentState.copy(
                     buttonsVisible = false

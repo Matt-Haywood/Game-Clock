@@ -9,10 +9,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -21,12 +19,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.example.gameclock.MainActivity
 import com.example.gameclock.ui.screens.backgrounds.pixel_background_model.fireColors
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -34,6 +30,9 @@ import kotlin.random.Random
 
 /**
  * This is a Composable function that creates a pixel fire animation.
+ * This background is based upon the Pixel Fire background created by @ditn and available at https://github.com/ditn/Doom-Compose
+ * however, this version has been heavily modified by myself from the ground up to be more performant and efficient.
+ * It may be a similar effect but the way I got there is completely different.
  * @param showAnimations A boolean value to control whether animations should be shown or not. Default is true.
  */
 
@@ -108,16 +107,6 @@ fun PixelFireBackground(showAnimations: Boolean = true, isFullscreen: Boolean = 
                         // Ensure the index is always less than the size of the array
                         if (index >= fireColors.size) fireColors.size - 1 else index
                     }
-                /*val colorIndex =
-                    if (firePixelY < randomPoint[i + y * pixelsNumberWidth]) {
-                        0
-                    } else {
-                        lerp(
-                            start = 0,
-                            stop = fireColors.size,
-                            fraction = (firePixelY - randomPoint[i + y * pixelsNumberWidth]) / pixelsNumberHeight.toFloat()
-                        ).toInt()
-                    }*/
 
                 val yOffset = firePixelY * pixelSize.height
 

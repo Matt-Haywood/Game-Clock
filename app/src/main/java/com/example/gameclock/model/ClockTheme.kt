@@ -9,6 +9,7 @@ import com.example.gameclock.ui.theme.ClockFont
 @Entity(tableName = "clock_preferences_table")
 class ClockThemePreferences(
     @PrimaryKey val appTheme: AppTheme,
+    @DrawableRes val thumbnail: Int,
     val showAnimations: Boolean = true,
     val clockFormat: ClockFormat = ClockFormat.TWENTY_FOUR_HOUR,
     val clockScale: Float = 1.8f,
@@ -17,11 +18,4 @@ class ClockThemePreferences(
     val showTimerButton: Boolean = true,
     val clockFont: ClockFont
 )
-
-class ClockTheme(
-    val appTheme: AppTheme,
-    @DrawableRes val thumbnail: Int,
-    val themeTitle: String,
-    val clockFont: ClockFont,
-    )
 

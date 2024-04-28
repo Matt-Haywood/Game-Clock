@@ -1,6 +1,5 @@
 package com.example.gameclock.ui.screens.backgrounds
 
-import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -23,7 +22,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
 
-
+/**
+ * Data class representing a star in the space background.
+ *
+ * @property currentX The current x-coordinate of the star.
+ * @property currentY The current y-coordinate of the star.
+ * @property originalX The original x-coordinate of the star.
+ * @property originalY The original y-coordinate of the star.
+ * @property timeOnScreen The time the star has been on the screen.
+ * @property animationOffset The offset for the star's animation.
+ */
 data class Star(
     var currentX: Float,
     var currentY: Float,
@@ -31,9 +39,15 @@ data class Star(
     var originalY: Float,
     var timeOnScreen: Float = 0f,
     val animationOffset: Float
-) 
+)
 
-@OptIn(ExperimentalTransitionApi::class)
+/**
+ * A Composable function that displays a space background with stars moving across the screen.
+ * The stars move from an animated center point and get larger as they spend more time on screen
+ * to create a 3d effect.
+ * @param showAnimations A boolean value to determine if the animations should be shown.
+ */
+
 @Preview(showBackground = true)
 @Composable
 fun SpaceBackground(showAnimations: Boolean = true) {
@@ -70,14 +84,6 @@ fun SpaceBackground(showAnimations: Boolean = true) {
     val starColor = Color.White
 
     val infiniteTransition = rememberInfiniteTransition(label = "Stars Animation")
-/*    val animation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ), label = ""
-    )*/
 
     val animation by if (showAnimations) {
         infiniteTransition.animateFloat(
@@ -147,8 +153,8 @@ fun SpaceBackground(showAnimations: Boolean = true) {
                 star.timeOnScreen * 0.01f  // Adjust the multiplier to control the acceleration rate
 
             val newPosition = Offset(
-                star.currentX + direction.x /* ((*//*animation +*//* star.animationOffset) % 1)*/ * acceleration,
-                star.currentY + direction.y /* ((*//*animation +*//* star.animationOffset) % 1) */ * acceleration
+                star.currentX + direction.x * acceleration,
+                star.currentY + direction.y * acceleration
             )
 
             star.currentX = newPosition.x

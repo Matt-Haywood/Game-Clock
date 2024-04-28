@@ -54,7 +54,7 @@ import com.example.gameclock.ui.alarm.AlarmPickerDialog
 import com.example.gameclock.ui.alarm.AlarmUiState
 import com.example.gameclock.ui.alarm.AlarmViewModel
 import com.example.gameclock.ui.screens.backgrounds.BackgroundBreathingEllipse
-import com.example.gameclock.ui.screens.backgrounds.BackgroundGreenNumbers
+import com.example.gameclock.ui.screens.backgrounds.BackgroundDigitalRain
 import com.example.gameclock.ui.screens.backgrounds.DvdBackground
 import com.example.gameclock.ui.screens.backgrounds.PixelFireBackground
 import com.example.gameclock.ui.screens.backgrounds.SpaceBackground
@@ -80,14 +80,7 @@ fun BaseClockScreen(
     alarmViewModel.getAlarmsList()
     val alarmList = alarmUiState.alarmsList
 
-//    val window: Window? = activity?.window
-
-
     when (clockUiState.theme) {
-/*        AppTheme.Default -> {
-            BackgroundBreathingEllipse(clockUiState = clockUiState)
-        }*/
-
         AppTheme.Red -> {
             PixelFireBackground(showAnimations = clockUiState.showAnimations, isFullscreen = clockUiState.isFullScreen)
         }
@@ -105,7 +98,7 @@ fun BaseClockScreen(
         }
 
         AppTheme.CodeFall -> {
-            BackgroundGreenNumbers(clockUiState = clockUiState)
+            BackgroundDigitalRain(clockUiState = clockUiState)
         }
 
         AppTheme.Space -> {
@@ -127,44 +120,6 @@ fun BaseClockScreen(
 
     }
 //    TextRatioTest()
-
-    /* // Create a mutable state to hold the visibility status of the buttons
-     val buttonsVisible = remember { mutableStateOf(true) }
-
-     // Create a mutable state to track whether the user has interacted with the screen
-     val userInteracted = remember { mutableStateOf(false) }
-
-     // Create a coroutine scope
-     val coroutineScope = rememberCoroutineScope()
-
-     // Create a job to hold the coroutine that hides the buttons
-     var hideButtonsJob: Job? = null
-
-     // Function to reset the timer
-     fun resetTimer() {
-         // Cancel the existing job if it's not null
-         hideButtonsJob?.cancel()
-
-         // Start a new job to hide the buttons after 10 seconds
-         hideButtonsJob = coroutineScope.launch {
-             delay(10000)  // Wait for 10 seconds
-             buttonsVisible.value = false  // Hide the buttons
-             Log.i(TAG, "resetTimer: Buttons are hidden.")
-         }
-     }
-
-     // Call resetTimer initially to start the timer
-     resetTimer()
-
-     // Use LaunchedEffect to reset the timer whenever the user interacts with the screen
-     LaunchedEffect(userInteracted.value) {
-         if (userInteracted.value) {
-             resetTimer()
-             // Reset userInteracted to false
-             userInteracted.value = false
-         }
-     }*/
-
 
     Box(
         modifier = Modifier
@@ -222,7 +177,6 @@ fun LandscapeBaseClock(
     val showTimerPopup = clockUiState.showTimerPickerPopup
     val buttonsVisible = clockUiState.buttonsVisible
 
-    val buttonsVisibleAnimationSpec = 1
 
     Box(modifier = Modifier.fillMaxSize()) {
         AnimatedVisibility(visible = alarmUiState.showAlarmListPopup) {
@@ -269,10 +223,6 @@ fun LandscapeBaseClock(
                 isLandscape = true,
                 clockFont = clockUiState.clockFont
             )
-//            AlarmList(
-//                alarmViewModel = alarmViewModel,
-//                alarmList = alarmList,
-//                alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) })
         }
 
         Row(
@@ -320,7 +270,7 @@ fun LandscapeBaseClock(
                     )
             ) {
                 AnimatedVisibility(
-                    visible = showTimerButton && buttonsVisible,
+                    visible = showAlarmButton && buttonsVisible,
                     enter = scaleIn(),
                     exit = scaleOut()
                 ) {
@@ -335,12 +285,12 @@ fun LandscapeBaseClock(
                         buttonScale = buttonScale
                     )
                 }
-                AnimatedVisibility(visible = showAlarmButton && buttonsVisible) {
+/*                AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
                     TimerButton(
                         timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
                         buttonScale = buttonScale
                     )
-                }
+                }*/
             }
         }
     }
@@ -477,7 +427,7 @@ fun PortraitBaseClock(
                         buttonScale = buttonScale
                     )
                 }
-                AnimatedVisibility(
+                /*AnimatedVisibility(
                     visible = showAlarmButton && buttonsVisible,
                     enter = scaleIn(),
                     exit = scaleOut()
@@ -487,7 +437,7 @@ fun PortraitBaseClock(
                         buttonScale = buttonScale
                     )
 
-                }
+                }*/
             }
         }
     }
@@ -577,15 +527,22 @@ fun ClockText(
                 for (i in lines.indices) {
                     val line = lines[i]
                     val lineIndex = i + 1
-                    val yOffset =
+                    val yOffset = if (lines.size == 1) {
+                        0.dp
+                    } else {
                         -(estimatedMaxTextSize * clockFont.fontYOffsetPercentage * lineIndex).dp
+                    }
+                    val requiredHeightModifier = if (lines.size == 1) {
+                        Modifier
+                    } else {
+                        Modifier.requiredHeight((estimatedMaxTextSize * clockFont.textBoxHeight).dp)
+                    }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
 //                        modifier = Modifier.height(estimatedMaxTextSize.dp)
-                        modifier = Modifier
-                            .requiredHeight((estimatedMaxTextSize * clockFont.textBoxHeight).dp)
+                        modifier = requiredHeightModifier
                             .offset(y = yOffset)
                     ) {
                         for (element in line) {
@@ -598,8 +555,7 @@ fun ClockText(
 
                             Box(
                                 contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .requiredHeight((estimatedMaxTextSize * clockFont.textBoxHeight).dp)
+                                modifier = requiredHeightModifier
                                     .requiredWidth(charWidth)
                             ) {
                                 Text(
@@ -642,6 +598,94 @@ fun ClockText(
         }
     }
 }
+
+@Composable
+fun BackButton(
+    onBackClick: () -> Unit,
+    buttonScale: Float = 1f
+) {
+    IconButton(
+        onClick = onBackClick,
+        modifier = Modifier.size(60.dp * buttonScale)
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = stringResource(R.string.back_button),
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(42.dp * buttonScale)
+        )
+    }
+}
+
+@Composable
+fun HomeButton(
+    onBackClick: () -> Unit,
+    buttonScale: Float = 1f
+) {
+    IconButton(
+        onClick = onBackClick,
+        modifier = Modifier.size(60.dp * buttonScale)
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Home,
+            contentDescription = stringResource(R.string.back_button),
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(42.dp * buttonScale)
+        )
+    }
+}
+
+@Composable
+fun SettingsButton(
+    onSettingsClick: () -> Unit,
+    buttonScale: Float = 1f
+) {
+    IconButton(
+        onClick = onSettingsClick,
+        modifier = Modifier.size(60.dp * buttonScale)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Settings,
+            contentDescription = stringResource(R.string.settings_button),
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.size(42.dp * buttonScale)
+        )
+    }
+}
+
+@Composable
+fun AlarmButton(alarmButtonOnClick: () -> Unit, buttonScale: Float) {
+    IconButton(
+        onClick = alarmButtonOnClick,
+        modifier = Modifier.size(80.dp * buttonScale)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_alarm_24),
+            contentDescription = stringResource(R.string.alarms_button),
+            modifier = Modifier.size(50.dp * buttonScale),
+            tint = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
+fun TimerButton(timerButtonOnClick: () -> Unit, buttonScale: Float) {
+    IconButton(
+        onClick = timerButtonOnClick,
+        modifier = Modifier.size(80.dp * buttonScale)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_hourglass_empty_24),
+            contentDescription = stringResource(R.string.timers_button),
+            modifier = Modifier.size(50.dp * buttonScale),
+            tint = MaterialTheme.colorScheme.onBackground
+        )
+
+    }
+}
+
+
+
 
 const val previewFontScale: Float = 2f
 val previewFont: ClockFont = ClockFont.TAC_ONE
@@ -1008,209 +1052,4 @@ fun LSV24HrSPreview() {
 }
 
 
-//            ClockText(
-//                clockFormat = ClockFormat.TWENTY_FOUR_HOUR,
-//                clockSize = 1.8f,
-//                isLandscape = false
-//            )
-//            ClockText(
-//                clockFormat = ClockFormat.TWELVE_HOUR_WITH_SECONDS,
-//                clockSize = 1.8f,
-//                isLandscape = false
-//            )
-//            ClockText(
-//                clockFormat = ClockFormat.TWENTY_FOUR_HOUR_WITH_SECONDS,
-//                clockSize = 1.8f,
-//                isLandscape = false
-//            )
-/*            ClockText(
-                clockFormat = ClockFormat.VERTICAL_TWELVE_HOUR,
-                clockSize = 1.8f,
-                isLandscape = false
-            )
-            ClockText(
-                clockFormat = ClockFormat.VERTICAL_TWENTY_FOUR_HOUR,
-                clockSize = 1.8f,
-                isLandscape = false
-            )*/
 
-@Composable
-fun BackButton(
-    onBackClick: () -> Unit,
-    buttonScale: Float = 1f
-) {
-    IconButton(
-        onClick = onBackClick,
-        modifier = Modifier.size(60.dp * buttonScale)
-    ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = stringResource(R.string.back_button),
-            tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(42.dp * buttonScale)
-        )
-    }
-}
-
-@Composable
-fun HomeButton(
-    onBackClick: () -> Unit,
-    buttonScale: Float = 1f
-) {
-    IconButton(
-        onClick = onBackClick,
-        modifier = Modifier.size(60.dp * buttonScale)
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Home,
-            contentDescription = stringResource(R.string.back_button),
-            tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(42.dp * buttonScale)
-        )
-    }
-}
-
-@Composable
-fun SettingsButton(
-    onSettingsClick: () -> Unit,
-    buttonScale: Float = 1f
-) {
-    IconButton(
-        onClick = onSettingsClick,
-        modifier = Modifier.size(60.dp * buttonScale)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Settings,
-            contentDescription = stringResource(R.string.settings_button),
-            tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(42.dp * buttonScale)
-        )
-    }
-}
-
-@Composable
-fun AlarmButton(alarmButtonOnClick: () -> Unit, buttonScale: Float) {
-    IconButton(
-        onClick = alarmButtonOnClick,
-        modifier = Modifier.size(80.dp * buttonScale)
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_alarm_24),
-            contentDescription = stringResource(R.string.alarms_button),
-            modifier = Modifier.size(50.dp * buttonScale),
-            tint = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Composable
-fun TimerButton(timerButtonOnClick: () -> Unit, buttonScale: Float) {
-    IconButton(
-        onClick = timerButtonOnClick,
-        modifier = Modifier.size(80.dp * buttonScale)
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_hourglass_empty_24),
-            contentDescription = stringResource(R.string.timers_button),
-            modifier = Modifier.size(50.dp * buttonScale),
-            tint = MaterialTheme.colorScheme.onBackground
-        )
-
-    }
-}
-
-
-/*
-@Composable
-fun TextRatioTest() {
-    val singleDigit = "1"
-    val doubleDigit = "12"
-    val tripleDigit = "123"
-    val time = "12:34"
-    val timeWithSeconds = "12:34:56"
-    val timeWithAmPm = "12:34 PM"
-    val timeWithSecondsAmPm = "12:34:56 PM"
-
-    val textList = listOf(
-        singleDigit,
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "0",
-        doubleDigit,
-        tripleDigit,
-        time,
-        timeWithSeconds,
-        timeWithAmPm,
-        timeWithSecondsAmPm
-    )
-
-    val fontFamilyList = mapOf<FontFamily, String>(
-
-        Pair(Roboto, "Roboto"),
-
-//        Pair(Wellfleet, "Wellfleet"),
-        Pair(SplineSansMono, "Spline San"),
-//        Pair(RobotoFlex, "Roboto Flex"),
-//        Pair(Anek, "Anek"),
-    )
-
-    Row {
-        fontFamilyList.forEach() { (fontFamily, string) ->
-            Column(
-                modifier = Modifier,
-            ) {
-                Row {
-                    Text(
-                        text = string,
-                        fontFamily = fontFamily,
-                        fontSize = 10.sp,
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(40.dp)
-//                        lineHeight = 10.sp,
-
-                    )
-                }
-                textList.forEach() {
-                    Row {
-                        Text(
-                            text = it,
-                            fontFamily = fontFamily,
-                            fontSize = 10.sp,
-//                            lineHeight = 10.sp,
-
-                        )
-                    }
-                }
-                Row {
-                    Text(
-                        text = string,
-                        fontFamily = fontFamily,
-                        fontSize = 20.sp,
-//                        lineHeight = 20.sp,
-
-                    )
-                }
-                textList.forEach() {
-                    Row {
-                        Text(
-                            text = it,
-                            fontFamily = fontFamily,
-                            fontSize = 20.sp,
-//                            lineHeight = 20.sp,
-
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-
-}*/

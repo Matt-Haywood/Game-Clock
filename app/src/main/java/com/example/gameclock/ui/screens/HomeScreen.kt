@@ -30,15 +30,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.gameclock.R
 import com.example.gameclock.model.AppTheme
-import com.example.gameclock.model.ClockTheme
-import com.example.gameclock.ui.ClockViewModel
+import com.example.gameclock.model.ClockThemePreferences
 import com.example.gameclock.ui.screens.backgrounds.HomeBackground
 
 
 @Composable
 fun HomeScreen(
-//    clockViewModel: ClockViewModel,
-    clockThemeList: List<ClockTheme>,
+    clockThemeList: List<ClockThemePreferences>,
     onThemeClick: (AppTheme) -> Unit
 ) {
     val isLandscape: Boolean =
@@ -74,7 +72,6 @@ fun HomeScreen(
                     items(clockThemeList) { clockTheme ->
                         UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
                     }
-
                 }
             } else
                 LazyVerticalGrid(
@@ -88,7 +85,6 @@ fun HomeScreen(
                         UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
 
                     }
-
                 }
         }
     }
@@ -96,7 +92,7 @@ fun HomeScreen(
 
 @Composable
 fun UiCard(
-    clockTheme: ClockTheme,
+    clockTheme: ClockThemePreferences,
     onThemeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -113,7 +109,7 @@ fun UiCard(
         ) {
             Image(
                 painter = painterResource(clockTheme.thumbnail),
-                contentDescription = clockTheme.themeTitle,
+                contentDescription = clockTheme.appTheme.themeName,
                 modifier = modifier
                     .fillMaxSize(),
 
@@ -121,7 +117,7 @@ fun UiCard(
             )
 
             Text(
-                text = clockTheme.themeTitle,
+                text = clockTheme.appTheme.themeName,
                 modifier = Modifier.padding(
                     top = 8.dp,
                     start = 0.dp,

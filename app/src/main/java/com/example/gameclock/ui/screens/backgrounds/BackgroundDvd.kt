@@ -2,9 +2,7 @@ package com.example.gameclock.ui.screens.backgrounds
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateValue
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -14,7 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -25,12 +27,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gameclock.R
 
-//TODO CHANGE SO COLOR CHANGES WHEN HITTING WALLS
+/**
+ * A Composable function that displays a DVD logo bouncing around the screen.
+ * The color of the logo changes each time it hits the edge of the screen.
+ *
+ * @param showAnimations A boolean value that determines whether animations should be shown.
+ */
 @Preview(showBackground = true)
 @Composable
 fun DvdBackground(showAnimations: Boolean = true) {
-
-
+    // Screen dimensions
     val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
     val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
 
@@ -47,7 +53,6 @@ fun DvdBackground(showAnimations: Boolean = true) {
 
     // DVD logo animation
     val dvdAnimation = rememberInfiniteTransition(label = "Dvd Animation")
-
 
     val dvdBoundsOffsetX by dvdAnimation.animateFloat(
         initialValue = dvdX,
@@ -75,18 +80,20 @@ fun DvdBackground(showAnimations: Boolean = true) {
         Color.Green,
         Color.Blue,
         Color(75, 0, 130, 255),
-        Color(155, 38, 182, 255),)
-
-    // Animate the color index
-    val colorIndex by dvdAnimation.animateValue(
-        initialValue = 0,
-        targetValue = colors.size - 1,
-        typeConverter = Int.VectorConverter,
-        animationSpec = infiniteRepeatable(
-            animation = tween((screenWidth / (dvdSpeed * 0.3)).toInt(), easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ), label = "Dvd Color Animation"
+        Color(155, 38, 182, 255),
     )
+    var colorIndex by remember { mutableIntStateOf(0) }
+
+    // Update colorIndex when DVD logo hits the edge
+    LaunchedEffect(dvdBoundsOffsetX, dvdBoundsOffsetY) {
+        colorIndex = when {
+            dvdBoundsOffsetX <= 0.5f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetX >= screenWidth - dvdWidth - 0.5f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetY <= 0.5f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetY >= screenHeight - dvdHeight - 0.5f -> (colorIndex + 1) % colors.size
+            else -> colorIndex
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -99,7 +106,4 @@ fun DvdBackground(showAnimations: Boolean = true) {
             colorFilter = ColorFilter.tint(colors[colorIndex])
         )
     }
-
-
-
 }
