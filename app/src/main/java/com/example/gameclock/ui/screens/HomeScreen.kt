@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -47,22 +48,29 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
+            .padding(start = 10.dp, end = 10.dp, top = 10.dp,)
     ) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            Text(
-                text = stringResource(id = R.string.app_name),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
-            )
+            Surface(
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                shape = MaterialTheme.shapes.medium,
+
+            ) {
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
 
 
             if (isLandscape) {
-
                 LazyHorizontalGrid(
                     rows = GridCells.Adaptive(200.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -83,7 +91,6 @@ fun HomeScreen(
                 ) {
                     items(clockThemeList) { clockTheme ->
                         UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
-
                     }
                 }
         }

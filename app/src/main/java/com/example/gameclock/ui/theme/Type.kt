@@ -95,7 +95,7 @@ val TacOne = FontFamily(
 val defaultTypography = Typography(
     //App Title
     titleLarge = TextStyle(
-        fontFamily = Honk,
+        fontFamily = GermaniaOne,
         fontWeight = FontWeight.Normal,
         fontSize = 80.sp,
         lineHeight = 80.sp,
