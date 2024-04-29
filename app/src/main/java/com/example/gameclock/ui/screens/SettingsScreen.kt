@@ -361,13 +361,23 @@ fun ChoiceRow(
             modifier = Modifier.weight(1f - settingsTextWeight)
         ) {
             Box {
-                TextButton(onClick = { expanded = true }) {
-                    Text(text = when (currentChoice) {
-                        is ClockFormat -> currentChoice.formatTitle
-                        is ClockFont -> currentChoice.fontName
-                        else -> ""
-                    },
-                         style = if (currentChoice is ClockFont) { currentChoice.textStyle } else textStyle)
+                TextButton(
+                    onClick = { expanded = true },
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text(
+                        text = when (currentChoice) {
+                            is ClockFormat -> currentChoice.formatTitle
+                            is ClockFont -> currentChoice.fontName
+                            else -> ""
+                        },
+                        style = if (currentChoice is ClockFont) {
+                            currentChoice.textStyle
+                        } else textStyle
+                    )
                 }
                 DropdownMenu(
                     expanded = expanded,
@@ -375,12 +385,16 @@ fun ChoiceRow(
                 ) {
                     choices.forEach { choice ->
                         DropdownMenuItem(text = {
-                            Text(text = when (choice) {
-                                is ClockFormat -> choice.formatTitle
-                                is ClockFont -> choice.fontName
-                                else -> ""
-                            },
-                                style = if (choice is ClockFont) { choice.textStyle } else textStyle)
+                            Text(
+                                text = when (choice) {
+                                    is ClockFormat -> choice.formatTitle
+                                    is ClockFont -> choice.fontName
+                                    else -> ""
+                                },
+                                style = if (choice is ClockFont) {
+                                    choice.textStyle
+                                } else textStyle
+                            )
                         }, onClick = {
                             onChoiceChange(choice)
                             expanded = false
