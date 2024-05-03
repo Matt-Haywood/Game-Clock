@@ -89,7 +89,7 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
             0f
         }
         ClockFormat.VERTICAL_TWELVE_HOUR, ClockFormat.VERTICAL_TWENTY_FOUR_HOUR, ClockFormat.VERTICAL_TWELVE_HOUR_WITH_SECONDS, ClockFormat.VERTICAL_TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) -(screenWidth/4) - (clockScale * 10) else 0f
+            if (isLandscape) -(screenWidth/3) - (clockScale * 10) else 0f
         }
     }
 
@@ -129,7 +129,7 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
     } else 0f
 
     Box(
-        modifier = scaleModifier.fillMaxSize().background(color = Color.White)
+        modifier = Modifier.fillMaxSize().background(color = Color.White)
     ) {
         val tileWidth = 80f
         val tileHeight = tileWidth*3/5
