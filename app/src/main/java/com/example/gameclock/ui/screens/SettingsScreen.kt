@@ -91,6 +91,39 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                     )
                 }
             }
+        },
+        bottomBar = {
+            Column {
+
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.app_version),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_copyright_24),
+                        contentDescription = stringResource(
+                            R.string.copyright_logo
+                        )
+                    )
+                    Text(
+                        text = stringResource(id = R.string.settings_bottom_bar),
+                        style = MaterialTheme.typography.bodySmall,
+
+                        )
+                }
+            }
         }
     ) { paddingValues ->
         Column(

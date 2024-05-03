@@ -27,4 +27,7 @@
     <string name="clock_font">Clock Font</string>
     <string name="alarms">Alarms</string>
     <string name="DaysOfWeek">mtwtfss</string>
+    <string name="settings_bottom_bar">Matt Haywood 2024</string>
+    <string name="copyright_logo">copyright logo</string>
+    <string name="app_version">Game Clock version 1.0</string>
 </resources>
