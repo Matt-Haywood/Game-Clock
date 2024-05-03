@@ -36,12 +36,12 @@ fun GameClockTheme(
         }
 
         AppTheme.Red -> {
-            colorScheme = if (darkTheme) RedDarkColorScheme else RedLightColorScheme
+            colorScheme = /*if (darkTheme) RedDarkColorScheme else*/ RedLightColorScheme
             typography = defaultTypography
         }
 
         AppTheme.CodeFall -> {
-            colorScheme = if (darkTheme) CodeFallDarkColorScheme else CodeFallLightColorScheme
+            colorScheme = /*if (darkTheme) CodeFallDarkColorScheme else */CodeFallLightColorScheme
             typography = defaultTypography
         }
 
@@ -56,6 +56,16 @@ fun GameClockTheme(
         }
 
         AppTheme.DvdLight -> {
+            colorScheme = LightColorScheme
+            typography = defaultTypography
+        }
+
+        AppTheme.PinkAF -> {
+            colorScheme = PinkAFColorScheme
+            typography = defaultTypography
+        }
+
+        AppTheme.Cat -> {
             colorScheme = LightColorScheme
             typography = defaultTypography
         }
@@ -148,7 +158,7 @@ private val DarkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
-private val RedLightColorScheme = lightColorScheme(
+private val RedLightColorScheme = darkColorScheme(
     primary = md_theme_red_light_primary,
     onPrimary = md_theme_red_light_onPrimary,
     primaryContainer = md_theme_red_light_primaryContainer,
@@ -245,7 +255,7 @@ private val CodeFallDarkColorScheme = darkColorScheme(
     surfaceDim = md_theme_codefall_dark_shadow,
 )
 
-private val CodeFallLightColorScheme = lightColorScheme(
+private val CodeFallLightColorScheme = darkColorScheme(
     primary = md_theme_codefall_light_primary,
     onPrimary = md_theme_codefall_light_onPrimary,
     primaryContainer = md_theme_codefall_light_primaryContainer,
@@ -276,6 +286,38 @@ private val CodeFallLightColorScheme = lightColorScheme(
     outlineVariant = md_theme_codefall_light_outlineVariant,
     scrim = md_theme_codefall_light_scrim,
     surfaceDim = md_theme_codefall_light_shadow,
+)
+
+private val PinkAFColorScheme = lightColorScheme(
+    primary = md_theme_pink_af_primary,
+    onPrimary = md_theme_pink_af_onPrimary,
+    primaryContainer = md_theme_pink_af_primaryContainer,
+    onPrimaryContainer = md_theme_pink_af_onPrimaryContainer,
+    secondary = md_theme_pink_af_secondary,
+    onSecondary = md_theme_pink_af_onSecondary,
+    secondaryContainer = md_theme_pink_af_secondaryContainer,
+    onSecondaryContainer = md_theme_pink_af_onSecondaryContainer,
+    tertiary = md_theme_pink_af_tertiary,
+    onTertiary = md_theme_pink_af_onTertiary,
+    tertiaryContainer = md_theme_pink_af_tertiaryContainer,
+    onTertiaryContainer = md_theme_pink_af_onTertiaryContainer,
+    error = md_theme_pink_af_error,
+    errorContainer = md_theme_pink_af_errorContainer,
+    onError = md_theme_pink_af_onError,
+    onErrorContainer = md_theme_pink_af_onErrorContainer,
+    background = md_theme_pink_af_background,
+    onBackground = md_theme_pink_af_onBackground,
+    surface = md_theme_pink_af_surface,
+    onSurface = md_theme_pink_af_onSurface,
+    surfaceVariant = md_theme_pink_af_surfaceVariant,
+    onSurfaceVariant = md_theme_pink_af_onSurfaceVariant,
+    outline = md_theme_pink_af_outline,
+    inverseOnSurface = md_theme_pink_af_inverseOnSurface,
+    inverseSurface = md_theme_pink_af_inverseSurface,
+    inversePrimary = md_theme_pink_af_inversePrimary,
+//    surfaceTint = md_theme_pink_af_surfaceTint,
+    outlineVariant = md_theme_pink_af_outlineVariant,
+    scrim = md_theme_pink_af_scrim,
 )
 //private val red_lightColorScheme = lightColorScheme(
 //    primary = md_theme_CHANGETHIS_primary,

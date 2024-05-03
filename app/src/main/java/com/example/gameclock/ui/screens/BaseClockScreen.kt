@@ -54,7 +54,9 @@ import com.example.gameclock.ui.alarm.AlarmPickerDialog
 import com.example.gameclock.ui.alarm.AlarmUiState
 import com.example.gameclock.ui.alarm.AlarmViewModel
 import com.example.gameclock.ui.screens.backgrounds.BackgroundBreathingEllipse
+import com.example.gameclock.ui.screens.backgrounds.BackgroundCat
 import com.example.gameclock.ui.screens.backgrounds.BackgroundDigitalRain
+import com.example.gameclock.ui.screens.backgrounds.BackgroundPinkAF
 import com.example.gameclock.ui.screens.backgrounds.DvdBackground
 import com.example.gameclock.ui.screens.backgrounds.PixelFireBackground
 import com.example.gameclock.ui.screens.backgrounds.SpaceBackground
@@ -65,6 +67,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
+
+//TODO: Sort out colours of icons for darker themes.
 @Composable
 fun BaseClockScreen(
     clockViewModel: ClockViewModel,
@@ -80,9 +84,13 @@ fun BaseClockScreen(
     alarmViewModel.getAlarmsList()
     val alarmList = alarmUiState.alarmsList
 
+
     when (clockUiState.theme) {
         AppTheme.Red -> {
-            PixelFireBackground(showAnimations = clockUiState.showAnimations, isFullscreen = clockUiState.isFullScreen)
+            PixelFireBackground(
+                showAnimations = clockUiState.showAnimations,
+                isFullscreen = clockUiState.isFullScreen
+            )
         }
 
         AppTheme.Light -> {
@@ -111,6 +119,18 @@ fun BaseClockScreen(
 
         AppTheme.DvdLight -> {
             DvdBackground(showAnimations = clockUiState.showAnimations)
+        }
+
+        AppTheme.PinkAF -> {
+            BackgroundPinkAF(showAnimations = clockUiState.showAnimations)
+        }
+
+        AppTheme.Cat -> {
+            BackgroundCat(
+                showAnimations = clockUiState.showAnimations,
+                clockScale = clockUiState.clockScale,
+                clockFormat = clockUiState.clockFormat
+            )
         }
 
         else -> {
@@ -171,7 +191,7 @@ fun LandscapeBaseClock(
     val clockScale = clockUiState.clockScale
     val buttonScale = clockUiState.buttonsScale
     val showAlarmButton = clockUiState.showAlarmButton
-    val showTimerButton = clockUiState.showTimerButton
+//    val showTimerButton = clockUiState.showTimerButton
     val showSetAlarmPopup = alarmUiState.showSetAlarmPopup
     val showUpdateAlarmPopup = alarmUiState.showAlarmUpdatePopup
     val showTimerPopup = clockUiState.showTimerPickerPopup
@@ -285,12 +305,12 @@ fun LandscapeBaseClock(
                         buttonScale = buttonScale
                     )
                 }
-/*                AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
-                    TimerButton(
-                        timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
-                        buttonScale = buttonScale
-                    )
-                }*/
+                /*                AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
+                                    TimerButton(
+                                        timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
+                                        buttonScale = buttonScale
+                                    )
+                                }*/
             }
         }
     }
@@ -311,7 +331,7 @@ fun PortraitBaseClock(
     val clockScale = clockUiState.clockScale
     val buttonScale = clockUiState.buttonsScale
     val showAlarmButton = clockUiState.showAlarmButton
-    val showTimerButton = clockUiState.showTimerButton
+//    val showTimerButton = clockUiState.showTimerButton
     val showSetAlarmPopup = alarmUiState.showSetAlarmPopup
     val showUpdateAlarmPopup = alarmUiState.showAlarmUpdatePopup
     val showTimerPopup = clockUiState.showTimerPickerPopup
@@ -411,7 +431,7 @@ fun PortraitBaseClock(
                     .padding(30.dp)
             ) {
                 AnimatedVisibility(
-                    visible = showTimerButton && buttonsVisible,
+                    visible = showAlarmButton && buttonsVisible,
                     enter = scaleIn(),
                     exit = scaleOut()
                 ) {
@@ -683,8 +703,6 @@ fun TimerButton(timerButtonOnClick: () -> Unit, buttonScale: Float) {
 
     }
 }
-
-
 
 
 const val previewFontScale: Float = 2f

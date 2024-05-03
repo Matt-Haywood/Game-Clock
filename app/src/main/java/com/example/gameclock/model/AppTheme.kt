@@ -13,5 +13,7 @@ enum class AppTheme(
     Space("Space"),
     DvdLight("DvdLight"),
     DvdDark("DvdDark"),
+    PinkAF("PinkAF"),
+    Cat("Cat"),
 }
 

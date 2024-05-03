@@ -2,9 +2,7 @@ package com.example.gameclock.ui.screens.backgrounds
 
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
@@ -47,10 +45,9 @@ fun HomeBackground() {
         if (tallerThanWide) numberOfSquaresOnLongEdge else ceil(screenHeightPixels / dotSize).toInt()
 
 
-    val alphaAnimation = remember { Animatable(0f) }
+    val alphaAnimation = remember { Animatable(40f) }
     val yAnimation = remember { Animatable(0f) }
     val xAnimation = remember { Animatable(0f) }
-    val blurAnimation = remember { Animatable(1f) }
 
 
 
@@ -59,14 +56,6 @@ fun HomeBackground() {
             alphaAnimation.animateTo(
                 255f,
                 animationSpec = infiniteRepeatable(
-                    animation = tween(5000, easing = LinearEasing), repeatMode = RepeatMode.Reverse
-                ),
-            )
-        }
-        launch {
-            blurAnimation.animateTo(
-                25f,
-                animationSpec = infiniteRepeatable(
                     animation = tween(10000, easing = LinearEasing), repeatMode = RepeatMode.Reverse
                 ),
             )
@@ -74,7 +63,7 @@ fun HomeBackground() {
         launch {
             yAnimation.animateTo(
                 1 * dotSize, animationSpec = infiniteRepeatable(
-                    animation = tween(5000, easing = FastOutSlowInEasing),
+                    animation = tween(10000, easing = LinearEasing),
                     repeatMode = RepeatMode.Restart
                 )
             )
@@ -82,7 +71,7 @@ fun HomeBackground() {
         launch {
             xAnimation.animateTo(
                 1 * dotSize, animationSpec = infiniteRepeatable(
-                    animation = tween(5000, easing = LinearOutSlowInEasing),
+                    animation = tween(10000, easing = LinearEasing),
                     repeatMode = RepeatMode.Restart
                 )
             )
@@ -96,16 +85,16 @@ fun HomeBackground() {
         modifier = Modifier
             .fillMaxSize()
             .blur(
-                radiusX = blurAnimation.value.dp,
-                radiusY = 3.dp,
+                radiusX = 1.dp,
+                radiusY = 1.dp,
                 edgeTreatment = BlurredEdgeTreatment.Unbounded
             ),
         contentDescription = "Home Background Canvas"
     ) {
         for (i in 0 until dotCountHorizontal + 1) {
             for (j in 0 until dotCountVertical + 3) {
-                val color = if ((i + j) % 2 == 0) Color(243, 187, 145, alpha1)
-                else Color(245, 228, 149, alpha2)
+                val color = if ((i + j) % 2 == 0) Color(82, 82, 82, alpha1)
+                else Color(82, 82, 82, alpha2)
                 drawCircle(
                     color = color, center = Offset(
                         i * dotSize + dotSize / 2 + xAnimation.value - dotSize,

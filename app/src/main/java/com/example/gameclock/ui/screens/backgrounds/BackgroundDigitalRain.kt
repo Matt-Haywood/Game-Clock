@@ -62,7 +62,7 @@ fun BackgroundDigitalRain(clockUiState: ClockUiState) {
     // Get the screen dimensions
     val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
     val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
-    val isLandScape = screenWidth > screenHeight
+    val isLandscape = screenWidth > screenHeight
 
     // Calculate the max of the screen width and height
     val maxScreenSize: Float = maxOf(screenWidth, screenHeight)
@@ -87,13 +87,13 @@ fun BackgroundDigitalRain(clockUiState: ClockUiState) {
     val binaryText =
         "0110010101101010010101010001010110101101101110001010100101101001010100101101010101101101001001110101"
 
-    val charText =
-        "kfeokxhjslektgalszxzqqhwmkxsdfiajelkthakskflkerthalksdflktlaksdhthsasdlkdtkejriejskdjurtioqnsigfpakd"
+//    val charText =
+//        "kfeokxhjslektgalszxzqqhwmkxsdfiajelkthakskflkerthalksdflktlaksdhthsasdlkdtkejriejskdjurtioqnsigfpakd"
     // Create an infinite transition that oscillates the radius between 0 and maxScreenSize
     val infiniteTransition =
         rememberInfiniteTransition(label = "Digital Rain Animation")
 
-    if (isLandScape) {
+    if (isLandscape) {
         Canvas(modifier = Modifier
             .fillMaxSize()
             .onSizeChanged { size ->
@@ -135,7 +135,7 @@ fun BackgroundDigitalRain(clockUiState: ClockUiState) {
                 val delay = Random.nextInt(0..3000)
                 val duration = Random.nextInt(15000..30000)
                 val spacing =
-                    if (isLandScape) Random.nextInt(3..25) else Random.nextInt(-10..15) // -10 to 15 works well.
+                    if (isLandscape) Random.nextInt(3..25) else Random.nextInt(-10..15) // -10 to 15 works well.
                 val fontSize = Random.nextInt(1..10)
                 columnSpaceCounter += (spacing * 2) + 5
                 val noAnimationY = (0..maxScreenSize.toInt()).random().toFloat()

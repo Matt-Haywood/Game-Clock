@@ -14,7 +14,7 @@ class ClockThemeList {
             ClockThemePreferences(
                 appTheme = AppTheme.Light,
                 thumbnail = R.drawable.thumbnail_light,
-                clockFont = ClockFont.ROBOTO,
+                clockFont = ClockFont.GERMANIA_ONE,
                 clockFormat = ClockFormat.VERTICAL_TWELVE_HOUR
             ),
             ClockThemePreferences(
@@ -42,13 +42,23 @@ class ClockThemeList {
             ClockThemePreferences(
                 appTheme = AppTheme.DvdDark,
                 thumbnail = R.drawable.thumbnail_gmc_dark,
-                clockFont = ClockFont.DOPPIO
+                clockFont = ClockFont.TAC_ONE
             ),
             ClockThemePreferences(
                 appTheme = AppTheme.DvdLight,
                 thumbnail = R.drawable.thumbnail_gmc_light,
-                clockFont = ClockFont.DOPPIO
+                clockFont = ClockFont.MONOTON_REGULAR
             ),
+            ClockThemePreferences(
+                appTheme = AppTheme.PinkAF,
+                thumbnail = R.drawable.thumbnail_gmc_light,
+                clockFont = ClockFont.WELLFLEET
+            ),
+            ClockThemePreferences(
+                appTheme = AppTheme.Cat,
+                thumbnail = R.drawable.cat_full,
+                clockFont = ClockFont.WELLFLEET
+            )
         )
     }
 }
