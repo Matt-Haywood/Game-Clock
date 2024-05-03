@@ -354,7 +354,7 @@ sealed class ThemeChangeEvent {
 data class ClockUiState(
     val theme: AppTheme = AppTheme.Light,
     val showAnimations: Boolean = true,
-    val clockFormat: ClockFormat = ClockFormat.TWENTY_FOUR_HOUR,
+    val clockFormat: ClockFormat = ClockFormat.VERTICAL_TWELVE_HOUR,
     val isFullScreen: Boolean = false,
     val clockScale: Float = 1.8f,
     val buttonsScale: Float = 1.2f,
@@ -362,7 +362,7 @@ data class ClockUiState(
     val showTimerButton: Boolean = true,
     val buttonsVisible: Boolean = true,
     val showTimerPickerPopup: Boolean = false,
-    val clockFont: ClockFont = ClockFont.ROBOTO
+    val clockFont: ClockFont = ClockFont.GERMANIA_ONE
 
 )
 
