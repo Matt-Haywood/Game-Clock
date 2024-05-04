@@ -7,7 +7,7 @@ The clock has several themes to match to the game you are playing with customiza
 ## Screenshots
 
 <div style="display:flex; flex-wrap:wrap;">
-  <img src="https://imgur.com/VYNQmYf.gif" style="flex:1; margin:5px;" width="250">
+  <img src="https://i.imgur.com/VYNQmYf.gif" style="flex:1; margin:5px;" width="250">
 
 </div>
 
