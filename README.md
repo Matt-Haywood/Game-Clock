@@ -7,11 +7,11 @@ The clock has several themes to match to the game you are playing with customiza
 ## Screenshots
 
 <div style="display:flex; flex-wrap:wrap;">
-  <img src="https://i.imgur.com/TF2tOI7.gif" style="flex:1; margin:5px;" height="450">
-  <img src="https://i.imgur.com/eNevLgd.gif" style="flex:1; margin:5px;" height="450">
+  <img src="https://i.imgur.com/TF2tOI7.gif" style="flex:1; margin:5px;" height="350">
+  <img src="https://i.imgur.com/nCQk883.gif" style="flex:1; margin:5px;" height="350">
 </div>
 
-![img](https://i.imgur.com/TF2tOI7.gif)
+
 
 ## Features
 - MVVM Architecture
