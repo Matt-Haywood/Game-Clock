@@ -13,7 +13,7 @@ import com.example.gameclock.model.Converters
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 12, exportSchema = false)
+@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 13, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class ClockDatabase : RoomDatabase() {
 
