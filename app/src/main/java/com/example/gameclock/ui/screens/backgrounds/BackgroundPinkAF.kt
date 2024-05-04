@@ -111,7 +111,7 @@ fun FloatingHeart(
     // Define the path
     val path = if (wiggleVariant) {
         Path().apply {
-            moveTo(halfPathWidth, screenHeight)
+            moveTo(halfPathWidth, screenHeight+60)
             cubicTo(
                 halfPathWidth,
                 screenHeight,
@@ -140,7 +140,7 @@ fun FloatingHeart(
         }
     } else {
         Path().apply {
-            moveTo(halfPathWidth, screenHeight)
+            moveTo(halfPathWidth, screenHeight+60)
             cubicTo(
                 halfPathWidth,
                 screenHeight,

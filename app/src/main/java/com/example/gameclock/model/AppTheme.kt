@@ -8,7 +8,7 @@ enum class AppTheme(
     Light("Light"),
     Dark("Dark"),
     Black("Black"),
-    Red("Red"),
+    Fire("Fire"),
     CodeFall("CodeFall"),
     Space("Space"),
     DvdLight("DvdLight"),

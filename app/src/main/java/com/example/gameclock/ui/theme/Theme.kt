@@ -35,7 +35,7 @@ fun GameClockTheme(
             typography = defaultTypography
         }
 
-        AppTheme.Red -> {
+        AppTheme.Fire -> {
             colorScheme = /*if (darkTheme) RedDarkColorScheme else*/ RedLightColorScheme
             typography = defaultTypography
         }

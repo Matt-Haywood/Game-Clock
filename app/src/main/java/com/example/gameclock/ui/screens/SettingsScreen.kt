@@ -534,7 +534,7 @@ fun ResetSettingsButton(
 )
 @Composable
 fun SettingsScreenPreviewPT() {
-    GameClockTheme(AppTheme.Red) {
+    GameClockTheme(AppTheme.Fire) {
         SettingsScreen(
             clockViewModel = viewModel(),
             onBackClick = {}
@@ -549,7 +549,7 @@ fun SettingsScreenPreviewPT() {
 )
 @Composable
 fun SettingsScreenPreviewLS() {
-    GameClockTheme(AppTheme.Red) {
+    GameClockTheme(AppTheme.Fire) {
         SettingsScreen(
             clockViewModel = viewModel(),
             onBackClick = {}

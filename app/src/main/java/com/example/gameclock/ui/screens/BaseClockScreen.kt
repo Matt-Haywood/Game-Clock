@@ -86,7 +86,7 @@ fun BaseClockScreen(
 
 
     when (clockUiState.theme) {
-        AppTheme.Red -> {
+        AppTheme.Fire -> {
             PixelFireBackground(
                 showAnimations = clockUiState.showAnimations,
                 isFullscreen = clockUiState.isFullScreen
