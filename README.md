@@ -9,9 +9,9 @@ The clock has several themes to match to the game you are playing with customiza
 <div style="display:flex; flex-wrap:wrap;">
   <img src="https://i.imgur.com/TF2tOI7.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/goxUVMb.gif" style="flex:1; margin:5px;" height="350">
+  <img src="https://i.imgur.com/RAwvlNR.gif" style="flex:1; margin:5px;" height="350"> 
   <img src="https://i.imgur.com/nCQk883.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/ZCA8YWC.gif" style="flex:1; margin:5px;" height="350">
-  <img src="https://i.imgur.com/RAwvlNR.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/JYUs8eW.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/AODbeUU.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/xB14jrE.gif" style="flex:1; margin:5px;" height="150">
