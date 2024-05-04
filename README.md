@@ -6,7 +6,7 @@ The clock has several themes to match to the game you are playing with customiza
 
 ## Screenshots
 
-![formats](https://imgur.com/wPWfYWc)
+![formats](https://imgur.com/wPWfYWc.gif)
 
 ## Features
 - MVVM Architecture
