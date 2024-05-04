@@ -11,6 +11,8 @@ The clock has several themes to match to the game you are playing with customiza
   <img src="https://i.imgur.com/eNevLgd.gif" style="flex:1; margin:5px;" height="450">
 </div>
 
+![img](https://i.imgur.com/eNevLgd.gif)
+
 ## Features
 - MVVM Architecture
 - Jetpack Compose
