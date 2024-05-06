@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -51,15 +52,8 @@ import com.example.gameclock.ui.ClockUiState
 import com.example.gameclock.ui.ClockViewModel
 import com.example.gameclock.ui.alarm.AlarmListDialog
 import com.example.gameclock.ui.alarm.AlarmPickerDialog
-import com.example.gameclock.ui.alarm.AlarmUiState
 import com.example.gameclock.ui.alarm.AlarmViewModel
-import com.example.gameclock.ui.screens.backgrounds.BackgroundBreathingEllipse
-import com.example.gameclock.ui.screens.backgrounds.BackgroundCat
-import com.example.gameclock.ui.screens.backgrounds.BackgroundDigitalRain
-import com.example.gameclock.ui.screens.backgrounds.BackgroundPinkAF
-import com.example.gameclock.ui.screens.backgrounds.DvdBackground
-import com.example.gameclock.ui.screens.backgrounds.PixelFireBackground
-import com.example.gameclock.ui.screens.backgrounds.SpaceBackground
+import com.example.gameclock.ui.screens.backgrounds.BackgroundChooser
 import com.example.gameclock.ui.theme.ClockFont
 import com.example.gameclock.ui.theme.GameClockTheme
 import kotlinx.coroutines.delay
@@ -81,66 +75,12 @@ fun BaseClockScreen(
     BackHandler(onBack = onBackClick)
     val clockUiState by clockViewModel.clockUiState.collectAsState()
     val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
-    alarmViewModel.getAlarmsList()
     val alarmList = alarmUiState.alarmsList
 
+    //Implements the background for each theme
+    BackgroundChooser(clockUiState = clockUiState)
 
-    when (clockUiState.theme) {
-        AppTheme.Fire -> {
-            PixelFireBackground(
-                showAnimations = clockUiState.showAnimations,
-                isFullscreen = clockUiState.isFullScreen
-            )
-        }
-
-        AppTheme.Light -> {
-            BackgroundBreathingEllipse(clockUiState = clockUiState)
-        }
-
-        AppTheme.Dark -> {
-            BackgroundBreathingEllipse(clockUiState = clockUiState)
-//            window.insetsController?.setSystemBarsAppearance(
-//                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-//                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-//            )
-        }
-
-        AppTheme.CodeFall -> {
-            BackgroundDigitalRain(clockUiState = clockUiState)
-        }
-
-        AppTheme.Space -> {
-            SpaceBackground(showAnimations = clockUiState.showAnimations)
-        }
-
-        AppTheme.DvdDark -> {
-            DvdBackground(showAnimations = clockUiState.showAnimations)
-        }
-
-        AppTheme.DvdLight -> {
-            DvdBackground(showAnimations = clockUiState.showAnimations)
-        }
-
-        AppTheme.PinkAF -> {
-            BackgroundPinkAF(showAnimations = clockUiState.showAnimations)
-        }
-
-        AppTheme.Cat -> {
-            BackgroundCat(
-                showAnimations = clockUiState.showAnimations,
-                clockScale = clockUiState.clockScale,
-                clockFormat = clockUiState.clockFormat
-            )
-        }
-
-        else -> {
-            BackgroundBreathingEllipse(clockUiState = clockUiState)
-
-        }
-
-    }
-//    TextRatioTest()
-
+    //Clickable box resets timer on buttons disappearing
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -152,12 +92,51 @@ fun BaseClockScreen(
                 )
             }
     ) {
+
+        // Alarm List dialog
+        AnimatedVisibility(visible = alarmUiState.showAlarmListPopup) {
+            AlarmListDialog(
+                alarmViewModel = alarmViewModel,
+                alarmList = alarmList,
+                alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) })
+        }
+
+        // Set new alarm dialog
+        AnimatedVisibility(visible = alarmUiState.showSetAlarmPopup) {
+            AlarmPickerDialog(
+                alarmViewModel = alarmViewModel,
+                onCancel = { alarmViewModel.dismissAlarmPickerPopup() },
+                onConfirm = {
+                    alarmViewModel.setNewAlarm()
+                    alarmViewModel.dismissAlarmPickerPopup()
+                },
+            )
+        }
+
+        // Update Existing alarm dialog
+        AnimatedVisibility(visible = alarmUiState.showAlarmUpdatePopup) {
+            AlarmPickerDialog(
+                alarmViewModel = alarmViewModel,
+                onCancel = { alarmViewModel.dismissAlarmUpdatePopup() },
+                onConfirm = {
+                    alarmViewModel.updateAlarm()
+                    alarmViewModel.dismissAlarmUpdatePopup()
+                },
+                onConfirmText = stringResource(R.string.updateAlarm)
+            )
+        }
+
+        //TODO: timer dialog.
+        AnimatedVisibility(visible = clockUiState.showTimerPickerPopup) {
+
+        }
+
+        //Clock and button layout logic
         if (isLandscape) {
             LandscapeBaseClock(
                 clockViewModel = clockViewModel,
                 clockUiState = clockUiState,
                 alarmViewModel = alarmViewModel,
-                alarmUiState = alarmUiState,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
                 alarmList = alarmList,
@@ -167,7 +146,6 @@ fun BaseClockScreen(
                 clockViewModel = clockViewModel,
                 clockUiState = clockUiState,
                 alarmViewModel = alarmViewModel,
-                alarmUiState = alarmUiState,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
                 alarmList = alarmList,
@@ -182,7 +160,6 @@ fun LandscapeBaseClock(
     clockViewModel: ClockViewModel,
     clockUiState: ClockUiState,
     alarmViewModel: AlarmViewModel,
-    alarmUiState: AlarmUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
     alarmList: List<Alarm>,
@@ -191,127 +168,91 @@ fun LandscapeBaseClock(
     val clockScale = clockUiState.clockScale
     val buttonScale = clockUiState.buttonsScale
     val showAlarmButton = clockUiState.showAlarmButton
-//    val showTimerButton = clockUiState.showTimerButton
-    val showSetAlarmPopup = alarmUiState.showSetAlarmPopup
-    val showUpdateAlarmPopup = alarmUiState.showAlarmUpdatePopup
-    val showTimerPopup = clockUiState.showTimerPickerPopup
+    //    val showTimerButton = clockUiState.showTimerButton
     val buttonsVisible = clockUiState.buttonsVisible
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        AnimatedVisibility(visible = alarmUiState.showAlarmListPopup) {
-            AlarmListDialog(
-                alarmViewModel = alarmViewModel,
-                alarmList = alarmList,
-                alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) })
-        }
-        AnimatedVisibility(visible = showSetAlarmPopup) {
-            AlarmPickerDialog(
-                alarmViewModel = alarmViewModel,
-                onCancel = { alarmViewModel.dismissAlarmPickerPopup() },
-                onConfirm = {
-                    alarmViewModel.setNewAlarm()
-                    alarmViewModel.dismissAlarmPickerPopup()
-                },
-            )
-        }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
 
-        AnimatedVisibility(visible = showUpdateAlarmPopup) {
-            AlarmPickerDialog(
-                alarmViewModel = alarmViewModel,
-                onCancel = { alarmViewModel.dismissAlarmUpdatePopup() },
-                onConfirm = {
-                    alarmViewModel.updateAlarm()
-                    alarmViewModel.dismissAlarmUpdatePopup()
-                },
-                onConfirmText = stringResource(R.string.updateAlarm)
-            )
-        }
-        AnimatedVisibility(visible = showTimerPopup) {
+    ) {
+        ClockText(
+            clockFormat = clockFormat,
+            clockSize = clockScale,
+            isLandscape = true,
+            clockFont = clockUiState.clockFont
+        )
+    }
 
-        }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxSize()
+    ) {
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .fillMaxSize()
-
+                .fillMaxHeight()
+                .padding(
+                    start = (30 / buttonScale).dp,
+                    top = (30 / buttonScale).dp,
+                    bottom = (30 / buttonScale).dp
+                )
         ) {
-            ClockText(
-                clockFormat = clockFormat,
-                clockSize = clockScale,
-                isLandscape = true,
-                clockFont = clockUiState.clockFont
-            )
+            AnimatedVisibility(
+                visible = buttonsVisible,
+                enter = scaleIn(),
+                exit = scaleOut()
+            ) {
+                HomeButton(onBackClick = onBackClick, buttonScale = buttonScale)
+            }
+            AnimatedVisibility(
+                visible = buttonsVisible,
+                enter = scaleIn(),
+                exit = scaleOut()
+            ) {
+                SettingsButton(onSettingsClick = onSettingsClick, buttonScale = buttonScale)
+            }
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(
+                    end = (30 / buttonScale).dp,
+                    top = (30 / buttonScale).dp,
+                    bottom = (30 / buttonScale).dp
+                )
         ) {
-
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(
-                        start = (30 / buttonScale).dp,
-                        top = (30 / buttonScale).dp,
-                        bottom = (30 / buttonScale).dp
-                    )
+            AnimatedVisibility(
+                visible = showAlarmButton && buttonsVisible,
+                enter = scaleIn(),
+                exit = scaleOut()
             ) {
-                AnimatedVisibility(
-                    visible = buttonsVisible,
-                    enter = scaleIn(),
-                    exit = scaleOut()
-                ) {
-                    HomeButton(onBackClick = onBackClick, buttonScale = buttonScale)
-                }
-                AnimatedVisibility(
-                    visible = buttonsVisible,
-                    enter = scaleIn(),
-                    exit = scaleOut()
-                ) {
-                    SettingsButton(onSettingsClick = onSettingsClick, buttonScale = buttonScale)
-                }
+                AlarmButton(
+                    alarmButtonOnClick = {
+                        if (alarmList.isNotEmpty()) {
+                            alarmViewModel.openAlarmListPopup()
+                        } else {
+                            alarmViewModel.openSetAlarmPopup()
+                        }
+                    },
+                    buttonScale = buttonScale
+                )
             }
-
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.End,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(
-                        end = (30 / buttonScale).dp,
-                        top = (30 / buttonScale).dp,
-                        bottom = (30 / buttonScale).dp
-                    )
-            ) {
-                AnimatedVisibility(
-                    visible = showAlarmButton && buttonsVisible,
-                    enter = scaleIn(),
-                    exit = scaleOut()
-                ) {
-                    AlarmButton(
-                        alarmButtonOnClick = {
-                            if (alarmList.isNotEmpty()) {
-                                alarmViewModel.openAlarmListPopup()
-                            } else {
-                                alarmViewModel.openSetAlarmPopup()
-                            }
-                        },
-                        buttonScale = buttonScale
-                    )
-                }
-                /*                AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
-                                    TimerButton(
-                                        timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
-                                        buttonScale = buttonScale
-                                    )
-                                }*/
-            }
+            /*                AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
+                                TimerButton(
+                                    timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
+                                    buttonScale = buttonScale
+                                )
+                            }*/
         }
     }
 }
@@ -322,7 +263,6 @@ fun PortraitBaseClock(
     clockViewModel: ClockViewModel,
     clockUiState: ClockUiState,
     alarmViewModel: AlarmViewModel,
-    alarmUiState: AlarmUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
     alarmList: List<Alarm>,
@@ -332,133 +272,81 @@ fun PortraitBaseClock(
     val buttonScale = clockUiState.buttonsScale
     val showAlarmButton = clockUiState.showAlarmButton
 //    val showTimerButton = clockUiState.showTimerButton
-    val showSetAlarmPopup = alarmUiState.showSetAlarmPopup
-    val showUpdateAlarmPopup = alarmUiState.showAlarmUpdatePopup
-    val showTimerPopup = clockUiState.showTimerPickerPopup
     val buttonsVisible = clockUiState.buttonsVisible
 
-
-    Box(
+    Row(
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
+            .fillMaxWidth()
+            .padding(10.dp * buttonScale.toInt())
     ) {
-        AnimatedVisibility(visible = alarmUiState.showAlarmListPopup) {
-            AlarmListDialog(
-                alarmViewModel = alarmViewModel,
-                alarmList = alarmList,
-                alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) })
+        AnimatedVisibility(
+            visible = buttonsVisible,
+            enter = scaleIn(),
+            exit = scaleOut()
+        ) {
+            HomeButton(onBackClick = onBackClick)
         }
-        AnimatedVisibility(visible = showSetAlarmPopup) {
-            AlarmPickerDialog(
-                alarmViewModel = alarmViewModel,
-                onCancel = { alarmViewModel.dismissAlarmPickerPopup() },
-                onConfirm = {
-                    alarmViewModel.setNewAlarm()
-                    alarmViewModel.dismissAlarmPickerPopup()
-                },
-            )
+        AnimatedVisibility(
+            visible = buttonsVisible,
+            enter = scaleIn(),
+            exit = scaleOut()
+        ) {
+            SettingsButton(onSettingsClick = onSettingsClick)
         }
-
-        AnimatedVisibility(visible = showUpdateAlarmPopup) {
-            AlarmPickerDialog(
-                alarmViewModel = alarmViewModel,
-                onCancel = { alarmViewModel.dismissAlarmUpdatePopup() },
-                onConfirm = {
-                    alarmViewModel.updateAlarm()
-                    alarmViewModel.dismissAlarmUpdatePopup()
-                },
-                onConfirmText = stringResource(R.string.updateAlarm)
-            )
-        }
-        //TODO: update alarm dialog.
-        //TODO: timer dialog.
-        AnimatedVisibility(visible = showTimerPopup) {
-
-        }
-
+    }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ClockText(
+            clockFormat = clockFormat,
+            clockSize = clockScale,
+            isLandscape = false,
+            clockFont = clockUiState.clockFont
+        )
+    }
+    Column(
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End,
+        modifier = Modifier.fillMaxSize()
+    ) {
         Row(
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp * buttonScale.toInt())
+                .padding(30.dp)
         ) {
             AnimatedVisibility(
-                visible = buttonsVisible,
+                visible = showAlarmButton && buttonsVisible,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
-                HomeButton(onBackClick = onBackClick)
+                AlarmButton(
+                    alarmButtonOnClick = {
+                        if (alarmList.isNotEmpty()) {
+                            alarmViewModel.openAlarmListPopup()
+                        } else {
+                            alarmViewModel.openSetAlarmPopup()
+                        }
+                    },
+                    buttonScale = buttonScale
+                )
             }
-            AnimatedVisibility(
-                visible = buttonsVisible,
+            /*AnimatedVisibility(
+                visible = showAlarmButton && buttonsVisible,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
-                SettingsButton(onSettingsClick = onSettingsClick)
-            }
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            ClockText(
-                clockFormat = clockFormat,
-                clockSize = clockScale,
-                isLandscape = false,
-                clockFont = clockUiState.clockFont
-            )
+                TimerButton(
+                    timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
+                    buttonScale = buttonScale
+                )
 
-//            AlarmList(
-//                alarmViewModel = alarmViewModel,
-//                alarmList = alarmList,
-//                alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) })
-        }
-        Column(
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End,
-
-            modifier = Modifier.fillMaxSize()
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(30.dp)
-            ) {
-                AnimatedVisibility(
-                    visible = showAlarmButton && buttonsVisible,
-                    enter = scaleIn(),
-                    exit = scaleOut()
-                ) {
-                    AlarmButton(
-                        alarmButtonOnClick = {
-                            if (alarmList.isNotEmpty()) {
-                                alarmViewModel.openAlarmListPopup()
-                            } else {
-                                alarmViewModel.openSetAlarmPopup()
-                            }
-//                            alarmViewModel.openSetAlarmPopup()
-                        },
-                        buttonScale = buttonScale
-                    )
-                }
-                /*AnimatedVisibility(
-                    visible = showAlarmButton && buttonsVisible,
-                    enter = scaleIn(),
-                    exit = scaleOut()
-                ) {
-                    TimerButton(
-                        timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
-                        buttonScale = buttonScale
-                    )
-
-                }*/
-            }
+            }*/
         }
     }
 }
@@ -473,6 +361,11 @@ fun ClockText(
 ) {
 //    val TAG = "ClockText"
     val currentTime = remember {
+/*      mutableStateOf(
+            ZonedDateTime.now(ZoneId.systemDefault()).withHour(13).withMinute(37).withSecond(0)
+                .withNano(0)
+        )
+*/
         mutableStateOf(ZonedDateTime.now(ZoneId.systemDefault()))
     }
 
@@ -497,33 +390,21 @@ fun ClockText(
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
 
-    @Suppress("KotlinConstantConditions")
-    val estimatedMaxTextSize = when {
-        formatIsVertical && formatHasSeconds -> {
-            screenWidth * (clockSize / 2) * (if (isLandscape) 0.12 else 0.4) * clockFont.fontScale
-        }
+    val estimatedMaxTextSize = estimateMaxTextSize(
+        formatIsVertical,
+        formatHasSeconds,
+        screenWidth,
+        clockSize,
+        isLandscape,
+        clockFont,
+        clockSuffix,
+        clockText
+    )
 
-        formatIsVertical && !formatHasSeconds -> {
-            screenWidth * (clockSize / 2) * (if (isLandscape) 0.18 else 0.5) * clockFont.fontScale
-        }
+    val totalClockHeight =
+        getTotalClockHeight(formatIsVertical, formatHasSeconds, estimatedMaxTextSize, clockFont)
 
-        !formatIsVertical && clockSuffix.isBlank() -> {
-            screenWidth * (clockSize / clockText.length) * (if (isLandscape) 0.7 else 0.7) * clockFont.fontScale
-        }
-
-        else -> {
-            screenWidth * (clockSize / clockText.length) * (if (isLandscape) 0.55 else 0.7) * clockFont.fontScale
-        }
-    }
-
-    val totalClockHeight = when {
-        formatIsVertical && formatHasSeconds -> estimatedMaxTextSize * clockFont.textBoxHeight * 3 * clockFont.fontTotalHeightPercentage
-        formatIsVertical && !formatHasSeconds -> estimatedMaxTextSize * clockFont.textBoxHeight * 2 * clockFont.fontTotalHeightPercentage
-        else -> estimatedMaxTextSize * clockFont.textBoxHeight * 1 * clockFont.fontTotalHeightPercentage
-    }
-
-    ConstraintLayout(
-    ) {
+    ConstraintLayout {
         val (text, suffix) = createRefs()
 
         //split the clock text into individual lines
@@ -536,7 +417,6 @@ fun ClockText(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             }
-//            .height(totalClockHeight.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -547,21 +427,16 @@ fun ClockText(
                 for (i in lines.indices) {
                     val line = lines[i]
                     val lineIndex = i + 1
-                    val yOffset = if (lines.size == 1) {
-                        0.dp
-                    } else {
+                    val yOffset = if (lines.size == 1) 0.dp else {
                         -(estimatedMaxTextSize * clockFont.fontYOffsetPercentage * lineIndex).dp
                     }
-                    val requiredHeightModifier = if (lines.size == 1) {
-                        Modifier
-                    } else {
+                    val requiredHeightModifier = if (lines.size == 1) Modifier else {
                         Modifier.requiredHeight((estimatedMaxTextSize * clockFont.textBoxHeight).dp)
                     }
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
-//                        modifier = Modifier.height(estimatedMaxTextSize.dp)
                         modifier = requiredHeightModifier
                             .offset(y = yOffset)
                     ) {
@@ -573,23 +448,17 @@ fun ClockText(
                                 (estimatedMaxTextSize * clockFont.textBoxWidthHeightRatio).dp
                             }
 
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = requiredHeightModifier
-                                    .requiredWidth(charWidth)
-                            ) {
-                                Text(
-                                    text = element.toString(),
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = estimatedMaxTextSize.sp,
-                                    textAlign = TextAlign.Center,
-                                    style = clockFont.textStyle,
-//                                    modifier = Modifier.offset(y = yOffset)
-                                )
-                            }
+                            ClockCharacter(
+                                requiredHeightModifier,
+                                charWidth,
+                                element,
+                                estimatedMaxTextSize,
+                                clockFont
+                            )
                         }
                     }
                 }
+                //clock suffix below clock for portrait
                 if (clockSuffix.isNotEmpty() && !isLandscape) {
                     Row {
                         Text(
@@ -603,6 +472,7 @@ fun ClockText(
                 }
             }
         }
+        //clock suffix to the right of clock for landscape
         if (clockSuffix.isNotEmpty() && isLandscape) {
             Text(
                 text = clockSuffix,
@@ -616,6 +486,70 @@ fun ClockText(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun getTotalClockHeight(
+    formatIsVertical: Boolean,
+    formatHasSeconds: Boolean,
+    estimatedMaxTextSize: Double,
+    clockFont: ClockFont
+) = when {
+    formatIsVertical && formatHasSeconds -> estimatedMaxTextSize * clockFont.textBoxHeight * 3 * clockFont.fontTotalHeightPercentage
+    formatIsVertical && !formatHasSeconds -> estimatedMaxTextSize * clockFont.textBoxHeight * 2 * clockFont.fontTotalHeightPercentage
+    else -> estimatedMaxTextSize * clockFont.textBoxHeight * 1 * clockFont.fontTotalHeightPercentage
+}
+
+@Suppress("KotlinConstantConditions")
+@Composable
+private fun estimateMaxTextSize(
+    formatIsVertical: Boolean,
+    formatHasSeconds: Boolean,
+    screenWidth: Int,
+    clockSize: Float,
+    isLandscape: Boolean,
+    clockFont: ClockFont,
+    clockSuffix: String,
+    clockText: String
+) = when {
+    formatIsVertical && formatHasSeconds -> {
+        screenWidth * (clockSize / 2) * (if (isLandscape) 0.12 else 0.4) * clockFont.fontScale
+    }
+
+    formatIsVertical && !formatHasSeconds -> {
+        screenWidth * (clockSize / 2) * (if (isLandscape) 0.18 else 0.5) * clockFont.fontScale
+    }
+
+    !formatIsVertical && clockSuffix.isBlank() -> {
+        screenWidth * (clockSize / clockText.length) * (if (isLandscape) 0.7 else 0.7) * clockFont.fontScale
+    }
+
+    else -> {
+        screenWidth * (clockSize / clockText.length) * (if (isLandscape) 0.55 else 0.7) * clockFont.fontScale
+    }
+}
+
+@Composable
+private fun ClockCharacter(
+    modifier: Modifier,
+    charWidth: Dp,
+    element: Char,
+    estimatedMaxTextSize: Double,
+    clockFont: ClockFont
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .requiredWidth(charWidth)
+    ) {
+        Text(
+            text = element.toString(),
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = estimatedMaxTextSize.sp,
+            textAlign = TextAlign.Center,
+            style = clockFont.textStyle,
+        )
     }
 }
 
