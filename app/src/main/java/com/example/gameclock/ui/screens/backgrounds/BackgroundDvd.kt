@@ -87,10 +87,10 @@ fun DvdBackground(showAnimations: Boolean = true) {
     // Update colorIndex when DVD logo hits the edge
     LaunchedEffect(dvdBoundsOffsetX, dvdBoundsOffsetY) {
         colorIndex = when {
-            dvdBoundsOffsetX <= 0.5f -> (colorIndex + 1) % colors.size
-            dvdBoundsOffsetX >= screenWidth - dvdWidth - 0.5f -> (colorIndex + 1) % colors.size
-            dvdBoundsOffsetY <= 0.5f -> (colorIndex + 1) % colors.size
-            dvdBoundsOffsetY >= screenHeight - dvdHeight - 0.5f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetX <= 1f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetX >= screenWidth - dvdWidth - 1f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetY <= 1f -> (colorIndex + 1) % colors.size
+            dvdBoundsOffsetY >= screenHeight - dvdHeight - 1f -> (colorIndex + 1) % colors.size
             else -> colorIndex
         }
     }
