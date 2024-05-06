@@ -18,7 +18,6 @@ import javax.inject.Inject
  * Currently only manages the fullscreen preference.
  */
 
-//TODO: SET UP LAST OPENED THEME SO IT CAN BE USED AS THE THEME APPLIED ON APP START
 class UserPreferencesRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
