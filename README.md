@@ -15,6 +15,7 @@ The clock has several themes to match to the game you are playing with customiza
   <img src="https://i.imgur.com/JYUs8eW.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/AODbeUU.gif" style="flex:1; margin:5px;" height="350">
   <img src="https://i.imgur.com/xB14jrE.gif" style="flex:1; margin:5px;" height="150">
+  <img src="https://i.imgur.com/MTarjO7.png" style="flex:1; margin:5px;" height="350">
 </div>
 
 
