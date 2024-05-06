@@ -120,6 +120,10 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.hilt.work)
 
+    // Admob
+    implementation(libs.play.services.ads)
+
+
 
 
 

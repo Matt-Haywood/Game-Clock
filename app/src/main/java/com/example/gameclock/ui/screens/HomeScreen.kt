@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,55 +45,61 @@ fun HomeScreen(
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
 
-    HomeBackground()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 10.dp, end = 10.dp, top = 10.dp,)
-    ) {
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+    Scaffold(bottomBar = {
+        BannerAd()
+
+    }) {paddingValues ->
+        HomeBackground()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Surface(
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                shape = MaterialTheme.shapes.medium,
 
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(10.dp)
-                )
+                Surface(
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                    shape = MaterialTheme.shapes.medium,
+
+                    ) {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+
+
+                if (isLandscape) {
+                    LazyHorizontalGrid(
+                        rows = GridCells.Adaptive(200.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                        contentPadding = PaddingValues(20.dp)
+                    ) {
+                        items(clockThemeList) { clockTheme ->
+                            UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
+                        }
+                    }
+                } else
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(160.dp),
+                        //                    GridCells.Adaptive(130.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                        contentPadding = PaddingValues(10.dp)
+                    ) {
+                        items(clockThemeList) { clockTheme ->
+                            UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
+                        }
+                    }
             }
-
-
-            if (isLandscape) {
-                LazyHorizontalGrid(
-                    rows = GridCells.Adaptive(200.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    contentPadding = PaddingValues(20.dp)
-                ) {
-                    items(clockThemeList) { clockTheme ->
-                        UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
-                    }
-                }
-            } else
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(160.dp),
-//                    GridCells.Adaptive(130.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
-                    contentPadding = PaddingValues(10.dp)
-                ) {
-                    items(clockThemeList) { clockTheme ->
-                        UiCard(clockTheme, onThemeClick = { onThemeClick(clockTheme.appTheme) })
-                    }
-                }
         }
     }
 }
@@ -131,7 +138,6 @@ fun UiCard(
                     end = 0.dp,
                     bottom = 8.dp
                 ),
-//                    style = MaterialTheme.typography.
             )
         }
     }
