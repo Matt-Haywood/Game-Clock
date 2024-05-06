@@ -48,7 +48,7 @@ class AlarmViewModel
     /**
      * Fetches the list of alarms from the repository and updates the UI state.
      */
-    fun getAlarmsList() {
+    private fun getAlarmsList() {
         viewModelScope.launch {
             alarmRepository.getAlarmsListFlow().collect { alarmsList ->
                 alarmsList.forEach {
@@ -77,11 +77,19 @@ class AlarmViewModel
 
             val alarmDate = _uiState.value.dateList[alarmDateIndex]
             val calendar = Calendar.getInstance()
+            val now = calendar.time
+
             calendar.time = alarmDate
             calendar.set(Calendar.HOUR_OF_DAY, alarmTimePickerState.hour)
             calendar.set(Calendar.MINUTE, alarmTimePickerState.minute)
             calendar.set(Calendar.SECOND, 0)
             calendar.set(Calendar.MILLISECOND, 0)
+
+            val alarmTime = calendar.time
+
+            //Handles case of alarm set in past.
+            //TODO: show user a message saying that the time is in past.
+            if (alarmTime <= now) return@launch
 
             val format = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
 
@@ -89,8 +97,8 @@ class AlarmViewModel
                 currentState.copy(
                     newAlarm = currentState.newAlarm.copy(
                         id = lastId?.plus(1) ?: 1,
-                        title = "Alarm: ${format.format(calendar.time)}",
-                        date = calendar.time,
+                        title = "Alarm: ${format.format(alarmTime)}",
+                        date = alarmTime,
                         isEnabled = true,
                     )
                 )
