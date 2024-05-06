@@ -64,8 +64,8 @@ fun HomeScreen(
                 Surface(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
                     shape = MaterialTheme.shapes.medium,
-
-                    ) {
+                    modifier = Modifier.padding(10.dp)
+                ) {
                     Text(
                         text = stringResource(id = R.string.app_name),
                         textAlign = TextAlign.Center,
