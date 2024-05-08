@@ -509,7 +509,7 @@ fun ResetSettingsButton(
                     Row(
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.reset_settings_confirmation),
