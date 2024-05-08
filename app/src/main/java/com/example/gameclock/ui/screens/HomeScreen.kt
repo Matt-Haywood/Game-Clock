@@ -44,12 +44,9 @@ fun HomeScreen(
     val isLandscape: Boolean =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-
-
     Scaffold(bottomBar = {
         BannerAd()
-
-    }) {paddingValues ->
+    }) { paddingValues ->
         HomeBackground()
         Box(
             modifier = Modifier
@@ -74,7 +71,6 @@ fun HomeScreen(
                         modifier = Modifier.padding(10.dp)
                     )
                 }
-
 
                 if (isLandscape) {
                     LazyHorizontalGrid(
@@ -129,7 +125,6 @@ fun UiCard(
 
                 contentScale = ContentScale.Crop
             )
-
             Text(
                 text = clockTheme.appTheme.themeName,
                 modifier = Modifier.padding(
