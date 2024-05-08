@@ -36,4 +36,5 @@
     <string name="app_wide_settings">App Settings</string>
     <string name="theme_settings">Theme Settings</string>
     <string name="other_settings">Documentation</string>
+    <string name="swipe_to_delete">swipe to delete</string>
 </resources>

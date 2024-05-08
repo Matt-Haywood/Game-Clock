@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.gameclock.R
@@ -85,9 +87,9 @@ fun AlarmList(
     alarmList: List<Alarm>,
     alarmOnClick: (Alarm) -> Unit
 ) {
-    alarmList.sortedBy { it.date }
+    val sortedAlarmList = alarmList.sortedBy { it.date }
     LazyColumn() {
-        items(alarmList, { alarm: Alarm -> alarm.id }) { alarm ->
+        items(sortedAlarmList, { alarm: Alarm -> alarm.id }) { alarm ->
             var isDismissed = false
             val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = {
@@ -106,21 +108,35 @@ fun AlarmList(
 
             SwipeToDismissBox(
                 state = dismissState,
-                backgroundContent = {},
-                modifier = Modifier.padding(top = 5.dp),
+                backgroundContent = {Row(horizontalArrangement = Arrangement.SpaceBetween, modifier= Modifier.fillMaxWidth()) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_delete_forever_24),
+                        contentDescription = stringResource(R.string.swipe_to_delete)
+                    )
+                    Icon(painter = painterResource(id = R.drawable.baseline_delete_forever_24),
+                        contentDescription = stringResource(R.string.swipe_to_delete)
+                    )
+
+                }
+
+                },
+                modifier = Modifier.padding(top = 10.dp),
                 content = {
                     Card {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_alarm_24),
                                 contentDescription = alarm.title,
                                 modifier = Modifier.scale(0.5f)
                             )
                             Text(
-                                text = alarm.title,
+                                text = alarm.title.removePrefix("Alarm: "),
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Justify,
                                 modifier = Modifier
                                     .clickable { alarmOnClick(alarm) }
-                                    .padding(start = 10.dp, end = 30.dp))
+                                    .padding(start = 10.dp, end = 30.dp, top = 5.dp, bottom = 5.dp))
                         }
                     }
                 },
