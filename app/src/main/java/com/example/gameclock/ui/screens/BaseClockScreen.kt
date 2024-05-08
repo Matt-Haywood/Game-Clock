@@ -64,7 +64,6 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 
-//TODO: Sort out colours of icons for darker themes.
 @Composable
 fun BaseClockScreen(
     clockViewModel: ClockViewModel,
