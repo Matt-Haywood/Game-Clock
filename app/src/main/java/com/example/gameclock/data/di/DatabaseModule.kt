@@ -29,7 +29,6 @@ object DatabaseModule {
         ClockDatabase::class.java,
         "clock_database"
     )
-        //TODO: Change fallback and migration method for room database
         .fallbackToDestructiveMigration()
         .build(
     )
