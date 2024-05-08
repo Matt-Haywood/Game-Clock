@@ -181,16 +181,17 @@ class ClockViewModel @Inject constructor(
 
     fun resetThemeToDefaults() {
         viewModelScope.launch {
+            val themeDefaults = ClockThemeList().loadThemes()
+                .first { it.appTheme == _uiState.value.theme }
             _uiState.update { ui ->
                 ui.copy(
-                    showAnimations = true,
-                    clockFormat = ClockFormat.TWENTY_FOUR_HOUR,
-                    clockScale = 1.8f,
-                    buttonsScale = 1.2f,
-                    showAlarmButton = true,
-                    showTimerButton = true,
-                    clockFont = ClockThemeList().loadThemes()
-                        .first { it.appTheme == _uiState.value.theme }.clockFont
+                    showAnimations = themeDefaults.showAnimations,
+                    clockFormat = themeDefaults.clockFormat,
+                    clockScale = themeDefaults.clockScale,
+                    buttonsScale = themeDefaults.buttonsScale,
+                    showAlarmButton = themeDefaults.showAlarmButton,
+                    showTimerButton = themeDefaults.showTimerButton,
+                    clockFont = themeDefaults.clockFont
 
                 )
             }
