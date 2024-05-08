@@ -225,13 +225,18 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
 @Composable
 fun SettingsHeader(headerText: String = "Test") {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-        HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f), color = MaterialTheme.colorScheme.onSurface)
-    Text(
-        text = headerText,
-        style = MaterialTheme.typography.titleSmall,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)
-    )
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(0.9f),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = headerText,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surface)
+        )
 
 
     }
@@ -516,12 +521,23 @@ fun ResetSettingsButton(
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        TextButton(onClick = {
-                            onClick(); isSettingsResetDialogVisible.value = false
-                        }) {
+                        TextButton(
+                            onClick = {
+                                onClick(); isSettingsResetDialogVisible.value = false
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
                             Text(text = stringResource(R.string.confirm))
                         }
-                        TextButton(onClick = { isSettingsResetDialogVisible.value = false }) {
+                        TextButton(
+                            onClick ={ isSettingsResetDialogVisible.value = false },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )) {
                             Text(text = stringResource(R.string.cancel))
                         }
                     }
@@ -534,7 +550,7 @@ fun ResetSettingsButton(
 @Composable
 fun DeepLinkRow(
     settingsTextWeight: Float,
-){
+) {
     val context = LocalContext.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(
@@ -551,7 +567,10 @@ fun DeepLinkRow(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://matt-haywood.github.io/PrivacyPolicy/"))
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://matt-haywood.github.io/PrivacyPolicy/")
+                        )
                         context.startActivity(intent)
                     }) {
                     Text(text = stringResource(R.string.privacy_policy))
@@ -562,7 +581,10 @@ fun DeepLinkRow(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.app-privacy-policy.com/live.php?token=F4zVmSVTi2HRmzfVdTeKuBhPAmxl4wlA"))
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://www.app-privacy-policy.com/live.php?token=F4zVmSVTi2HRmzfVdTeKuBhPAmxl4wlA")
+                        )
                         context.startActivity(intent)
                     }) {
                     Text(text = stringResource(R.string.eula))
