@@ -1,5 +1,6 @@
 package com.example.gameclock.ui.screens.backgrounds
 
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -31,6 +32,8 @@ import com.example.gameclock.R
 import com.example.gameclock.model.ClockFormat
 import com.example.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
 import kotlin.math.ceil
+import kotlin.math.sin
+import kotlin.math.PI
 
 @Preview
 @Composable
@@ -122,7 +125,7 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
             initialValue = 30f,
             targetValue = -30f,
             animationSpec = infiniteRepeatable(
-                animation = tween(1000, easing = LinearEasing),
+                animation = tween(2000, easing = sineEasing()),
                 repeatMode = RepeatMode.Reverse
             ), label = "Cat tail Animation"
         ).value
@@ -191,4 +194,8 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
             )
         }
     }
+}
+
+fun sineEasing() : Easing = Easing { fraction ->
+    ((sin(2 * PI * fraction - PI / 2) + 1) / 2).toFloat()
 }
