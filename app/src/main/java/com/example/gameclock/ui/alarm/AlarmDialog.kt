@@ -107,19 +107,13 @@ fun AlarmPickerDialog(
                             .padding(5.dp)
                     ) {
                         TimePicker(state = alarmTimePickerState)
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .padding(start = 10.dp)
-                                .width(100.dp)
-                        ) {
+
                             DateSelector(
                                 dateListState = dateListState,
 //                                dateList = alarmUiState.dateList,
                                 alarmViewModel = alarmViewModel
                             )
-                        }
+
                     }
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -181,76 +175,100 @@ fun DateSelector(
 //                Log.i(TAG, "DateSelector: firstVisibleItemIndex: $firstVisibleItemIndex")
             }
     }
-
-    Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.height(70.dp)) {
-        LaunchedEffect(dateListState) {
-            snapshotFlow { dateListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-                .collectLatest { lastIndex ->
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(start = 10.dp)
+//            .fillMaxHeight()
+            .width(80.dp)
+    ) {
+        Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.height(120.dp)
+//            .offset(y = 80.dp)
+        ) {
+            LaunchedEffect(dateListState) {
+                snapshotFlow { dateListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                    .collectLatest { lastIndex ->
 //                    Log.i(TAG, "DateSelector: lastIndex: $lastIndex, dateList: ${dateList.size}")
-                    if (lastIndex != null) {
-                        if (lastIndex >= dateList.size-1) {
-                            val lastDate = dateList.last()
-                            Log.i(TAG, "lastIndex: $lastIndex, lastDate: $lastDate, dateList: ${dateList.size}")
-                            calenderNext.time = lastDate
-                            calenderNext.add(Calendar.DAY_OF_MONTH, 1)
-                            alarmViewModel.addToDateList(calenderNext.time)
-                            dateList = alarmUiState.dateList
+                        if (lastIndex != null) {
+                            if (lastIndex >= dateList.size - 1) {
+                                val lastDate = dateList.last()
+                                Log.i(
+                                    TAG,
+                                    "lastIndex: $lastIndex, lastDate: $lastDate, dateList: ${dateList.size}"
+                                )
+                                calenderNext.time = lastDate
+                                calenderNext.add(Calendar.DAY_OF_MONTH, 1)
+                                alarmViewModel.addToDateList(calenderNext.time)
+                                dateList = alarmUiState.dateList
+                            }
                         }
                     }
-                }
-        }
+            }
 
-        LazyColumn(
-            state = dateListState,
-            flingBehavior = rememberSnapFlingBehavior(lazyListState = dateListState),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ){
-//            item {
-//                Text(text = "")
-//            }
-            itemsIndexed(dateList) { index, date ->
-                val textColor = if (index == firstVisibleItemIndex) {
-                    MaterialTheme.colorScheme.onPrimary
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-                val surfaceColor = if (index == firstVisibleItemIndex) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
-                val text = when (index) {
-                    0 -> "Today"
-                    1 -> "Tomorrow"
-                    else -> format.format(date)
-                }
-                Surface(
-                    color = surfaceColor
-                ) {
-                    Text(
-                        text = text,
-                        color = textColor,
+            LazyColumn(
+                state = dateListState,
+                flingBehavior = rememberSnapFlingBehavior(lazyListState = dateListState),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                itemsIndexed(dateList) { index, date ->
+                    val textColor = if (index == firstVisibleItemIndex) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+                    val surfaceColor = if (index == firstVisibleItemIndex) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    }
+                    val text = when (index) {
+                        0 -> "Today"
+//                    1 -> "Tomorrow"
+                        else -> format.format(date)
+                    }
+                    Surface(
+                        color = surfaceColor,
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = text,
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyLarge
 //                        modifier = Modifier.padding(5.dp)
-                    )
+                            )
+                        }
+
+                    }
                 }
             }
-        }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
 //                            MaterialTheme.colorScheme.surface,
-                            Color.Transparent,
-                            MaterialTheme.colorScheme.surface
-                        ),
-                        startY = 40f,
-                        endY = 180f // Adjust the endY to control the fade effect
+                                Color.Transparent,
+                                Color.Transparent,
+                                MaterialTheme.colorScheme.surface
+                            ),
+                            startY = 0f,
+                            endY = 300f // Adjust the endY to control the fade effect
+                        )
                     )
-                )
-        )
+            )
+        }
     }
 }
 
