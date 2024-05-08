@@ -1,5 +1,7 @@
 package com.example.gameclock.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -24,6 +26,7 @@ import androidx.compose.material3.CaretProperties
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Label
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -132,6 +136,15 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
+            SettingsHeader(headerText = stringResource(R.string.app_wide_settings))
+
+            ToggleRow(
+                settingsTextWeight = settingsTextWeight,
+                rowText = R.string.full_screen,
+                settingEnabled = uiState.isFullScreen,
+                onClick = { clockViewModel.toggleFullScreen() })
+
+            SettingsHeader(headerText = stringResource(R.string.theme_settings))
             SliderRow(
                 sliderThumb = painterResource(id = R.drawable.baseline_access_time_filled_24),
                 sliderValue = uiState.clockScale,
@@ -149,12 +162,6 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 onValueChangeFinished = { clockViewModel.updateButtonsScale(buttonScaleSlider) },
                 settingsTextWeight = settingsTextWeight
             )
-
-//            ToggleRow(
-//                settingsTextWeight = settingsTextWeight,
-//                rowText = R.string.show_seconds,
-//                settingEnabled = uiState.showSeconds,
-//                onClick = { clockViewModel.toggleSeconds() })
             ChoiceRow(
                 settingsTextWeight = settingsTextWeight,
                 rowText = R.string.clock_format,
@@ -163,6 +170,18 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 onChoiceChange = { choice ->
                     if (choice is ClockFormat) {
                         clockViewModel.updateClockFormat(choice)
+                    }
+                }
+            )
+
+            ChoiceRow(
+                settingsTextWeight = settingsTextWeight,
+                rowText = R.string.clock_font,
+                currentChoice = uiState.clockFont,
+                choices = ClockFont.entries.toList(),
+                onChoiceChange = { choice ->
+                    if (choice is ClockFont) {
+                        clockViewModel.updateClockFont(choice)
                     }
                 }
             )
@@ -185,23 +204,6 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
 //                settingEnabled = uiState.showTimerButton,
 //                onClick = { clockViewModel.toggleTimerButton() })
 
-            ToggleRow(
-                settingsTextWeight = settingsTextWeight,
-                rowText = R.string.full_screen,
-                settingEnabled = uiState.isFullScreen,
-                onClick = { clockViewModel.toggleFullScreen() })
-
-            ChoiceRow(
-                settingsTextWeight = settingsTextWeight,
-                rowText = R.string.clock_font,
-                currentChoice = uiState.clockFont,
-                choices = ClockFont.entries.toList(),
-                onChoiceChange = { choice ->
-                    if (choice is ClockFont) {
-                        clockViewModel.updateClockFont(choice)
-                    }
-                }
-            )
 
             ResetSettingsButton(
                 settingsTextWeight = settingsTextWeight,
@@ -209,8 +211,29 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
                 onClick = { clockViewModel.resetThemeToDefaults() }
             )
 
+            SettingsHeader(headerText = stringResource(R.string.other_settings))
+
+            DeepLinkRow(settingsTextWeight = settingsTextWeight)
+
 
         }
+    }
+
+}
+
+
+@Composable
+fun SettingsHeader(headerText: String = "Test") {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+        HorizontalDivider(modifier = Modifier.fillMaxWidth(0.9f), color = MaterialTheme.colorScheme.onSurface)
+    Text(
+        text = headerText,
+        style = MaterialTheme.typography.titleSmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)
+    )
+
+
     }
 
 }
@@ -290,8 +313,6 @@ fun ToggleRow(
     settingEnabled: Boolean,
     onClick: (Boolean) -> Unit
 ) {
-
-//    val selectedIndex = if (settingEnabled) 0 else 1
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = stringResource(rowText),
@@ -348,23 +369,6 @@ fun ToggleRow(
                     }
                 }
             }
-
-//            SingleChoiceSegmentedButtonRow {
-//                toggleOptions.forEachIndexed { index, label ->
-//                    SegmentedButton(
-//                        selected = index == selectedIndex,
-//                        onClick = onClick,
-//                        shape = SegmentedButtonDefaults.itemShape(
-//                            index = index,
-//                            count = toggleOptions.size
-//                        )
-//                    ) {
-//                        Text(text = label)
-//                    }
-//                }
-//
-//            }
-
         }
     }
 }
@@ -521,6 +525,47 @@ fun ResetSettingsButton(
                             Text(text = stringResource(R.string.cancel))
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DeepLinkRow(
+    settingsTextWeight: Float,
+){
+    val context = LocalContext.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1f - settingsTextWeight)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://matt-haywood.github.io/PrivacyPolicy/"))
+                        context.startActivity(intent)
+                    }) {
+                    Text(text = stringResource(R.string.privacy_policy))
+                }
+                TextButton(
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.app-privacy-policy.com/live.php?token=F4zVmSVTi2HRmzfVdTeKuBhPAmxl4wlA"))
+                        context.startActivity(intent)
+                    }) {
+                    Text(text = stringResource(R.string.eula))
                 }
             }
         }
