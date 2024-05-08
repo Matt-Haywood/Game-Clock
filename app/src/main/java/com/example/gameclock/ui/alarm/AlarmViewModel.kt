@@ -298,6 +298,22 @@ class AlarmViewModel
         }
         return dates
     }
+
+    fun openPermissionsRequestPopup() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                showPermissionsRequestPopup = true
+            )
+        }
+    }
+
+    fun dismissPermissionsRequestPopup() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                showPermissionsRequestPopup = false
+            )
+        }
+    }
 }
 
 /**
@@ -327,4 +343,5 @@ data class AlarmUiState @OptIn(ExperimentalMaterial3Api::class) constructor(
     val showSetAlarmPopup: Boolean = false,
     val showAlarmUpdatePopup: Boolean = false,
     val showAlarmListPopup: Boolean = false,
+    val showPermissionsRequestPopup: Boolean = false
 )

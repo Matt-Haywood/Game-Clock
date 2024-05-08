@@ -1,5 +1,6 @@
 package com.example.gameclock.data.alarms
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -8,12 +9,10 @@ import android.icu.util.Calendar
 import android.util.Log
 import com.example.gameclock.data.workManager.WorkRequestManager
 import com.example.gameclock.model.Alarm
-import com.example.gameclock.ui.util.PermissionsHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
-
 
 
 /**
@@ -33,6 +32,7 @@ class GameClockAlarmManager @Inject constructor(
      *
      * @param alarm The alarm to be set.
      */
+    @SuppressLint("MissingPermission")
     fun setAlarm(alarm: Alarm) {
 
         val TAG = "SetAlarm"
@@ -56,22 +56,14 @@ class GameClockAlarmManager @Inject constructor(
         val calendar = Calendar.getInstance()
         calendar.time = alarm.date
 
-
-        if (PermissionsHelper(applicationContext, alarmManager).checkPermissions()) {
-
-            // Notification and alarm permissions have already been granted
-            // Set the alarm
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                alarmPendingIntent,
-            )
-            Log.i(TAG, "Alarm set for $alarm")
-        } else {
-            Log.i(TAG, "setAlarm: requesting permissions")
-            PermissionsHelper(applicationContext, alarmManager).requestPermissions()
-        }
-
+        // Notification and alarm permissions have already been granted
+        // Set the alarm
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            alarmPendingIntent,
+        )
+        Log.i(TAG, "Alarm set for $alarm")
 
     }
 

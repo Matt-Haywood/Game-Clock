@@ -88,8 +88,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
-
-
+    //Permissions
+    implementation(libs.accompanist.permissions)
 
     //View Model
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -108,7 +108,6 @@ dependencies {
     implementation(libs.room.ktx)
 
     //Hilt
-
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)

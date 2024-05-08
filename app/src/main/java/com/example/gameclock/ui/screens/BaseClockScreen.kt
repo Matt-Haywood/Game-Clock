@@ -53,9 +53,11 @@ import com.example.gameclock.ui.ClockViewModel
 import com.example.gameclock.ui.alarm.AlarmListDialog
 import com.example.gameclock.ui.alarm.AlarmPickerDialog
 import com.example.gameclock.ui.alarm.AlarmViewModel
+import com.example.gameclock.ui.permissions.PermissionsRequestDialog
 import com.example.gameclock.ui.screens.backgrounds.BackgroundChooser
 import com.example.gameclock.ui.theme.ClockFont
 import com.example.gameclock.ui.theme.GameClockTheme
+import com.example.gameclock.ui.util.PermissionsHelper
 import kotlinx.coroutines.delay
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -76,6 +78,10 @@ fun BaseClockScreen(
     val clockUiState by clockViewModel.clockUiState.collectAsState()
     val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
     val alarmList = alarmUiState.alarmsList
+    val appHasPermissions = remember { mutableStateOf(false) }
+    if (!appHasPermissions.value) {
+        appHasPermissions.value = PermissionsHelper().checkPermissions()
+    }
 
     //Implements the background for each theme
     BackgroundChooser(clockUiState = clockUiState)
@@ -126,6 +132,11 @@ fun BaseClockScreen(
             )
         }
 
+        // Permissions Request dialog
+        AnimatedVisibility(visible = alarmUiState.showPermissionsRequestPopup) {
+            PermissionsRequestDialog(alarmViewModel = alarmViewModel)
+        }
+
         //TODO: timer dialog.
         AnimatedVisibility(visible = clockUiState.showTimerPickerPopup) {
 
@@ -136,21 +147,36 @@ fun BaseClockScreen(
             LandscapeBaseClock(
                 clockViewModel = clockViewModel,
                 clockUiState = clockUiState,
-                alarmViewModel = alarmViewModel,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
-                alarmList = alarmList,
+                alarmButtonOnClick = { alarmButtonOnClick(alarmViewModel,alarmList,appHasPermissions.value) }
             )
         } else {
             PortraitBaseClock(
                 clockViewModel = clockViewModel,
                 clockUiState = clockUiState,
-                alarmViewModel = alarmViewModel,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
-                alarmList = alarmList,
+                alarmButtonOnClick = { alarmButtonOnClick(alarmViewModel,alarmList,appHasPermissions.value) }
             )
         }
+    }
+}
+
+
+fun alarmButtonOnClick(
+    alarmViewModel: AlarmViewModel,
+    alarmList: List<Alarm>,
+    appHasPermissions: Boolean,
+) {
+    if (appHasPermissions) {
+        if (alarmList.isNotEmpty()) {
+            alarmViewModel.openAlarmListPopup()
+        } else {
+            alarmViewModel.openSetAlarmPopup()
+        }
+    } else {
+        alarmViewModel.openPermissionsRequestPopup()
     }
 }
 
@@ -159,10 +185,9 @@ fun BaseClockScreen(
 fun LandscapeBaseClock(
     clockViewModel: ClockViewModel,
     clockUiState: ClockUiState,
-    alarmViewModel: AlarmViewModel,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    alarmList: List<Alarm>,
+    alarmButtonOnClick: () -> Unit
 ) {
     val clockFormat = clockUiState.clockFormat
     val clockScale = clockUiState.clockScale
@@ -237,13 +262,7 @@ fun LandscapeBaseClock(
                 exit = scaleOut()
             ) {
                 AlarmButton(
-                    alarmButtonOnClick = {
-                        if (alarmList.isNotEmpty()) {
-                            alarmViewModel.openAlarmListPopup()
-                        } else {
-                            alarmViewModel.openSetAlarmPopup()
-                        }
-                    },
+                    alarmButtonOnClick = alarmButtonOnClick,
                     buttonScale = buttonScale
                 )
             }
@@ -262,10 +281,9 @@ fun LandscapeBaseClock(
 fun PortraitBaseClock(
     clockViewModel: ClockViewModel,
     clockUiState: ClockUiState,
-    alarmViewModel: AlarmViewModel,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    alarmList: List<Alarm>,
+    alarmButtonOnClick: () -> Unit
 ) {
     val clockFormat = clockUiState.clockFormat
     val clockScale = clockUiState.clockScale
@@ -326,13 +344,7 @@ fun PortraitBaseClock(
                 exit = scaleOut()
             ) {
                 AlarmButton(
-                    alarmButtonOnClick = {
-                        if (alarmList.isNotEmpty()) {
-                            alarmViewModel.openAlarmListPopup()
-                        } else {
-                            alarmViewModel.openSetAlarmPopup()
-                        }
-                    },
+                    alarmButtonOnClick = alarmButtonOnClick,
                     buttonScale = buttonScale
                 )
             }
@@ -361,7 +373,9 @@ fun ClockText(
 ) {
 //    val TAG = "ClockText"
     val currentTime = remember {
-/*      mutableStateOf(
+/*
+// this is used for setting the time to 13:37 for screenshots etc.
+mutableStateOf(
             ZonedDateTime.now(ZoneId.systemDefault()).withHour(13).withMinute(37).withSecond(0)
                 .withNano(0)
         )
