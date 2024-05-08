@@ -22,6 +22,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -121,9 +124,6 @@ dependencies {
 
     // Admob
     implementation(libs.play.services.ads)
-
-
-
 
 
 }

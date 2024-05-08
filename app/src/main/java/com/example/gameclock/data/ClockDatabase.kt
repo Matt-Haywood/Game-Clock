@@ -1,5 +1,6 @@
 package com.example.gameclock.data
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -13,7 +14,9 @@ import com.example.gameclock.model.Converters
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 13, exportSchema = false)
+@Database(entities = [ClockThemePreferences::class, Alarm::class], version = 14,
+//    autoMigrations = [AutoMigration(from = 13, to = 14)]
+)
 @TypeConverters(Converters::class)
 abstract class ClockDatabase : RoomDatabase() {
 
