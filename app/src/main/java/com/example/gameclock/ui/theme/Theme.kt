@@ -23,56 +23,67 @@ fun GameClockTheme(
 ) {
     val colorScheme: ColorScheme
     val typography: Typography
+    var darkTopBarIcons = false
     when (appTheme) {
 
         AppTheme.Light -> {
             colorScheme = LightColorScheme
             typography = defaultTypography
+            darkTopBarIcons = true
         }
 
         AppTheme.Dark -> {
             colorScheme = DarkColorScheme
             typography = defaultTypography
+            darkTopBarIcons = false
         }
 
         AppTheme.Fire -> {
             colorScheme = /*if (darkTheme) RedDarkColorScheme else*/ RedLightColorScheme
             typography = defaultTypography
+            darkTopBarIcons = false
         }
 
         AppTheme.CodeFall -> {
             colorScheme = /*if (darkTheme) CodeFallDarkColorScheme else */CodeFallLightColorScheme
             typography = defaultTypography
+            darkTopBarIcons = false
         }
 
         AppTheme.Space -> {
             colorScheme = DarkColorScheme
             typography = defaultTypography
+            darkTopBarIcons = false
         }
 
         AppTheme.DvdDark -> {
             colorScheme = DarkColorScheme
             typography = defaultTypography
+            darkTopBarIcons = false
         }
 
         AppTheme.DvdLight -> {
             colorScheme = LightColorScheme
             typography = defaultTypography
+            darkTopBarIcons = true
         }
 
         AppTheme.PinkAF -> {
             colorScheme = PinkAFColorScheme
             typography = defaultTypography
+            darkTopBarIcons = true
         }
 
         AppTheme.Cat -> {
             colorScheme = LightColorScheme
             typography = defaultTypography
+            darkTopBarIcons = true
         }
 
         else -> {
             colorScheme = DarkColorScheme
             typography = defaultTypography
+            darkTopBarIcons = false
         }
     }
 
@@ -82,7 +93,7 @@ fun GameClockTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTopBarIcons
         }
     }
 
