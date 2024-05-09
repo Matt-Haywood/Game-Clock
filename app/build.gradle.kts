@@ -29,12 +29,15 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isDebuggable = false
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug { isDebuggable = false }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
