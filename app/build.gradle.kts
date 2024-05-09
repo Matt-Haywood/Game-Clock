@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gameclock"
+    namespace = "com.mhappening.gameclock"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gameclock"
+        applicationId = "com.mhappening.gameclock"
         minSdk = 33
         targetSdk = 34
         versionCode = 1
