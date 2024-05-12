@@ -40,9 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.mhappening.gameclock.R
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
 
@@ -85,6 +89,7 @@ fun AlarmPickerDialog(
             .width(373.dp)
             .height(500.dp)
     }
+    val localContentDescription = stringResource(R.string.alarm_picker_dialog)
 
     Dialog(
         onDismissRequest = onCancel,
@@ -94,6 +99,7 @@ fun AlarmPickerDialog(
             shape = MaterialTheme.shapes.large,
             shadowElevation = 6.dp,
             modifier = surfaceModifier
+                .semantics { contentDescription = localContentDescription }
         ) {
 
             Row {
@@ -108,11 +114,11 @@ fun AlarmPickerDialog(
                     ) {
                         TimePicker(state = alarmTimePickerState)
 
-                            DateSelector(
-                                dateListState = dateListState,
+                        DateSelector(
+                            dateListState = dateListState,
 //                                dateList = alarmUiState.dateList,
-                                alarmViewModel = alarmViewModel
-                            )
+                            alarmViewModel = alarmViewModel
+                        )
 
                     }
                     Row(
@@ -183,7 +189,8 @@ fun DateSelector(
 //            .fillMaxHeight()
             .width(80.dp)
     ) {
-        Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.height(120.dp)
+        Box(
+            contentAlignment = Alignment.TopCenter, modifier = Modifier.height(120.dp)
 //            .offset(y = 80.dp)
         ) {
             LaunchedEffect(dateListState) {
