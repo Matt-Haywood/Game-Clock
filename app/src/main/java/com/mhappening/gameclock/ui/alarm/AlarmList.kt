@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -73,7 +75,7 @@ fun AlarmListDialog(
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_add_alarm_24),
                         contentDescription = "Add Alarm",
-                        )
+                    )
                 }
             }
         }
@@ -108,23 +110,30 @@ fun AlarmList(
 
             SwipeToDismissBox(
                 state = dismissState,
-                backgroundContent = {Row(horizontalArrangement = Arrangement.SpaceBetween, modifier= Modifier.fillMaxWidth()) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_delete_forever_24),
-                        contentDescription = stringResource(R.string.swipe_to_delete)
-                    )
-                    Icon(painter = painterResource(id = R.drawable.baseline_delete_forever_24),
-                        contentDescription = stringResource(R.string.swipe_to_delete)
-                    )
-
-                }
-
+                backgroundContent = {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_delete_forever_24),
+                            contentDescription = stringResource(R.string.swipe_to_delete)
+                        )
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_delete_forever_24),
+                            contentDescription = stringResource(R.string.swipe_to_delete)
+                        )
+                    }
                 },
                 modifier = Modifier.padding(top = 10.dp),
                 content = {
-                    Card {
-                        Row(verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
+                    Card(modifier = Modifier.height(48.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.fillMaxHeight()
+                        ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_alarm_24),
                                 contentDescription = alarm.title,
