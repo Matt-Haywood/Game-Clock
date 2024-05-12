@@ -1,4 +1,4 @@
-package com.example.gameclock.test
+package com.mhappening.gameclock.test
 
 
 import androidx.activity.ComponentActivity
@@ -9,11 +9,9 @@ import androidx.compose.ui.test.performClick
 
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import androidx.test.core.app.ApplicationProvider
 
-import com.example.gameclock.ui.AppNavigation
-import com.example.gameclock.ui.AppScreen
-import com.example.gameclock.ui.ClockViewModel
+import com.mhappening.gameclock.ui.AppNavigation
+import com.mhappening.gameclock.ui.AppScreen
 
 import org.junit.Before
 import org.junit.Rule

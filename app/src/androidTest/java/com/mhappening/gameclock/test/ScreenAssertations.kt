@@ -1,4 +1,4 @@
-package com.example.gameclock.test
+package com.mhappening.gameclock.test
 
 import androidx.navigation.NavController
 import org.junit.Assert
