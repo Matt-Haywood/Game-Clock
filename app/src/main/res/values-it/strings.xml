@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back_button">Indietro</string>
+    <string name="settings_button">Impostazioni</string>
+    <string name="alarms_button">Allarmi</string>
+    <string name="timers_button">Timers</string>
+    <string name="animations">Animazioni</string>
+    <string name="alarm_button">Pulsante allarme</string>
+    <string name="timer_button">Pulsante timer</string>
+    <string name="full_screen">Schermo intero</string>
+    <string name="clock_font_override">Sovrascrivi font orologio</string>
+    <string name="clock_format">Formato orologio</string>
+    <string name="clock_scale">Scala orologio</string>
+    <string name="buttons_scale">Scala pulsanti</string>
+    <string name="reset_settings">Reimposta impostazioni tema</string>
+    <string name="reset_settings_confirmation">Sei sicuro di voler reimpostare le impostazioni di questo tema?</string>
+    <string name="confirm">Conferma</string>
+    <string name="cancel">Annulla</string>
+    <string name="alarm_worker_channel_name">Canale lavoratore allarme</string>
+    <string name="alarm_worker_channel_description">Mostra una notifica di avviso al momento programmato</string>
+    <string name="alarm_checker_channel_name">Canale controllore allarme</string>
+    <string name="alarm_checker_channel_description">Mostra una notifica quando qualsiasi allarme è programmato</string>
+    <string name="updateAlarm">Aggiorna allarme</string>
+    <string name="clock_font">Font orologio</string>
+    <string name="alarms">Allarmi</string>
+    <string name="copyright_logo">logo copyright</string>
+    <string name="app_version">Versione Game Clock 1.012</string>
+    <string name="view_privacy_policy">Visualizza la politica sulla privacy</string>
+    <string name="privacy_policy">Politica sulla privacy</string>
+    <string name="eula">EULA</string>
+    <string name="app_wide_settings">Impostazioni app</string>
+    <string name="theme_settings">Impostazioni tema</string>
+    <string name="other_settings">Documentazione</string>
+    <string name="swipe_to_delete">scorri per eliminare</string>
+    <string name="breathing_ellipse_background">Sfondo ellisse respirante</string>
+    <string name="pixel_fire_background">Sfondo fuoco pixel</string>
+    <string name="pink_heart_background">Sfondo cuore rosa</string>
+    <string name="dvd_type_background">Sfondo animazione DVD</string>
+    <string name="digital_rain_background">Sfondo pioggia digitale</string>
+    <string name="cat_background">Sfondo gatto</string>
+    <string name="space_background">sfondo spaziale</string>
+    <string name="home_button">Scelta tema</string>
+    <string name="click_box_content_description">Schermo orologio, tocca per mostrare i pulsanti</string>
+    <string name="alarm_picker_dialog">Dialogo di selezione allarme</string>
+</resources>

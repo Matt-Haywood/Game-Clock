@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back_button">Retour</string>
+    <string name="settings_button">Paramètres</string>
+    <string name="alarms_button">Alarmes</string>
+    <string name="timers_button">Minuteries</string>
+    <string name="animations">Animations</string>
+    <string name="alarm_button">Bouton d\'alarme</string>
+    <string name="timer_button">Bouton de minuterie</string>
+    <string name="full_screen">Plein écran</string>
+    <string name="clock_font_override">Remplacement de la police de l\'horloge</string>
+    <string name="clock_format">Format de l\'horloge</string>
+    <string name="clock_scale">Échelle de l\'horloge</string>
+    <string name="buttons_scale">Échelle des boutons</string>
+    <string name="reset_settings">Réinitialiser les paramètres du thème</string>
+    <string name="reset_settings_confirmation">Êtes-vous sûr de vouloir réinitialiser les paramètres de ce thème?</string>
+    <string name="confirm">Confirmer</string>
+    <string name="cancel">Annuler</string>
+    <string name="alarm_worker_channel_name">Canal de travail d\'alarme</string>
+    <string name="alarm_worker_channel_description">Affiche une notification d\'alerte à l\'heure programmée</string>
+    <string name="alarm_checker_channel_name">Canal de vérification d\'alarme</string>
+    <string name="alarm_checker_channel_description">Affiche une notification lorsqu\'une alarme est programmée</string>
+    <string name="updateAlarm">Mettre à jour l\'alarme</string>
+    <string name="clock_font">Police de l\'horloge</string>
+    <string name="alarms">Alarmes</string>
+    <string name="copyright_logo">logo de copyright</string>
+    <string name="app_version">Version de Game Clock 1.012</string>
+    <string name="view_privacy_policy">Voir la politique de confidentialité</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="eula">EULA</string>
+    <string name="app_wide_settings">Paramètres de l\'application</string>
+    <string name="theme_settings">Paramètres du thème</string>
+    <string name="other_settings">Documentation</string>
+    <string name="swipe_to_delete">glisser pour supprimer</string>
+    <string name="breathing_ellipse_background">Fond d\'ellipse respirante</string>
+    <string name="pixel_fire_background">Fond de feu de pixel</string>
+    <string name="pink_heart_background">Fond de coeur rose</string>
+    <string name="dvd_type_background">Fond d\'animation DVD</string>
+    <string name="digital_rain_background">Fond de pluie numérique</string>
+    <string name="cat_background">Fond de chat</string>
+    <string name="space_background">fond spatial</string>
+    <string name="home_button">Choix du thème</string>
+    <string name="click_box_content_description">Écran de l\'horloge, appuyez pour afficher les boutons</string>
+    <string name="alarm_picker_dialog">Dialogue de sélection d\\\'alarme</string>
+</resources>
