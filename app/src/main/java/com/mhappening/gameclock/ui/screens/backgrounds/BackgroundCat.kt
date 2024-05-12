@@ -26,6 +26,9 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mhappening.gameclock.R
@@ -37,52 +40,67 @@ import kotlin.math.PI
 
 @Preview
 @Composable
-fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFormat: ClockFormat = ClockFormat.TWENTY_FOUR_HOUR) {
+fun BackgroundCat(
+    showAnimations: Boolean = true,
+    clockScale: Float = 2f,
+    clockFormat: ClockFormat = ClockFormat.TWENTY_FOUR_HOUR,
+    isFullscreen: Boolean = false
+) {
     val isLandscape = BackgroundUtilities().isLandscape()
-    val screenWidth = BackgroundUtilities().getScreenWidth()
-    val screenHeight = BackgroundUtilities().getScreenHeight()
+    val screenWidth = BackgroundUtilities().getScreenWidthDp(isFullscreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightDp(isFullscreen)
 
 
     val catTopYOffset = when (clockFormat) {
         ClockFormat.TWELVE_HOUR, ClockFormat.TWELVE_HOUR_WITH_SECONDS -> {
-            if (isLandscape) -42*clockScale + 25 else -30*clockScale + 40
+            if (isLandscape) -42 * clockScale + 25 else -30 * clockScale + 40
         }
+
         ClockFormat.TWENTY_FOUR_HOUR, ClockFormat.TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) -42*clockScale + 15 else -25*clockScale + 40
+            if (isLandscape) -42 * clockScale + 15 else -25 * clockScale + 40
         }
+
         ClockFormat.VERTICAL_TWELVE_HOUR -> {
-            if (isLandscape) 0f else -115*clockScale + 20
+            if (isLandscape) 0f else -115 * clockScale + 20
         }
+
         ClockFormat.VERTICAL_TWENTY_FOUR_HOUR -> {
-            if (isLandscape) 0f else -115*clockScale + 60
+            if (isLandscape) 0f else -115 * clockScale + 60
         }
+
         ClockFormat.VERTICAL_TWELVE_HOUR_WITH_SECONDS -> {
-            if (isLandscape) 0f else -150*clockScale + 40
+            if (isLandscape) 0f else -150 * clockScale + 40
         }
+
         ClockFormat.VERTICAL_TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) 0f else -130*clockScale + 40
+            if (isLandscape) 0f else -130 * clockScale + 40
         }
     }
 
 
     val catBottomYOffset = when (clockFormat) {
         ClockFormat.TWELVE_HOUR, ClockFormat.TWELVE_HOUR_WITH_SECONDS -> {
-            if (isLandscape) 42*clockScale - 45 else 40*clockScale - 80
+            if (isLandscape) 42 * clockScale - 45 else 40 * clockScale - 80
         }
+
         ClockFormat.TWENTY_FOUR_HOUR, ClockFormat.TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) 42*clockScale - 45 else 25*clockScale - 80
+            if (isLandscape) 42 * clockScale - 45 else 25 * clockScale - 80
         }
+
         ClockFormat.VERTICAL_TWELVE_HOUR -> {
-            if (isLandscape) -90f else 115*clockScale - 60
+            if (isLandscape) -90f else 115 * clockScale - 60
         }
+
         ClockFormat.VERTICAL_TWENTY_FOUR_HOUR -> {
-            if (isLandscape) -90f else 115*clockScale - 90
+            if (isLandscape) -90f else 115 * clockScale - 90
         }
+
         ClockFormat.VERTICAL_TWELVE_HOUR_WITH_SECONDS -> {
-            if (isLandscape) -90f else 143*clockScale - 80
+            if (isLandscape) -90f else 143 * clockScale - 80
         }
+
         ClockFormat.VERTICAL_TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) -90f else 130*clockScale - 80
+            if (isLandscape) -90f else 130 * clockScale - 80
         }
     }
 
@@ -91,8 +109,9 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
         ClockFormat.TWELVE_HOUR, ClockFormat.TWELVE_HOUR_WITH_SECONDS, ClockFormat.TWENTY_FOUR_HOUR, ClockFormat.TWENTY_FOUR_HOUR_WITH_SECONDS -> {
             0f
         }
+
         ClockFormat.VERTICAL_TWELVE_HOUR, ClockFormat.VERTICAL_TWENTY_FOUR_HOUR, ClockFormat.VERTICAL_TWELVE_HOUR_WITH_SECONDS, ClockFormat.VERTICAL_TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) -(screenWidth/3) - (clockScale * 10) else 0f
+            if (isLandscape) -(screenWidth / 3) - (clockScale * 10) else 0f
         }
     }
 
@@ -100,26 +119,27 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
         ClockFormat.TWELVE_HOUR, ClockFormat.TWELVE_HOUR_WITH_SECONDS, ClockFormat.TWENTY_FOUR_HOUR, ClockFormat.TWENTY_FOUR_HOUR_WITH_SECONDS -> {
             Modifier
         }
+
         ClockFormat.VERTICAL_TWELVE_HOUR, ClockFormat.VERTICAL_TWENTY_FOUR_HOUR, ClockFormat.VERTICAL_TWELVE_HOUR_WITH_SECONDS, ClockFormat.VERTICAL_TWENTY_FOUR_HOUR_WITH_SECONDS -> {
-            if (isLandscape) Modifier.scale(clockScale/3 +0.3f) else Modifier
+            if (isLandscape) Modifier.scale(clockScale / 3 + 0.3f) else Modifier
         }
     }
 
     val catAnimation = rememberInfiniteTransition(label = "Cat Animation")
 
-    var eyeOffset by remember{ mutableFloatStateOf(0f) }
+    var eyeOffset by remember { mutableFloatStateOf(0f) }
     eyeOffset = if (showAnimations) {
-    catAnimation.animateFloat(
-        initialValue =-15f,
-        targetValue = 15f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = "Cat Eye Animation"
-    ).value
+        catAnimation.animateFloat(
+            initialValue = -15f,
+            targetValue = 15f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse
+            ), label = "Cat Eye Animation"
+        ).value
     } else 0f
 
-    var tailRotation by remember{ mutableFloatStateOf(0f) }
+    var tailRotation by remember { mutableFloatStateOf(0f) }
     tailRotation = if (showAnimations) {
         catAnimation.animateFloat(
             initialValue = 30f,
@@ -131,25 +151,33 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
         ).value
     } else 0f
 
+    val localContentDescription = stringResource(R.string.cat_background)
+
     Box(
-        modifier = Modifier.fillMaxSize().background(color = Color.White)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White)
+            .semantics { contentDescription = localContentDescription }
     ) {
         val tileWidth = 80f
-        val tileHeight = tileWidth*3/5
+        val tileHeight = tileWidth * 3 / 5
         val numberOfTilesX = (ceil(screenWidth / tileWidth) + 1).toInt()
         val numberOfTilesY = (ceil(screenHeight / tileHeight) + 1).toInt()
 
         for (i in 0 until numberOfTilesX) {
             for (j in 0 until numberOfTilesY) {
-                val xOffset = if (j % 2 ==0) -tileWidth/2 else 0f
+                val xOffset = if (j % 2 == 0) -tileWidth / 2 else 0f
                 Image(
                     painter = painterResource(id = R.drawable.tile),
                     contentDescription = "CatTile",
                     modifier = Modifier
-                        .offset(x = (xOffset + i * tileWidth - tileWidth/2).dp, y = (j * tileHeight - tileHeight/2).dp)
+                        .offset(
+                            x = (xOffset + i * tileWidth - tileWidth / 2).dp,
+                            y = (j * tileHeight - tileHeight / 2).dp
+                        )
                         .size(width = tileWidth.dp, height = tileHeight.dp),
 
-                )
+                    )
             }
         }
 
@@ -160,7 +188,8 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
             Image(
                 painter = painterResource(id = R.drawable.cat_tail),
                 contentDescription = "CatTail",
-                modifier = Modifier.offset(y = catBottomYOffset.dp + 280.dp, x = catXOffset.dp)
+                modifier = Modifier
+                    .offset(y = catBottomYOffset.dp + 280.dp, x = catXOffset.dp)
                     .graphicsLayer(
                         rotationZ = tailRotation,
                         transformOrigin = TransformOrigin(0.5f, 0f)
@@ -196,6 +225,6 @@ fun BackgroundCat(showAnimations: Boolean = true, clockScale: Float=2f, clockFor
     }
 }
 
-fun sineEasing() : Easing = Easing { fraction ->
+fun sineEasing(): Easing = Easing { fraction ->
     ((sin(2 * PI * fraction - PI / 2) + 1) / 2).toFloat()
 }

@@ -20,16 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import com.mhappening.gameclock.R
 import com.mhappening.gameclock.ui.ClockUiState
+import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
 
 
 @Composable
 fun BackgroundBreathingEllipse(clockUiState: ClockUiState) {
-    // Get the screen dimensions
-    val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
-    val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
+    // Screen dimensions
+    val screenWidth = BackgroundUtilities().getScreenWidthDp(clockUiState.isFullScreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightDp(clockUiState.isFullScreen)
 
     // Calculate the max of the screen width and height
     val maxScreenSize: Float = maxOf(screenWidth, screenHeight) * 1f
@@ -52,6 +56,8 @@ fun BackgroundBreathingEllipse(clockUiState: ClockUiState) {
     }
     val aspectRatio = screenWidth / screenHeight
 
+    val localContentDescription = stringResource(R.string.breathing_ellipse_background)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -65,6 +71,9 @@ fun BackgroundBreathingEllipse(clockUiState: ClockUiState) {
                     tileMode = TileMode.Clamp
                 )
             )
+            .semantics {
+                contentDescription = localContentDescription
+            }
     )
 }
 

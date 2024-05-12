@@ -37,15 +37,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mhappening.gameclock.R
 import com.mhappening.gameclock.ui.ClockUiState
 import com.mhappening.gameclock.ui.screens.backgrounds.codefall_model.MatrixShader
+import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
@@ -60,9 +64,9 @@ import kotlin.random.nextInt
 @Composable
 fun BackgroundDigitalRain(clockUiState: ClockUiState) {
     // Get the screen dimensions
-    val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
-    val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
-    val isLandscape = screenWidth > screenHeight
+    val isLandscape = BackgroundUtilities().isLandscape()
+    val screenWidth = BackgroundUtilities().getScreenWidthDp(clockUiState.isFullScreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightDp(clockUiState.isFullScreen)
 
     // Calculate the max of the screen width and height
     val maxScreenSize: Float = maxOf(screenWidth, screenHeight)
@@ -93,32 +97,36 @@ fun BackgroundDigitalRain(clockUiState: ClockUiState) {
     val infiniteTransition =
         rememberInfiniteTransition(label = "Digital Rain Animation")
 
-    if (isLandscape) {
-        Canvas(modifier = Modifier
-            .fillMaxSize()
-            .onSizeChanged { size ->
-                matrixShader.setFloatUniform(
-                    "resolution", size.width.toFloat(), size.height.toFloat()
-                )
-            }
-            .graphicsLayer {
-                matrixShader.setFloatUniform("iTime", time)
-                renderEffect = RenderEffect
-                    .createRuntimeShaderEffect(
-                        matrixShader,
-                        "contents"
-                    )
-                    .asComposeRenderEffect()
-            }
-        ) {
-            drawRect(Color.Red)
+    val localContentDescription = stringResource(R.string.digital_rain_background)
+
+    Canvas(modifier =
+    Modifier
+        .fillMaxSize()
+        .semantics { contentDescription = localContentDescription }
+        .onSizeChanged { size ->
+            matrixShader.setFloatUniform(
+                "resolution", size.width.toFloat(), size.height.toFloat()
+            )
         }
+        .graphicsLayer {
+            matrixShader.setFloatUniform("iTime", time)
+            renderEffect = RenderEffect
+                .createRuntimeShaderEffect(
+                    matrixShader,
+                    "contents"
+                )
+                .asComposeRenderEffect()
+        }
+    ) {
+        drawRect(Color.Red)
     }
+
 
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
             .fillMaxSize()
+            .semantics { contentDescription = localContentDescription }
 //            .background(
 //                brush =
 //                Brush.verticalGradient(
@@ -190,13 +198,13 @@ fun ColumnOfText(
     delay: Int,
     noAnimationY: Float
 ) {
-/*    val time by produceState(0f) {
-        while (true) {
-            withInfiniteAnimationFrameMillis {
-                value = it / 1000f
+    /*    val time by produceState(0f) {
+            while (true) {
+                withInfiniteAnimationFrameMillis {
+                    value = it / 1000f
+                }
             }
-        }
-    }*/
+        }*/
     // Animate the y-coordinate of each column
     var yLocation by remember { mutableFloatStateOf(0f) }
     yLocation = if (clockUiState.showAnimations) {
@@ -239,7 +247,7 @@ fun ColumnOfText(
                     0.8f to Color(101, 216, 101, 150),
                     1f to Color(255, 255, 255, 120),
                     start = Offset(0f, 0f),
-                    ),
+                ),
 
                 ),
             color = Color.Green,

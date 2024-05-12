@@ -26,21 +26,24 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mhappening.gameclock.R
+import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
 import kotlin.math.atan2
 import kotlin.random.Random
 
 @Preview
 @Composable
-fun BackgroundPinkAF(showAnimations: Boolean = true) {
-
-    val screenWidth = LocalConfiguration.current.screenWidthDp.toFloat()
-    val screenHeight = LocalConfiguration.current.screenHeightDp.toFloat()
-    val isLandscape = screenWidth > screenHeight
+fun BackgroundPinkAF(showAnimations: Boolean = true, isFullscreen: Boolean = false) {
+// Get the screen dimensions
+    val isLandscape = BackgroundUtilities().isLandscape()
+    val screenWidth = BackgroundUtilities().getScreenWidthDp(isFullscreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightDp(isFullscreen)
 
     val infiniteTransition =
         rememberInfiniteTransition(label = "Floating heart Animation")
@@ -62,6 +65,8 @@ fun BackgroundPinkAF(showAnimations: Boolean = true) {
     val sizeList = List(floatingHeartNumber) { Random.nextInt(30, 50) }
 
 
+    val localContentDescription = stringResource(R.string.pink_heart_background)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -75,6 +80,7 @@ fun BackgroundPinkAF(showAnimations: Boolean = true) {
                         )
                 )
             )
+            .semantics { contentDescription = localContentDescription }
     ) {
         for (i in 0 until floatingHeartNumber) {
             FloatingHeart(

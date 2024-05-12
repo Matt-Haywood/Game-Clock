@@ -16,10 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.mhappening.gameclock.R
+import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
 import kotlin.random.Random
 
 /**
@@ -50,10 +52,10 @@ data class Star(
 
 @Preview(showBackground = true)
 @Composable
-fun SpaceBackground(showAnimations: Boolean = true) {
-    val density = LocalDensity.current
-    val screenWidth = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
-    val screenHeight = with(density) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+fun SpaceBackground(showAnimations: Boolean = true, isFullscreen: Boolean = false) {
+// Get the screen dimensions
+    val screenWidth = BackgroundUtilities().getScreenWidthPx(isFullscreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightPx(isFullscreen)
     val starCount = 300
     val center = Offset(screenWidth / 2, screenHeight / 2)
 
@@ -101,10 +103,13 @@ fun SpaceBackground(showAnimations: Boolean = true) {
         )
     }
 
+    val localContentDescription = stringResource(R.string.space_background)
+
     Canvas(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color(17, 17, 17, 255))
+            .semantics { contentDescription = localContentDescription }
     ) {
 /*        // Draw crosshair at the center of the screen
         val crosshairColor = Color.Red
@@ -160,11 +165,6 @@ fun SpaceBackground(showAnimations: Boolean = true) {
             star.currentX = newPosition.x
             star.currentY = newPosition.y
 
-//            drawCircle(
-//                color = starColorWithAlpha,
-//                center = Offset(star.currentX, star.currentY),
-//                radius = 0.4f * acceleration + 2f
-//            )
 
             val trailCount = 5 // Number of trails for each star, adjust as needed
             val trailDistance = 5f // Distance between each trail, adjust as needed

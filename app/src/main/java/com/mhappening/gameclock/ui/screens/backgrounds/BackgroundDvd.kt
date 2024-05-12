@@ -22,6 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mhappening.gameclock.R
@@ -35,10 +38,13 @@ import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
  */
 @Preview(showBackground = true)
 @Composable
-fun DvdBackground(showAnimations: Boolean = true) {
+fun DvdBackground(
+    showAnimations: Boolean = true,
+    isFullscreen: Boolean = false
+) {
     // Screen dimensions
-    val screenWidth = BackgroundUtilities().getScreenWidth()
-    val screenHeight = BackgroundUtilities().getScreenHeight()
+    val screenWidth = BackgroundUtilities().getScreenWidthDp(isFullscreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightDp(isFullscreen)
 
     // DVD logo dimensions
     val dvdWidth = 150f
@@ -94,8 +100,12 @@ fun DvdBackground(showAnimations: Boolean = true) {
             else -> colorIndex
         }
     }
+    val localContentDescription = stringResource(R.string.dvd_type_background)
 
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .semantics { contentDescription = localContentDescription }) {
         Image(
             painter = painterResource(R.drawable.gmc_logo),
             contentDescription = "DVD Logo",

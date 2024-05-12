@@ -18,12 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.mhappening.gameclock.R
 import com.mhappening.gameclock.ui.screens.backgrounds.pixel_background_model.fireColors
+import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.random.Random
@@ -39,13 +41,11 @@ import kotlin.random.Random
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PixelFireBackground(showAnimations: Boolean = true, isFullscreen: Boolean = false) {
+    // Get the screen width and height
+    val screenWidth = BackgroundUtilities().getScreenWidthPx(isFullscreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightPx(isFullscreen)
 
-
-    val density = LocalDensity.current
-    val screenWidth = with(density) { LocalConfiguration.current.screenWidthDp.dp.toPx() }
-    val screenHeight = with(density) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
-
-    val isLandscape = screenWidth >= screenHeight
+    val isLandscape = BackgroundUtilities().isLandscape()
 
     // Set the pixel size of the fire
     val pixelSize = Size(
@@ -78,6 +78,7 @@ fun PixelFireBackground(showAnimations: Boolean = true, isFullscreen: Boolean = 
     // Create a random array of points to use as a point from the top of screen at which each pixel will finish its interpolation to black
     val randomPoint = Array(pixelsNumberWidth * pixelsNumberHeight) { Random.nextFloat() * 0.26f * pixelsNumberHeight }
 
+    val localContentDescription = stringResource(R.string.pixel_fire_background)
 
     Canvas(
         modifier = Modifier
@@ -89,6 +90,7 @@ fun PixelFireBackground(showAnimations: Boolean = true, isFullscreen: Boolean = 
                     end = Offset(0f, screenHeight)
                 )
             )
+            .semantics { contentDescription = localContentDescription }
     ) {
         for (i in 0 until pixelsNumberWidth) {
             for (y in 0 until pixelsNumberHeight) {

@@ -36,22 +36,31 @@ fun BackgroundChooser(clockUiState: ClockUiState) {
         }
 
         AppTheme.DvdDark -> {
-            DvdBackground(showAnimations = clockUiState.showAnimations)
+            DvdBackground(
+                showAnimations = clockUiState.showAnimations,
+                isFullscreen = clockUiState.isFullScreen
+            )
         }
 
         AppTheme.DvdLight -> {
-            DvdBackground(showAnimations = clockUiState.showAnimations)
+            DvdBackground(
+                showAnimations = clockUiState.showAnimations,
+                isFullscreen = clockUiState.isFullScreen
+            )
         }
 
         AppTheme.PinkAF -> {
-            BackgroundPinkAF(showAnimations = clockUiState.showAnimations)
+            BackgroundPinkAF(showAnimations = clockUiState.showAnimations,
+                isFullscreen = clockUiState.isFullScreen
+            )
         }
 
         AppTheme.Cat -> {
             BackgroundCat(
                 showAnimations = clockUiState.showAnimations,
                 clockScale = clockUiState.clockScale,
-                clockFormat = clockUiState.clockFormat
+                clockFormat = clockUiState.clockFormat,
+                isFullscreen = clockUiState.isFullScreen
             )
         }
 
