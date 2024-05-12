@@ -227,15 +227,16 @@ fun SettingsHeader(headerText: String = "Test") {
     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(0.9f),
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = headerText,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .padding(16.dp)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.background)
         )
 
 
