@@ -3,12 +3,10 @@ package com.mhappening.gameclock.ui.theme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.mhappening.gameclock.R
@@ -24,17 +22,6 @@ val Roboto = FontFamily(
 
 val Teko = FontFamily(
     Font(R.font.teko, FontWeight.Normal, FontStyle.Normal)
-)
-
-@OptIn(ExperimentalTextApi::class)
-val Honk = FontFamily(
-    Font(
-        R.font.honk, FontWeight.Normal, FontStyle.Normal,
-        variationSettings = FontVariation.Settings(
-            FontVariation.Setting("MORF", 10f),
-            FontVariation.Setting("SHLN", 50f)
-        )
-    )
 )
 
 
@@ -61,9 +48,6 @@ val BlackOpsOne = FontFamily(
     Font(R.font.black_ops_one, FontWeight.Normal, FontStyle.Normal)
 )
 
-val Caveat = FontFamily(
-    Font(R.font.caveat_regular, FontWeight.Normal, FontStyle.Normal)
-)
 
 val GermaniaOne = FontFamily(
     Font(R.font.germania_one, FontWeight.Normal, FontStyle.Normal)
@@ -97,8 +81,8 @@ val defaultTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = GermaniaOne,
         fontWeight = FontWeight.Normal,
-        fontSize = 80.sp,
-        lineHeight = 80.sp,
+        fontSize = 60.sp,
+        lineHeight = 60.sp,
 
         shadow = Shadow(offset = Offset(10.0f, 10.0f), blurRadius = 10f)
     ),
