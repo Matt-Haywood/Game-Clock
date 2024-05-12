@@ -3,20 +3,18 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-
-
 }
 
 android {
-    namespace = "com.example.gameclock"
+    namespace = "com.mhappening.gameclock"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gameclock"
+        applicationId = "com.mhappening.gameclock"
         minSdk = 33
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "1.02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -37,8 +35,16 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("debug")
+            ndk {
+                debugSymbolLevel =  "FULL"
+            }
         }
-        debug { isDebuggable = false }
+        debug {
+            isDebuggable = false
+            ndk {
+                debugSymbolLevel =  "FULL"
+            }
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -128,6 +134,9 @@ dependencies {
 
     // Admob
     implementation(libs.play.services.ads)
+
+    // Splash Screen
+    implementation(libs.core.splashscreen)
 
 
 }

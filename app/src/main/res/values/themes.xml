@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.GameClock" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.GameClock.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#353535</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.GameClock</item>
+    </style>
 </resources>
