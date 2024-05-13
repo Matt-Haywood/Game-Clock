@@ -1,11 +1,14 @@
 package com.mhappening.gameclock.ui.util
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -39,6 +42,19 @@ class PermissionsHelper {
         )
 
         return hasAlarmPermission && hasNotificationPolicyPermission && hasScheduleExactAlarmPermission && hasNotificationPermission
+    }
+
+    fun checkNotificationPermissions(context: Context): Boolean {
+        val hasNotificationPolicyPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_NOTIFICATION_POLICY
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val hasPostNotificationPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
+        return hasPostNotificationPermission && hasNotificationPolicyPermission
     }
 
 

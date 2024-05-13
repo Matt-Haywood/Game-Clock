@@ -14,6 +14,7 @@ import com.mhappening.gameclock.data.workManager.WorkRequestManager
 import com.mhappening.gameclock.ui.util.ALARM_WORKER_NOTIFICATION_ID
 import com.mhappening.gameclock.ui.util.AlarmNotificationHelper
 import com.mhappening.gameclock.ui.util.MediaPlayerHelper
+import com.mhappening.gameclock.ui.util.PermissionsHelper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ class AlarmWorker @AssistedInject constructor(
     @Assisted private val alarmNotificationHelper: AlarmNotificationHelper,
     @Assisted private val mediaPlayerHelper: MediaPlayerHelper,
     @Assisted private val workRequestManager: WorkRequestManager,
-    @Assisted ctx: Context,
+    @Assisted val ctx: Context,
     @Assisted params: WorkerParameters,
 ) : CoroutineWorker(ctx, params) {
     private val TAG = "Alarm Worker"
@@ -75,12 +76,6 @@ class AlarmWorker @AssistedInject constructor(
                 val alarmId = inputData.getInt("ID", 0)
                 Log.i(TAG, "doWork: Alarm called $alarmId, at ${Date(date)}")
 
-                mediaPlayerHelper.prepare()
-
-                setForeground(getForegroundInfo())
-
-                mediaPlayerHelper.start()
-
                 // Fetch the alarm by unique ID and disable it if it exists
                 alarmRepository.getAlarmFlowByID(alarmId)
                     .collectLatest {
@@ -90,6 +85,16 @@ class AlarmWorker @AssistedInject constructor(
                         }
                     }
 
+                // Stops before starting the alarm if no notification permissions are granted.
+                if (!PermissionsHelper().checkNotificationPermissions(context = ctx)) {
+                    alarmNotificationHelper.removeAlarmWorkerNotification()
+                    mediaPlayerHelper.release()
+                    return@withContext Result.failure()
+                }
+
+                mediaPlayerHelper.prepare()
+                setForeground(getForegroundInfo())
+                mediaPlayerHelper.start()
                 Result.success()
             } catch (e: CancellationException) {
                 alarmNotificationHelper.removeAlarmWorkerNotification()
