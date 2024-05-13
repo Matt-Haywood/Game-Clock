@@ -20,13 +20,13 @@ class PermissionsHelper {
     @Composable
     @OptIn(ExperimentalPermissionsApi::class)
     fun checkPermissions(): Boolean {
-        val alarmPermissionState = rememberPermissionState(android.Manifest.permission.SET_ALARM)
+        val alarmPermissionState = rememberPermissionState(Manifest.permission.SET_ALARM)
         val notificationPolicyPermissionState =
-            rememberPermissionState(android.Manifest.permission.ACCESS_NOTIFICATION_POLICY)
+            rememberPermissionState(Manifest.permission.ACCESS_NOTIFICATION_POLICY)
         val notificationPermissionState =
-            rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
+            rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
         val useExactAlarmPermissionState =
-            rememberPermissionState(android.Manifest.permission.USE_EXACT_ALARM)
+            rememberPermissionState(Manifest.permission.USE_EXACT_ALARM)
 
         val hasAlarmPermission = alarmPermissionState.status.isGranted
 

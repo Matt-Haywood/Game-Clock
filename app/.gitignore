@@ -1,1 +1,5 @@
 /build
+appInsightsSettings.xml
+deploymentTargetSelector.xml
+14.json
+app-release.aab
