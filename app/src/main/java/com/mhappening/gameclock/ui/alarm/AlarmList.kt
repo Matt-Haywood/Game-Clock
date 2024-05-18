@@ -91,7 +91,7 @@ fun AlarmList(
 ) {
     val sortedAlarmList = alarmList.sortedBy { it.date }
     LazyColumn() {
-        items(sortedAlarmList, { alarm: Alarm -> alarm.id }) { alarm ->
+        items(sortedAlarmList, { alarm: Alarm -> alarm.alarmId }) { alarm ->
             var isDismissed = false
             val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = {

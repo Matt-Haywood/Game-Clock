@@ -2,7 +2,7 @@ package com.mhappening.gameclock.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.mhappening.gameclock.data.ClockDatabase
+import com.mhappening.gameclock.data.roomDatabase.ClockDatabase
 import com.mhappening.gameclock.data.alarms.AlarmDao
 import com.mhappening.gameclock.data.alarms.AlarmRepository
 import com.mhappening.gameclock.data.clockthemes.ClockDao

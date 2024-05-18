@@ -96,7 +96,7 @@ class AlarmViewModel
             _uiState.update { currentState ->
                 currentState.copy(
                     newAlarm = currentState.newAlarm.copy(
-                        id = lastId?.plus(1) ?: 1,
+                        alarmId = lastId?.plus(1) ?: 1,
                         title = "Alarm: ${format.format(alarmTime)}",
                         date = alarmTime,
                         isEnabled = true,

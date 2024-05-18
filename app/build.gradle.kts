@@ -13,8 +13,8 @@ android {
         applicationId = "com.mhappening.gameclock"
         minSdk = 33
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.02"
+        versionCode = 6
+        versionName = "1.03"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -40,10 +40,10 @@ android {
             }
         }
         debug {
-            isDebuggable = false
-            ndk {
-                debugSymbolLevel =  "FULL"
-            }
+            isDebuggable = true
+//            ndk {
+//                debugSymbolLevel =  "FULL"
+//            }
         }
     }
     compileOptions {

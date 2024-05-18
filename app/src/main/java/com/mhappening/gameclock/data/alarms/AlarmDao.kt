@@ -46,7 +46,7 @@ interface AlarmDao {
      *
      * @return The ID of the last inserted alarm.
      */
-    @Query("SELECT id FROM alarm_table ORDER BY id DESC LIMIT 1")
+    @Query("SELECT alarm_id FROM alarm_table ORDER BY alarm_id DESC LIMIT 1")
     suspend fun getLastId(): Int?
 
     /**
@@ -55,7 +55,7 @@ interface AlarmDao {
      * @param id The ID of the alarm to be retrieved.
      * @return The alarm with the given ID.
      */
-    @Query("SELECT * FROM alarm_table WHERE id=:id")
+    @Query("SELECT * FROM alarm_table WHERE alarm_id=:id")
     suspend fun getAlarmById(id: Int): Alarm?
 
     /**
@@ -63,13 +63,13 @@ interface AlarmDao {
      *
      * @return A Flow of List of alarms.
      */
-    @Query("SELECT * FROM alarm_table ORDER BY id DESC")
+    @Query("SELECT * FROM alarm_table ORDER BY alarm_id DESC")
     fun getAlarmsList(): Flow<List<Alarm>>
 
-    @Query("SELECT * FROM alarm_table WHERE id=:id")
+    @Query("SELECT * FROM alarm_table WHERE alarm_id=:id")
     fun getAlarmFlowByID(id: Int): Flow<Alarm?>
 
-    @Query("SELECT * FROM alarm_table WHERE date=:date")
+    @Query("SELECT * FROM alarm_table WHERE alarm_date=:date")
     fun getAlarmByDate(date: Long): Flow<Alarm?>
 
 }

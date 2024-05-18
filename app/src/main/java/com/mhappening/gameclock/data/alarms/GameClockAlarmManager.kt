@@ -42,13 +42,13 @@ class GameClockAlarmManager @Inject constructor(
         val alarmManager = applicationContext.getSystemService(AlarmManager::class.java)
 
         val alarmIntent = Intent(applicationContext, AlarmReceiver::class.java).apply {
-            putExtra(ID, alarm.id)
+            putExtra(ID, alarm.alarmId)
             putExtra(TITLE, alarm.title)
             putExtra(DATE, alarm.date.time)
         }
         val alarmPendingIntent = PendingIntent.getBroadcast(
             applicationContext,
-            alarm.id,
+            alarm.alarmId,
             alarmIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
@@ -77,7 +77,7 @@ class GameClockAlarmManager @Inject constructor(
         calendar.add(java.util.Calendar.MINUTE, 10)
 
         val alarm = Alarm(
-            id = Random().nextInt(Integer.MAX_VALUE),
+            alarmId = Random().nextInt(Integer.MAX_VALUE),
             title = "Snooze",
             isEnabled = true,
             date = calendar.time,
@@ -97,7 +97,7 @@ class GameClockAlarmManager @Inject constructor(
         val alamIntent = Intent(applicationContext, AlarmReceiver::class.java)
         val alarmPendingIntent = PendingIntent.getBroadcast(
             applicationContext,
-            alarm.id,
+            alarm.alarmId,
             alamIntent,
             PendingIntent.FLAG_IMMUTABLE,
         )
