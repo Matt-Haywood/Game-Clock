@@ -8,6 +8,8 @@ import com.mhappening.gameclock.data.alarms.AlarmRepository
 import com.mhappening.gameclock.data.clockthemes.ClockDao
 import com.mhappening.gameclock.data.clockthemes.ClockThemePreferencesRepository
 import com.mhappening.gameclock.data.clockthemes.OfflineClockThemePreferencesRepository
+import com.mhappening.gameclock.data.timers.TimerDao
+import com.mhappening.gameclock.data.timers.TimerRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,6 +49,12 @@ object DatabaseModule {
 
     @Singleton
     @Provides
+    fun provideTimerRepository(timerDao: TimerDao): TimerRepository {
+        return TimerRepository(timerDao)
+    }
+
+    @Singleton
+    @Provides
     fun provideClockDao(clockDatabase: ClockDatabase): ClockDao {
         return clockDatabase.clockDao()
     }
@@ -56,4 +64,11 @@ object DatabaseModule {
     fun provideAlarmDao(clockDatabase: ClockDatabase): AlarmDao {
         return clockDatabase.alarmDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideTimerDao(clockDatabase: ClockDatabase): TimerDao {
+        return clockDatabase.timerDao()
+    }
+
 }

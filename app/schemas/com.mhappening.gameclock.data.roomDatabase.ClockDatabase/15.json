@@ -1,0 +1,164 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 15,
+    "identityHash": "fc7a7c01b986db90c45e98750d197d9e",
+    "entities": [
+      {
+        "tableName": "clock_preferences_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`appTheme` TEXT NOT NULL, `thumbnail` INTEGER NOT NULL, `showAnimations` INTEGER NOT NULL, `clockFormat` TEXT NOT NULL, `clockScale` REAL NOT NULL, `buttonsScale` REAL NOT NULL, `showAlarmButton` INTEGER NOT NULL, `showTimerButton` INTEGER NOT NULL, `clockFont` TEXT NOT NULL, PRIMARY KEY(`appTheme`))",
+        "fields": [
+          {
+            "fieldPath": "appTheme",
+            "columnName": "appTheme",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnail",
+            "columnName": "thumbnail",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showAnimations",
+            "columnName": "showAnimations",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clockFormat",
+            "columnName": "clockFormat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clockScale",
+            "columnName": "clockScale",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "buttonsScale",
+            "columnName": "buttonsScale",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showAlarmButton",
+            "columnName": "showAlarmButton",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "showTimerButton",
+            "columnName": "showTimerButton",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clockFont",
+            "columnName": "clockFont",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "appTheme"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "alarm_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`alarm_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `alarm_title` TEXT NOT NULL, `is_alarm_enabled` INTEGER NOT NULL, `alarm_date` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "alarmId",
+            "columnName": "alarm_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "alarm_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_alarm_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "alarm_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "alarm_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "timer_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`timerId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timer_title` TEXT NOT NULL, `duration` INTEGER NOT NULL, `end_time` INTEGER NOT NULL, `is_timer_enabled` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "timerId",
+            "columnName": "timerId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timerTitle",
+            "columnName": "timer_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durationSeconds",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "end_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_timer_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "timerId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc7a7c01b986db90c45e98750d197d9e')"
+    ]
+  }
+}
