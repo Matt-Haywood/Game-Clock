@@ -109,6 +109,25 @@ class AlarmViewModel
         }
     }
 
+    fun canNewAlarmBeSet(): Boolean {
+        val alarmTimePickerState = _uiState.value.timePickerState
+        val alarmDateIndex = _uiState.value.dateListState.firstVisibleItemIndex
+
+        val alarmDate = _uiState.value.dateList[alarmDateIndex]
+        val calendar = Calendar.getInstance()
+        val now = calendar.time
+
+        calendar.time = alarmDate
+        calendar.set(Calendar.HOUR_OF_DAY, alarmTimePickerState.hour)
+        calendar.set(Calendar.MINUTE, alarmTimePickerState.minute)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        val alarmTime = calendar.time
+
+        return (alarmTime >= now)
+    }
+
     /**
      * Resets the UI state for the new alarm and the alarm to update.
      */

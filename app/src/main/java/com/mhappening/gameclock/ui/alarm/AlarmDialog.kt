@@ -70,7 +70,7 @@ fun AlarmPickerDialog(
     alarmViewModel: AlarmViewModel,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
-    onConfirmText: String = "Set Alarm",
+    onConfirmText: String = stringResource(R.string.set_alarm),
 ) {
     val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
     val alarmTimePickerState = alarmUiState.timePickerState
@@ -134,13 +134,15 @@ fun AlarmPickerDialog(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant
                             )
                         ) {
-                            Text("Cancel")
+                            Text(stringResource(id = R.string.cancel))
                         }
                         TextButton(
                             onClick = onConfirm,
                             colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary
+                            ),
+                            enabled = alarmViewModel.canNewAlarmBeSet()
                         ) {
                             Text(onConfirmText)
                         }
