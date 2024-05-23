@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -50,7 +51,7 @@ fun BackgroundPinkAF(showAnimations: Boolean = true, isFullscreen: Boolean = fal
 
     // Defining random variables once on initial load
 
-    val floatingHeartNumber = if (isLandscape) 110 else 100
+    val floatingHeartNumber = if (isLandscape) 110 else 150
     val randomListSize = (floatingHeartNumber * 0.7).toInt()
     val pathWidth = if (isLandscape) 100f else 200f
     val noAnimationYList = List(randomListSize) { Random.nextFloat() }
@@ -60,7 +61,7 @@ fun BackgroundPinkAF(showAnimations: Boolean = true, isFullscreen: Boolean = fal
     val durationList = if (isLandscape) {
         List(randomListSize) { Random.nextInt(4000, 7000) }
     } else {
-        List(randomListSize) { Random.nextInt(8000, 15000) }
+        List(randomListSize) { Random.nextInt(8000, 16000) }
     }
     val sizeList = List(floatingHeartNumber) { Random.nextInt(30, 50) }
 
@@ -219,6 +220,7 @@ fun FloatingHeart(
             .size(heartSize.dp)
             .offset(x = pos[0].dp + xOffset.dp, y = pos[1].dp)
             .rotate(rotation)
+            .graphicsLayer { rotationY = progress * 360 +delay +duration }
     )
 
 
