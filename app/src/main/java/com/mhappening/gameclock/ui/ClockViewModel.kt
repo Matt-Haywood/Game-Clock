@@ -46,8 +46,7 @@ class ClockViewModel @Inject constructor(
     // pre-loads the themes and fullscreen settings
     init {
         firstLoad()
-        loadThemes()
-        loadLastTheme()
+        showButtons()
     }
 
     private fun firstLoad() {
@@ -81,14 +80,14 @@ class ClockViewModel @Inject constructor(
                     )
                 }
             }
+            loadThemes()
         }
     }
 
-    private fun loadThemes() {
-        backgroundCoroutineScope.launch {
-            clockThemePreferencesRepository.getAllClockThemePreferences().collect { list ->
-                themesPreferencesList = list.filterNotNull().toMutableList()
-            }
+    private suspend fun loadThemes() {
+        clockThemePreferencesRepository.getAllClockThemePreferences().collect { list ->
+            themesPreferencesList = list.filterNotNull().toMutableList()
+        }
 //            _uiState.update { currentState ->
 //                currentState.copy(
 //                    themesPreferencesList = themesPreferencesList.toList()
@@ -99,8 +98,25 @@ class ClockViewModel @Inject constructor(
 //            if (lastOpenedTheme != null) {
 //                onThemeChange(ThemeChangeEvent.ThemeChange(AppTheme.valueOf(lastOpenedTheme)))
 //            }
-        }
+        loadLastTheme()
+    }
 
+
+    private suspend fun loadLastTheme() {
+        val lastOpenedTheme = userPreferencesRepository.lastOpenedTheme.firstOrNull()
+        if (lastOpenedTheme != null) {
+            val themeExists =
+                themesPreferencesList.any { it.appTheme.themeName == lastOpenedTheme }
+            if (themeExists) {
+                onThemeChange(ThemeChangeEvent.ThemeChange(AppTheme.valueOf(lastOpenedTheme)))
+//                    Log.i("themeChange", "loadLastTheme: $lastOpenedTheme")
+            } else {
+////                    Log.i(
+//                        "themeChange",
+//                        "loadLastTheme: theme $lastOpenedTheme doesn't exist in themesPreferencesList"
+//                    )
+            }
+        }
     }
 
 
@@ -118,30 +134,8 @@ class ClockViewModel @Inject constructor(
                     clockFont = clockUiState.value.clockFont,
                     thumbnail = themesPreferencesList.first { it.appTheme == clockUiState.value.theme }.thumbnail
 
-                    )
+                )
             )
-        }
-    }
-
-    private fun loadLastTheme() {
-        backgroundCoroutineScope.launch {
-            val lastOpenedTheme = userPreferencesRepository.lastOpenedTheme.firstOrNull()
-            if (lastOpenedTheme != null) {
-//                val themePreferences =
-//                    clockThemePreferencesRepository.getClockThemePreferences(lastOpenedTheme)
-//                        .firstOrNull()
-                val themeExists =
-                    themesPreferencesList.any { it.appTheme.themeName == lastOpenedTheme }
-                if (themeExists) {
-                    onThemeChange(ThemeChangeEvent.ThemeChange(AppTheme.valueOf(lastOpenedTheme)))
-//                    Log.i("themeChange", "loadLastTheme: $lastOpenedTheme")
-                } else {
-////                    Log.i(
-//                        "themeChange",
-//                        "loadLastTheme: theme $lastOpenedTheme doesn't exist in themesPreferencesList"
-//                    )
-                }
-            }
         }
     }
 
@@ -202,10 +196,6 @@ class ClockViewModel @Inject constructor(
     // Create a job to hold the coroutine that hides the buttons
     private var hideButtonsJob: Job? = null
 
-    init {
-        // Call resetTimer initially to start the timer
-        showButtons()
-    }
 
     // Function to reset the timer
     fun resetHideButtonsTimer() {
