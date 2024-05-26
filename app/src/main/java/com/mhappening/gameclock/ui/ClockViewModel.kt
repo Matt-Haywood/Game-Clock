@@ -313,21 +313,21 @@ class ClockViewModel @Inject constructor(
             }
         }*/
 
-    fun toggleTimerPickerPopup() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                showTimerPickerPopup = !clockUiState.value.showTimerPickerPopup,
-            )
-        }
-    }
-
-    fun dismissTimerPickerPopup() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                showTimerPickerPopup = false
-            )
-        }
-    }
+//    fun toggleTimerPickerPopup() {
+//        _uiState.update { currentState ->
+//            currentState.copy(
+//                showTimerPickerPopup = !clockUiState.value.showTimerPickerPopup,
+//            )
+//        }
+//    }
+//
+//    fun dismissTimerPickerPopup() {
+//        _uiState.update { currentState ->
+//            currentState.copy(
+//                showTimerPickerPopup = false
+//            )
+//        }
+//    }
 
     fun updateClockFont(clockFont: ClockFont) {
         _uiState.update { currentState ->
@@ -352,7 +352,6 @@ data class ClockUiState(
     val showAlarmButton: Boolean = true,
     val showTimerButton: Boolean = true,
     val buttonsVisible: Boolean = true,
-    val showTimerPickerPopup: Boolean = false,
     val clockFont: ClockFont = ClockFont.GERMANIA_ONE
 
 )
