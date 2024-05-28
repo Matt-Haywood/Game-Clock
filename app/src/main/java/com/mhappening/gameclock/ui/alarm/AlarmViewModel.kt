@@ -87,9 +87,6 @@ class AlarmViewModel
 
             val alarmTime = calendar.time
 
-            //Handles case of alarm set in past.
-            //TODO: show user a message saying that the time is in past.
-            if (alarmTime <= now) return@launch
 
             val format = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
 
