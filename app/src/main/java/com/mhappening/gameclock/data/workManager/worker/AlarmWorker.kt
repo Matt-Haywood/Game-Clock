@@ -7,6 +7,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import com.mhappening.gameclock.data.alarms.ALARM_ID
 import com.mhappening.gameclock.data.alarms.AlarmRepository
 import com.mhappening.gameclock.data.alarms.DATE
 import com.mhappening.gameclock.data.alarms.TITLE
@@ -38,7 +39,7 @@ class AlarmWorker @AssistedInject constructor(
     @Assisted private val alarmNotificationHelper: AlarmNotificationHelper,
     @Assisted private val mediaPlayerHelper: MediaPlayerHelper,
     @Assisted private val workRequestManager: WorkRequestManager,
-    @Assisted val ctx: Context,
+    @Assisted ctx: Context,
     @Assisted params: WorkerParameters,
 ) : CoroutineWorker(ctx, params) {
     private val TAG = "Alarm Worker"
@@ -73,8 +74,22 @@ class AlarmWorker @AssistedInject constructor(
                     Log.e(TAG, "doWork: Date is null")
                     return@withContext Result.failure()
                 }
-                val alarmId = inputData.getInt("ID", 0)
+                val alarmId = inputData.getInt(ALARM_ID, 0)
                 Log.i(TAG, "doWork: Alarm called $alarmId, at ${Date(date)}")
+
+                // Stops before starting the alarm if no notification permissions are granted.
+                if (!PermissionsHelper().checkNotificationPermissions(context = applicationContext)) {
+                    alarmNotificationHelper.removeAlarmWorkerNotification()
+                    mediaPlayerHelper.release()
+                    Log.i(TAG, "doWork: No notification permissions granted. Stopping alarm.")
+                    return@withContext Result.failure()
+                }
+
+                mediaPlayerHelper.prepare()
+
+                setForeground(getForegroundInfo())
+
+                mediaPlayerHelper.start()
 
                 // Fetch the alarm by unique ID and disable it if it exists
                 alarmRepository.getAlarmFlowByID(alarmId)
@@ -85,16 +100,8 @@ class AlarmWorker @AssistedInject constructor(
                         }
                     }
 
-                // Stops before starting the alarm if no notification permissions are granted.
-                if (!PermissionsHelper().checkNotificationPermissions(context = ctx)) {
-                    alarmNotificationHelper.removeAlarmWorkerNotification()
-                    mediaPlayerHelper.release()
-                    return@withContext Result.failure()
-                }
 
-                mediaPlayerHelper.prepare()
-                setForeground(getForegroundInfo())
-                mediaPlayerHelper.start()
+
                 Result.success()
             } catch (e: CancellationException) {
                 alarmNotificationHelper.removeAlarmWorkerNotification()
@@ -105,6 +112,11 @@ class AlarmWorker @AssistedInject constructor(
                 alarmNotificationHelper.removeAlarmWorkerNotification()
                 mediaPlayerHelper.release()
                 Log.e(TAG, "doWork: failed NoSuchMethodException")
+                Result.failure()
+            } catch (e: Exception) {
+                alarmNotificationHelper.removeAlarmWorkerNotification()
+                mediaPlayerHelper.release()
+                Log.e(TAG, "doWork: failed with exception: $e")
                 Result.failure()
             }
         }
