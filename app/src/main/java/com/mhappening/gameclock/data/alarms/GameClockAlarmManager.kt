@@ -42,7 +42,7 @@ class GameClockAlarmManager @Inject constructor(
         val alarmManager = applicationContext.getSystemService(AlarmManager::class.java)
 
         val alarmIntent = Intent(applicationContext, AlarmReceiver::class.java).apply {
-            putExtra(ID, alarm.alarmId)
+            putExtra(ALARM_ID, alarm.alarmId)
             putExtra(TITLE, alarm.title)
             putExtra(DATE, alarm.date.time)
         }
