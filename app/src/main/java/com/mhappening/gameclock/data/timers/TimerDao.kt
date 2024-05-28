@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.mhappening.gameclock.model.Timer
 import kotlinx.coroutines.flow.Flow
 
@@ -15,6 +16,9 @@ interface TimerDao {
 
     @Delete(entity = Timer::class)
     suspend fun delete(timer: Timer)
+
+    @Update(entity = Timer::class)
+    suspend fun update(timer: Timer)
 
     @Query("SELECT timerId FROM timer_table ORDER BY timerId DESC LIMIT 1")
     suspend fun getLastTimerId(): Int?

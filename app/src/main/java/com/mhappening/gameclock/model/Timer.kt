@@ -16,6 +16,8 @@ data class Timer(
     var durationSeconds: Long = 0L,
     @ColumnInfo(name = "end_time")
     var endTime: Date = Date(),
+    @ColumnInfo(name = "remaining_time_on_pause", defaultValue = "0")
+    var remainingTimeOnPause: Long = 0L,
     @ColumnInfo(name = "is_timer_enabled")
     var isEnabled: Boolean = false
 )

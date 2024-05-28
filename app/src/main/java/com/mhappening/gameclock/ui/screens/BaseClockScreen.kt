@@ -1,7 +1,6 @@
 package com.mhappening.gameclock.ui.screens
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
@@ -50,6 +49,7 @@ import com.mhappening.gameclock.R
 import com.mhappening.gameclock.model.Alarm
 import com.mhappening.gameclock.model.AppTheme
 import com.mhappening.gameclock.model.ClockFormat
+import com.mhappening.gameclock.model.Timer
 import com.mhappening.gameclock.ui.ClockUiState
 import com.mhappening.gameclock.ui.ClockViewModel
 import com.mhappening.gameclock.ui.alarm.AlarmListDialog
@@ -59,6 +59,10 @@ import com.mhappening.gameclock.ui.permissions.PermissionsRequestDialog
 import com.mhappening.gameclock.ui.screens.backgrounds.BackgroundChooser
 import com.mhappening.gameclock.ui.theme.ClockFont
 import com.mhappening.gameclock.ui.theme.GameClockTheme
+import com.mhappening.gameclock.ui.timer.TimerListDialog
+import com.mhappening.gameclock.ui.timer.TimerPickerDialog
+import com.mhappening.gameclock.ui.timer.TimerRunningDraggableSurface
+import com.mhappening.gameclock.ui.timer.TimerViewModel
 import com.mhappening.gameclock.ui.util.PermissionsHelper
 import kotlinx.coroutines.delay
 import java.time.ZoneId
@@ -70,6 +74,7 @@ import java.time.format.DateTimeFormatter
 fun BaseClockScreen(
     clockViewModel: ClockViewModel,
     alarmViewModel: AlarmViewModel,
+    timerViewModel: TimerViewModel,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
     isLandscape: Boolean = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
@@ -78,6 +83,7 @@ fun BaseClockScreen(
     BackHandler(onBack = onBackClick)
     val clockUiState by clockViewModel.clockUiState.collectAsState()
     val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
+    val timerUiState by timerViewModel.uiState.collectAsState()
     val alarmList = alarmUiState.alarmsList
     val appHasPermissions = remember { mutableStateOf(false) }
     if (!appHasPermissions.value) {
@@ -95,12 +101,12 @@ fun BaseClockScreen(
             .fillMaxSize()
             .clickable {  // Detect taps and show the buttons again
                 clockViewModel.showButtons()
-                Log.i(
-                    TAG,
-                    "BaseClockScreen: Clicked on the screen. Buttons are visible again."
-                )
+//                Log.i(
+//                    TAG,
+//                    "BaseClockScreen: Clicked on the screen. Buttons are visible again."
+//                )
             }
-            .semantics { contentDescription = clickBoxContentDescription}
+            .semantics { contentDescription = clickBoxContentDescription }
     ) {
 
         // Alarm List dialog
@@ -142,9 +148,23 @@ fun BaseClockScreen(
         }
 
         //TODO: timer dialog.
-        AnimatedVisibility(visible = clockUiState.showTimerPickerPopup) {
 
+
+        AnimatedVisibility(visible = timerUiState.showTimerPickerPopup) {
+            TimerPickerDialog(
+                onDismissRequest = {
+                    timerViewModel.dismissTimerPickerPopup()
+                    timerViewModel.resetNewTimerState()
+                },
+                timerViewModel = timerViewModel,
+                onTimerSet = {
+                    timerViewModel.setNewTimer()
+                    timerViewModel.dismissTimerPickerPopup()
+                },
+                isSetTimerEnabled = timerViewModel.isSetTimerEnabled()
+            )
         }
+
 
         //Clock and button layout logic
         if (isLandscape) {
@@ -153,7 +173,20 @@ fun BaseClockScreen(
                 clockUiState = clockUiState,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
-                alarmButtonOnClick = { alarmButtonOnClick(alarmViewModel,alarmList,appHasPermissions.value) }
+                alarmButtonOnClick = {
+                    alarmButtonOnClick(
+                        alarmViewModel,
+                        alarmList,
+                        appHasPermissions.value
+                    ) { alarmViewModel.openPermissionsRequestPopup() }
+                },
+                timerButtonOnClick = {
+                    timerButtonOnClick(
+                        timerViewModel,
+                        timerUiState.timerList,
+                        appHasPermissions.value
+                    ) { alarmViewModel.openPermissionsRequestPopup() }
+                }
             )
         } else {
             PortraitBaseClock(
@@ -161,8 +194,35 @@ fun BaseClockScreen(
                 clockUiState = clockUiState,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
-                alarmButtonOnClick = { alarmButtonOnClick(alarmViewModel,alarmList,appHasPermissions.value) }
+                alarmButtonOnClick = {
+                    alarmButtonOnClick(
+                        alarmViewModel,
+                        alarmList,
+                        appHasPermissions.value
+                    ) { alarmViewModel.openPermissionsRequestPopup() }
+                },
+                timerButtonOnClick = {
+                    timerButtonOnClick(
+                        timerViewModel,
+                        timerUiState.timerList,
+                        appHasPermissions.value
+                    ) { alarmViewModel.openPermissionsRequestPopup() }
+                }
             )
+        }
+
+        AnimatedVisibility(visible = timerUiState.showSmallTimerRunning) {
+            TimerRunningDraggableSurface(
+                timer = timerUiState.smallTimerRunning,
+                onTimerPausePlay = { timerViewModel.toggleTimerPausePlay(timerUiState.smallTimerRunning) },
+                onTimerCancel = { timerViewModel.cancelTimer(timerUiState.smallTimerRunning)},
+                onTimerMinimise = { timerViewModel.dismissSmallTimerRunning()})
+        }
+        AnimatedVisibility(visible = timerUiState.showTimerListPopup) {
+            TimerListDialog(
+                timerViewModel = timerViewModel,
+                timerList = timerUiState.timerList,
+                onTimerClick = {})
         }
     }
 }
@@ -172,6 +232,7 @@ fun alarmButtonOnClick(
     alarmViewModel: AlarmViewModel,
     alarmList: List<Alarm>,
     appHasPermissions: Boolean,
+    openPermissionsRequestPopup: () -> Unit,
 ) {
     if (appHasPermissions) {
         if (alarmList.isNotEmpty()) {
@@ -180,7 +241,24 @@ fun alarmButtonOnClick(
             alarmViewModel.openSetAlarmPopup()
         }
     } else {
-        alarmViewModel.openPermissionsRequestPopup()
+        openPermissionsRequestPopup()
+    }
+}
+
+fun timerButtonOnClick(
+    timerViewModel: TimerViewModel,
+    timerList: List<Timer>,
+    appHasPermissions: Boolean,
+    openPermissionsRequestPopup: () -> Unit,
+) {
+    if (appHasPermissions) {
+        if (timerList.isNotEmpty()) {
+            timerViewModel.toggleTimerListPopup()
+        } else {
+            timerViewModel.toggleTimerPickerPopup()
+        }
+    } else {
+        openPermissionsRequestPopup()
     }
 }
 
@@ -191,13 +269,14 @@ fun LandscapeBaseClock(
     clockUiState: ClockUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    alarmButtonOnClick: () -> Unit
+    alarmButtonOnClick: () -> Unit,
+    timerButtonOnClick: () -> Unit,
 ) {
     val clockFormat = clockUiState.clockFormat
     val clockScale = clockUiState.clockScale
     val buttonScale = clockUiState.buttonsScale
     val showAlarmButton = clockUiState.showAlarmButton
-    //    val showTimerButton = clockUiState.showTimerButton
+    val showTimerButton = clockUiState.showTimerButton
     val buttonsVisible = clockUiState.buttonsVisible
 
 
@@ -270,12 +349,12 @@ fun LandscapeBaseClock(
                     buttonScale = buttonScale
                 )
             }
-            /*                AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
-                                TimerButton(
-                                    timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
-                                    buttonScale = buttonScale
-                                )
-                            }*/
+            AnimatedVisibility(visible = showTimerButton && buttonsVisible) {
+                TimerButton(
+                    timerButtonOnClick = timerButtonOnClick,
+                    buttonScale = buttonScale
+                )
+            }
         }
     }
 }
@@ -287,13 +366,14 @@ fun PortraitBaseClock(
     clockUiState: ClockUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    alarmButtonOnClick: () -> Unit
+    alarmButtonOnClick: () -> Unit,
+    timerButtonOnClick: () -> Unit,
 ) {
     val clockFormat = clockUiState.clockFormat
     val clockScale = clockUiState.clockScale
     val buttonScale = clockUiState.buttonsScale
     val showAlarmButton = clockUiState.showAlarmButton
-//    val showTimerButton = clockUiState.showTimerButton
+    val showTimerButton = clockUiState.showTimerButton
     val buttonsVisible = clockUiState.buttonsVisible
 
     Row(
@@ -352,17 +432,17 @@ fun PortraitBaseClock(
                     buttonScale = buttonScale
                 )
             }
-            /*AnimatedVisibility(
-                visible = showAlarmButton && buttonsVisible,
+            AnimatedVisibility(
+                visible = showTimerButton && buttonsVisible,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
                 TimerButton(
-                    timerButtonOnClick = { clockViewModel.toggleTimerPickerPopup() },
+                    timerButtonOnClick = timerButtonOnClick,
                     buttonScale = buttonScale
                 )
 
-            }*/
+            }
         }
     }
 }
@@ -435,7 +515,7 @@ mutableStateOf(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             }
-            .semantics { contentDescription = "$clockText $clockSuffix"}
+            .semantics { contentDescription = "$clockText $clockSuffix" }
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
