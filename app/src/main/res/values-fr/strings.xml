@@ -24,7 +24,7 @@
     <string name="clock_font">Police de l\'horloge</string>
     <string name="alarms">Alarmes</string>
     <string name="copyright_logo">logo de copyright</string>
-    <string name="app_version">Version de Game Clock 1.03</string>
+    <string name="app_version">Version de Game Clock 1.05</string>
     <string name="view_privacy_policy">Voir la politique de confidentialité</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="eula">EULA</string>
@@ -42,4 +42,12 @@
     <string name="home_button">Choix du thème</string>
     <string name="click_box_content_description">Écran de l\'horloge, appuyez pour afficher les boutons</string>
     <string name="alarm_picker_dialog">Dialogue de sélection d\\\'alarme</string>
+    <string name="timer_picker_dialog">Sélecteur de minuterie</string>
+    <string name="timer_end_time">Heure de fin de la minuterie</string>
+    <string name="hours">Heures</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Secondes</string>
+    <string name="set_alarm">Définir une alarme</string>
+    <string name="go">Partir !</string>
+    <string name="timers">Minuteries</string>
 </resources>

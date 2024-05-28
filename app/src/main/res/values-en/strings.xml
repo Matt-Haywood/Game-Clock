@@ -24,7 +24,7 @@
     <string name="clock_font">Clock Font</string>
     <string name="alarms">Alarms</string>
     <string name="copyright_logo">copyright logo</string>
-    <string name="app_version">Game Clock version 1.03</string>
+    <string name="app_version">Game Clock version 1.05</string>
     <string name="view_privacy_policy">View Privacy Policy</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="eula">EULA</string>
@@ -42,4 +42,12 @@
     <string name="home_button">Theme choice</string>
     <string name="click_box_content_description">Clock screen, tap to show buttons</string>
     <string name="alarm_picker_dialog">Alarm picker dialog</string>
+    <string name="timer_picker_dialog">timer picker dialog</string>
+    <string name="timer_end_time">Timer end time:</string>
+    <string name="hours">Hours</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Seconds</string>
+    <string name="set_alarm">Set Alarm</string>
+    <string name="go">Go!</string>
+    <string name="timers">Timers</string>
 </resources>

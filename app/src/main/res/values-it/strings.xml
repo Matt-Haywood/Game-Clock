@@ -24,7 +24,7 @@
     <string name="clock_font">Font orologio</string>
     <string name="alarms">Allarmi</string>
     <string name="copyright_logo">logo copyright</string>
-    <string name="app_version">Versione Game Clock 1.03</string>
+    <string name="app_version">Versione Game Clock 1.05</string>
     <string name="view_privacy_policy">Visualizza la politica sulla privacy</string>
     <string name="privacy_policy">Politica sulla privacy</string>
     <string name="eula">EULA</string>
@@ -42,4 +42,12 @@
     <string name="home_button">Scelta tema</string>
     <string name="click_box_content_description">Schermo orologio, tocca per mostrare i pulsanti</string>
     <string name="alarm_picker_dialog">Dialogo di selezione allarme</string>
+    <string name="timer_picker_dialog">Selettore timer</string>
+    <string name="timer_end_time">Orario di fine del timer:</string>
+    <string name="hours">Ore</string>
+    <string name="minutes">Minuti</string>
+    <string name="seconds">Secondi</string>
+    <string name="set_alarm">Imposta allarme</string>
+    <string name="go">Vai!</string>
+    <string name="timers">Timer</string>
 </resources>
