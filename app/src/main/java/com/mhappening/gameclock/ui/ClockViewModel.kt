@@ -39,82 +39,106 @@ class ClockViewModel @Inject constructor(
     val clockUiState: StateFlow<ClockUiState> = _uiState
 
     private val backgroundCoroutineScope = CoroutineScope(Job() + Dispatchers.IO)
-//    var stateApp by mutableStateOf(MainState())
 
     private var themesPreferencesList = mutableListOf<ClockThemePreferences>()
 
-    // pre-loads the themes and fullscreen settings
     init {
+        loadLastUsedTheme()
         firstLoad()
         showButtons()
     }
 
     private fun firstLoad() {
         viewModelScope.launch {
-            val clockThemeList = ClockThemeList().loadThemes()
-            clockThemeList.forEach { theme ->
-                // check if the theme preferences exist, if not create them as defaults. This should only run on the first start up or if the app has been updated to include more themes.
-                val themePreferences =
-                    clockThemePreferencesRepository.getClockThemePreferences(theme.appTheme)
-                        .firstOrNull()
-                if (themePreferences == null) {
-                    clockThemePreferencesRepository.writeClockThemePreferences(
-                        ClockThemePreferences(
-                            appTheme = theme.appTheme,
-                            clockFont = theme.clockFont,
-                            thumbnail = theme.thumbnail,
-                            showAnimations = theme.showAnimations,
-                            clockFormat = theme.clockFormat,
-                            clockScale = theme.clockScale,
-                            buttonsScale = theme.buttonsScale,
-                            showAlarmButton = theme.showAlarmButton,
-                            showTimerButton = theme.showTimerButton
+            if (clockThemePreferencesRepository.getAllClockThemePreferences().firstOrNull().isNullOrEmpty()) {
+                val clockThemeList = ClockThemeList().loadThemes()
+                clockThemeList.forEach { theme ->
+                    // check if the theme preferences exist, if not create them as defaults. This should only run on the first start up or if the app has been updated to include more themes.
+                    val themePreferences =
+                        clockThemePreferencesRepository.getClockThemePreferences(theme.appTheme)
+                            .firstOrNull()
+                    if (themePreferences == null) {
+                        clockThemePreferencesRepository.writeClockThemePreferences(
+                            ClockThemePreferences(
+                                appTheme = theme.appTheme,
+                                clockFont = theme.clockFont,
+                                thumbnail = theme.thumbnail,
+                                showAnimations = theme.showAnimations,
+                                clockFormat = theme.clockFormat,
+                                clockScale = theme.clockScale,
+                                buttonsScale = theme.buttonsScale,
+                                showAlarmButton = theme.showAlarmButton,
+                                showTimerButton = theme.showTimerButton
+                            )
                         )
-                    )
+                    }
+                }
+                userPreferencesRepository.fullscreen.collect { fullscreen ->
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isFullScreen = fullscreen
+                        )
+                    }
                 }
             }
-            userPreferencesRepository.fullscreen.collect { fullscreen ->
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isFullScreen = fullscreen
-                    )
-                }
-            }
-            loadThemes()
         }
     }
 
-    private suspend fun loadThemes() {
-        clockThemePreferencesRepository.getAllClockThemePreferences().collect { list ->
-            themesPreferencesList = list.filterNotNull().toMutableList()
+    private fun loadLastUsedTheme() {
+        viewModelScope.launch {
+            val lastUsedThemeName = userPreferencesRepository.lastOpenedTheme.firstOrNull()
+            if (lastUsedThemeName != null) {
+                val lastUsedThemePreferences =
+                    clockThemePreferencesRepository.getClockThemePreferences(
+                        AppTheme.valueOf(lastUsedThemeName)
+                    ).firstOrNull()
+                if (lastUsedThemePreferences != null) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            theme = lastUsedThemePreferences.appTheme,
+                            showAnimations = lastUsedThemePreferences.showAnimations,
+                            clockFormat = lastUsedThemePreferences.clockFormat,
+                            clockScale = lastUsedThemePreferences.clockScale,
+                            buttonsScale = lastUsedThemePreferences.buttonsScale,
+                            showAlarmButton = lastUsedThemePreferences.showAlarmButton,
+                            showTimerButton = lastUsedThemePreferences.showTimerButton,
+                            clockFont = lastUsedThemePreferences.clockFont
+                        )
+                    }
+                }
+            }
         }
-//            _uiState.update { currentState ->
-//                currentState.copy(
-//                    themesPreferencesList = themesPreferencesList.toList()
-//                )
-//            }
-//            Log.i("themeChange", "loadThemes: Themes Loaded ${themesPreferencesList.size} ")
-//            val lastOpenedTheme = userPreferencesRepository.lastOpenedTheme.firstOrNull()
-//            if (lastOpenedTheme != null) {
-//                onThemeChange(ThemeChangeEvent.ThemeChange(AppTheme.valueOf(lastOpenedTheme)))
-//            }
-        loadLastTheme()
     }
 
+    fun onThemeChange(event: ThemeChangeEvent) {
+        when (event) {
+            is ThemeChangeEvent.ThemeChange -> {
+                viewModelScope.launch {
+                    val newThemePreferences =
+                        clockThemePreferencesRepository.getClockThemePreferences(event.theme)
+                            .firstOrNull()
+                    if (newThemePreferences != null) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                theme = newThemePreferences.appTheme,
+                                showAnimations = newThemePreferences.showAnimations,
+                                clockFormat = newThemePreferences.clockFormat,
+                                clockScale = newThemePreferences.clockScale,
+                                buttonsScale = newThemePreferences.buttonsScale,
+                                showAlarmButton = newThemePreferences.showAlarmButton,
+                                showTimerButton = newThemePreferences.showTimerButton,
+                                clockFont = newThemePreferences.clockFont
+                            )
+                        }
+                        userPreferencesRepository.setLastOpenedTheme(event.theme.themeName)
+                    } else {
+                        // In the event of a theme not in the repository, check clockthemeList and add it to the repository
+                        val newTheme = ClockThemeList().getThemeByAppTheme(event.theme)
+                        clockThemePreferencesRepository.writeClockThemePreferences(newTheme)
+                        onThemeChange(event)
 
-    private suspend fun loadLastTheme() {
-        val lastOpenedTheme = userPreferencesRepository.lastOpenedTheme.firstOrNull()
-        if (lastOpenedTheme != null) {
-            val themeExists =
-                themesPreferencesList.any { it.appTheme.themeName == lastOpenedTheme }
-            if (themeExists) {
-                onThemeChange(ThemeChangeEvent.ThemeChange(AppTheme.valueOf(lastOpenedTheme)))
-//                    Log.i("themeChange", "loadLastTheme: $lastOpenedTheme")
-            } else {
-////                    Log.i(
-//                        "themeChange",
-//                        "loadLastTheme: theme $lastOpenedTheme doesn't exist in themesPreferencesList"
-//                    )
+                    }
+                }
             }
         }
     }
@@ -139,39 +163,6 @@ class ClockViewModel @Inject constructor(
         }
     }
 
-
-    fun onThemeChange(event: ThemeChangeEvent) {
-        when (event) {
-            is ThemeChangeEvent.ThemeChange -> {
-                viewModelScope.launch {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            theme = event.theme,
-                            showAnimations = themesPreferencesList.first { it.appTheme == event.theme }.showAnimations,
-                            clockFormat = themesPreferencesList.first { it.appTheme == event.theme }.clockFormat,
-                            clockScale = themesPreferencesList.first { it.appTheme == event.theme }.clockScale,
-                            buttonsScale = themesPreferencesList.first { it.appTheme == event.theme }.buttonsScale,
-                            showAlarmButton = themesPreferencesList.first { it.appTheme == event.theme }.showAlarmButton,
-                            showTimerButton = themesPreferencesList.first { it.appTheme == event.theme }.showTimerButton,
-                            clockFont = themesPreferencesList.first { it.appTheme == event.theme }.clockFont,
-
-                            )
-                    }
-                    userPreferencesRepository.setLastOpenedTheme(event.theme.themeName)
-//                    Log.i("themeChange", "LastOpenedTheme: ${event.theme}")
-
-                }
-            }
-        }
-    }
-
-    /*    fun returnToDefaultTheme() {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    theme = AppTheme.Default,
-                )
-            }
-        }*/
 
     fun resetThemeToDefaults() {
         viewModelScope.launch {
@@ -280,54 +271,6 @@ class ClockViewModel @Inject constructor(
         }
     }
 
-    /*    fun toggleAlarmPickerPopup() {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    showSetAlarmPopup = !clockUiState.value.showSetAlarmPopup,
-                    showTimerPickerPopup = false
-                )
-            }
-        }
-
-        fun dismissAlarmPickerPopup() {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    showSetAlarmPopup = false
-                )
-            }
-        }
-
-        fun toggleAlarmUpdatePopup() {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    showAlarmUpdatePopup = !clockUiState.value.showAlarmUpdatePopup
-                )
-            }
-        }
-
-        fun dismissAlarmUpdatePopup() {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    showAlarmUpdatePopup = false
-                )
-            }
-        }*/
-
-//    fun toggleTimerPickerPopup() {
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                showTimerPickerPopup = !clockUiState.value.showTimerPickerPopup,
-//            )
-//        }
-//    }
-//
-//    fun dismissTimerPickerPopup() {
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                showTimerPickerPopup = false
-//            )
-//        }
-//    }
 
     fun updateClockFont(clockFont: ClockFont) {
         _uiState.update { currentState ->
@@ -350,7 +293,7 @@ data class ClockUiState(
     val clockScale: Float = 1.8f,
     val buttonsScale: Float = 1.2f,
     val showAlarmButton: Boolean = true,
-    val showTimerButton: Boolean = true,
+    val showTimerButton: Boolean = false,
     val buttonsVisible: Boolean = true,
     val clockFont: ClockFont = ClockFont.GERMANIA_ONE
 
