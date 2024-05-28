@@ -65,13 +65,13 @@ class AlarmReceiver : BroadcastReceiver() {
                         else -> {
 //                            val shouldStartWorker = alarmIsToday(intent)
                             val inputData = Data.Builder()
-                                .putInt(ID, intent.getIntExtra(ID, 0))
+                                .putInt(ALARM_ID, intent.getIntExtra(ALARM_ID, 0))
                                 .putString(TITLE, intent.getStringExtra(TITLE))
                                 .putLong(DATE, intent.getLongExtra(DATE, 1L))
                                 .build()
                             Log.i(
                                 TAG,
-                                "onReceive: ${intent.getIntExtra(ID, 0)} ${
+                                "onReceive: ${intent.getIntExtra(ALARM_ID, 0)} ${
                                     intent.getStringExtra(TITLE)
                                 } date: ${intent.getLongExtra(DATE, 1L)}"
                             )
@@ -92,7 +92,7 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 }
 
-const val ID = "ID"
+const val ALARM_ID = "ALARMID"
 const val TITLE = "TITLE"
 const val DATE = "DATE"
 const val ACTION_DISMISS = "ACTION_DISMISS"
