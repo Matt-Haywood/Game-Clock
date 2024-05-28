@@ -1,7 +1,6 @@
 package com.mhappening.gameclock.ui.alarm
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -36,7 +37,6 @@ import androidx.compose.ui.window.Dialog
 import com.mhappening.gameclock.R
 import com.mhappening.gameclock.model.Alarm
 
-//TODO: make sure add alarm button doesn't disappear off the bottom of  the list.
 @Composable
 fun AlarmListDialog(
     alarmViewModel: AlarmViewModel,
@@ -45,19 +45,16 @@ fun AlarmListDialog(
 ) {
     Dialog(onDismissRequest = { alarmViewModel.dismissAlarmListPopup() }) {
         Surface(
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
             shape = MaterialTheme.shapes.large,
             tonalElevation = 6.dp,
             shadowElevation = 6.dp,
-            modifier = Modifier
-                .background(
-                    shape = MaterialTheme.shapes.large,
-                    color = MaterialTheme.colorScheme.surface
-                ),
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier
+                    .padding(10.dp)
             ) {
                 Text(
                     text = stringResource(R.string.alarms),
@@ -70,13 +67,7 @@ fun AlarmListDialog(
                     alarmList = alarmList,
                     alarmOnClick = alarmOnClick
                 )
-                Spacer(modifier = Modifier.padding(10.dp))
-                FilledIconButton(onClick = { alarmViewModel.openSetAlarmPopup() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_add_alarm_24),
-                        contentDescription = "Add Alarm",
-                    )
-                }
+
             }
         }
     }
@@ -90,7 +81,7 @@ fun AlarmList(
     alarmOnClick: (Alarm) -> Unit
 ) {
     val sortedAlarmList = alarmList.sortedBy { it.date }
-    LazyColumn() {
+    LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
         items(sortedAlarmList, { alarm: Alarm -> alarm.alarmId }) { alarm ->
             var isDismissed = false
             val dismissState = rememberSwipeToDismissBoxState(
@@ -128,7 +119,10 @@ fun AlarmList(
                 },
                 modifier = Modifier.padding(top = 10.dp),
                 content = {
-                    Card(modifier = Modifier.height(48.dp)) {
+                    Card(modifier = Modifier
+                        .height(48.dp)
+                        .clickable { alarmOnClick(alarm) }
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -144,12 +138,22 @@ fun AlarmList(
                                 style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Justify,
                                 modifier = Modifier
-                                    .clickable { alarmOnClick(alarm) }
-                                    .padding(start = 10.dp, end = 30.dp, top = 5.dp, bottom = 5.dp))
+
+                                    .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp)
+                            )
                         }
                     }
                 },
             )
+        }
+        item {
+            Spacer(modifier = Modifier.padding(10.dp))
+            FilledIconButton(onClick = { alarmViewModel.openSetAlarmPopup() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_add_alarm_24),
+                    contentDescription = "Add Alarm",
+                )
+            }
         }
     }
 }
