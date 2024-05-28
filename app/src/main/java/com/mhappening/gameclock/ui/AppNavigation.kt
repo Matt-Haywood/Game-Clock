@@ -32,6 +32,7 @@ import com.mhappening.gameclock.ui.screens.BaseClockScreen
 import com.mhappening.gameclock.ui.screens.HomeScreen
 import com.mhappening.gameclock.ui.screens.SettingsScreen
 import com.mhappening.gameclock.ui.theme.GameClockTheme
+import com.mhappening.gameclock.ui.timer.TimerViewModel
 
 enum class AppScreen(@StringRes val title: Int) {
     Home(title = R.string.app_name),
@@ -40,16 +41,16 @@ enum class AppScreen(@StringRes val title: Int) {
 }
 
 
-//TODO: Sort out animation from clock screen to home screen suddenly popping
 //TODO: Add navigation tests + testTags
 
 
 @Composable
 fun AppNavigation(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    clockViewModel: ClockViewModel = viewModel(),
+    alarmViewModel: AlarmViewModel = viewModel(),
+    timerViewModel: TimerViewModel = viewModel(),
 ) {
-    val clockViewModel: ClockViewModel = viewModel()
-    val alarmViewModel: AlarmViewModel = viewModel()
 
     val context = LocalContext.current
     val window = remember { (context as Activity).window }
@@ -60,15 +61,13 @@ fun AppNavigation(
         WindowInsetsControllerCompat(window, window.decorView).let { controller ->
             if (isFullscreen) {
                 controller.hide(WindowInsetsCompat.Type.systemBars())
-                controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             } else {
                 controller.show(WindowInsetsCompat.Type.systemBars())
             }
         }
     }
-
-
-
 
     GameClockTheme(appTheme = clockViewModel.clockUiState.collectAsState().value.theme) {
         Surface(
@@ -83,17 +82,12 @@ fun AppNavigation(
                     fadeIn()
                 },
                 exitTransition = {
-//                    shrinkOut(
-//                        shrinkTowards = Alignment.Center,
-//                    )
                     scaleOut()
-                    fadeOut(animationSpec =  tween(durationMillis = 500) )
+                    fadeOut(animationSpec = tween(durationMillis = 500))
                 }
-                ) {
+            ) {
                 composable(AppScreen.Home.name) {
-
                     HomeScreen(
-//                        clockViewModel = clockViewModel,
                         clockThemeList = ClockThemeList().loadThemes(),
                         onThemeClick = { appTheme: AppTheme ->
                             clockViewModel.onThemeChange(
@@ -110,10 +104,9 @@ fun AppNavigation(
                     BaseClockScreen(
                         clockViewModel = clockViewModel,
                         alarmViewModel = alarmViewModel,
+                        timerViewModel = timerViewModel,
                         onBackClick = {
                             navController.navigate(AppScreen.Home.name)
-                            //changes the app theme back to default before displaying the home screen
-//                            clockViewModel.returnToDefaultTheme()
                         },
                         onSettingsClick = { navController.navigate(AppScreen.Settings.name) }
                     )
@@ -125,7 +118,8 @@ fun AppNavigation(
                         onBackClick = {
                             clockViewModel.saveThemePreferences()
                             clockViewModel.resetHideButtonsTimer()
-                            navController.navigateUp() }
+                            navController.navigateUp()
+                        }
                     )
                 }
             }
