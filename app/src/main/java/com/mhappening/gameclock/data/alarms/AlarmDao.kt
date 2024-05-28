@@ -22,7 +22,7 @@ interface AlarmDao {
      *
      * @param alarm The alarm to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE, entity = Alarm::class)
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Alarm::class)
     suspend fun insert(alarm: Alarm)
 
     /**
