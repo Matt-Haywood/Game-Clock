@@ -16,9 +16,10 @@ import com.mhappening.gameclock.model.Timer
 /**
  * Database class with a singleton Instance object.
  */
-@Database(entities = [ClockThemePreferences::class, Alarm::class, Timer::class], version = 15,
+@Database(entities = [ClockThemePreferences::class, Alarm::class, Timer::class], version = 16,
     autoMigrations = [
         AutoMigration(from = 14, to = 15, spec = ClockAutoMigrationSpec::class),
+        AutoMigration(from = 15, to = 16)
     ]
 
 )
