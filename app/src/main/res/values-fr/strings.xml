@@ -4,7 +4,7 @@
     <string name="settings_button">Paramètres</string>
     <string name="alarms_button">Alarmes</string>
     <string name="timers_button">Minuteries</string>
-    <string name="animations">Animations</string>
+    <string name="animations">Animation</string>
     <string name="alarm_button">Bouton d\'alarme</string>
     <string name="timer_button">Bouton de minuterie</string>
     <string name="full_screen">Plein écran</string>
@@ -24,7 +24,7 @@
     <string name="clock_font">Police de l\'horloge</string>
     <string name="alarms">Alarmes</string>
     <string name="copyright_logo">logo de copyright</string>
-    <string name="app_version">Version de Game Clock 1.05</string>
+    <string name="app_version">Version de Game Clock</string>
     <string name="view_privacy_policy">Voir la politique de confidentialité</string>
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="eula">EULA</string>
@@ -50,4 +50,8 @@
     <string name="set_alarm">Définir une alarme</string>
     <string name="go">Partir !</string>
     <string name="timers">Minuteries</string>
+    <string name="permission_request_text_1">Veuillez accorder les permissions suivantes pour utiliser la fonction d\'alarme de l\'application :</string>
+    <string name="permission_request_text_2">" - Notifications Utilisées pour afficher la notification d'alarme, nous ne vous enverrons jamais aucun autre type de notification."</string>
+    <string name="permissions_request">Demande de Permissions</string>
+    <string name="request_permissions">Demander les Permissions</string>
 </resources>

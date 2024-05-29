@@ -24,7 +24,7 @@
     <string name="clock_font">Font orologio</string>
     <string name="alarms">Allarmi</string>
     <string name="copyright_logo">logo copyright</string>
-    <string name="app_version">Versione Game Clock 1.05</string>
+    <string name="app_version">Versione Game Clock</string>
     <string name="view_privacy_policy">Visualizza la politica sulla privacy</string>
     <string name="privacy_policy">Politica sulla privacy</string>
     <string name="eula">EULA</string>
@@ -50,4 +50,8 @@
     <string name="set_alarm">Imposta allarme</string>
     <string name="go">Vai!</string>
     <string name="timers">Timer</string>
+    <string name="permission_request_text_1">Si prega di concedere i seguenti permessi per utilizzare la funzione di allarme dell\'app:</string>
+    <string name="permission_request_text_2">- Notifiche Utilizzate per visualizzare la notifica dell\'allarme, non invieremo mai nessun altro tipo di notifica.</string>
+    <string name="permissions_request">Richiesta Permessi</string>
+    <string name="request_permissions">Richiedi Permessi</string>
 </resources>
