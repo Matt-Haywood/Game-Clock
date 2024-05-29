@@ -98,15 +98,17 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
         },
         bottomBar = {
             Column {
-
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = stringResource(id = R.string.app_version),
+                        text = stringResource(id = R.string.app_version).plus(" ").plus(
+                            stringResource(
+                                id = R.string.version_number
+                            )
+                        ),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -213,12 +215,11 @@ fun SettingsScreen(clockViewModel: ClockViewModel, onBackClick: () -> Unit) {
 
             SettingsHeader(headerText = stringResource(R.string.other_settings))
 
-            DeepLinkRow(settingsTextWeight = settingsTextWeight)
+            DeepLinkRow()
 
 
         }
     }
-
 }
 
 
@@ -238,10 +239,7 @@ fun SettingsHeader(headerText: String = "Test") {
                 .padding(16.dp)
                 .background(MaterialTheme.colorScheme.background)
         )
-
-
     }
-
 }
 
 
@@ -256,14 +254,7 @@ fun SliderRow(
     onValueChangeFinished: () -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(rowText),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .weight(settingsTextWeight)
-                .padding(end = 8.dp)
-        )
+        SettingsRowText(rowText = rowText, weightModifier = Modifier.weight(settingsTextWeight))
         Column(
             modifier = Modifier
                 .weight(1f - settingsTextWeight)
@@ -320,14 +311,8 @@ fun ToggleRow(
     onClick: (Boolean) -> Unit
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(rowText),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .weight(settingsTextWeight)
-                .padding(end = 8.dp)
-        )
+        SettingsRowText(rowText = rowText, weightModifier = Modifier.weight(settingsTextWeight))
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -349,7 +334,7 @@ fun ToggleRow(
                     ) {
                         Text(
                             text = toggleOptions.first,
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -370,7 +355,7 @@ fun ToggleRow(
                     ) {
                         Text(
                             text = toggleOptions.second,
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
@@ -383,7 +368,7 @@ fun ToggleRow(
 fun ChoiceRow(
     settingsTextWeight: Float,
     rowText: Int,
-    textStyle: TextStyle = TextStyle.Default,
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     currentChoice: Any,
     choices: List<Any>,
     onChoiceChange: (Any) -> Unit
@@ -391,14 +376,7 @@ fun ChoiceRow(
     var expanded by remember { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(rowText),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .weight(settingsTextWeight)
-                .padding(end = 8.dp)
-        )
+        SettingsRowText(rowText = rowText, weightModifier = Modifier.weight(settingsTextWeight))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f - settingsTextWeight)
@@ -419,7 +397,8 @@ fun ChoiceRow(
                         },
                         style = if (currentChoice is ClockFont) {
                             currentChoice.textStyle
-                        } else textStyle
+                        } else textStyle,
+                        textAlign = TextAlign.Center
                     )
                 }
                 DropdownMenu(
@@ -457,14 +436,7 @@ fun ResetSettingsButton(
 ) {
     val isSettingsResetDialogVisible = remember { mutableStateOf(false) }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(rowText),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .weight(settingsTextWeight)
-                .padding(end = 8.dp)
-        )
+        SettingsRowText(rowText = rowText, weightModifier = Modifier.weight(settingsTextWeight))
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f - settingsTextWeight)
@@ -479,7 +451,9 @@ fun ResetSettingsButton(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     onClick = { isSettingsResetDialogVisible.value = true }) {
-                    Text(text = stringResource(R.string.reset_settings))
+                    Text(text = stringResource(R.string.reset_settings),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center)
                 }
             }
         }
@@ -510,7 +484,9 @@ fun ResetSettingsButton(
                     Row(
                         verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.reset_settings_confirmation),
@@ -534,11 +510,12 @@ fun ResetSettingsButton(
                             Text(text = stringResource(R.string.confirm))
                         }
                         TextButton(
-                            onClick ={ isSettingsResetDialogVisible.value = false },
+                            onClick = { isSettingsResetDialogVisible.value = false },
                             colors = ButtonDefaults.textButtonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
-                            )) {
+                            )
+                        ) {
                             Text(text = stringResource(R.string.cancel))
                         }
                     }
@@ -550,49 +527,59 @@ fun ResetSettingsButton(
 
 @Composable
 fun DeepLinkRow(
-    settingsTextWeight: Float,
 ) {
     val context = LocalContext.current
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1f - settingsTextWeight)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    onClick = {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://matt-haywood.github.io/PrivacyPolicy/")
-                        )
-                        context.startActivity(intent)
-                    }) {
-                    Text(text = stringResource(R.string.privacy_policy))
-                }
-                TextButton(
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    onClick = {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://www.app-privacy-policy.com/live.php?token=F4zVmSVTi2HRmzfVdTeKuBhPAmxl4wlA")
-                        )
-                        context.startActivity(intent)
-                    }) {
-                    Text(text = stringResource(R.string.eula))
-                }
-            }
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        TextButton(
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            onClick = {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://matt-haywood.github.io/PrivacyPolicy/")
+                )
+                context.startActivity(intent)
+            }) {
+            Text(text = stringResource(R.string.privacy_policy),
+                style = MaterialTheme.typography.bodyMedium)
+        }
+        TextButton(
+            colors = ButtonDefaults.textButtonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            onClick = {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://www.app-privacy-policy.com/live.php?token=F4zVmSVTi2HRmzfVdTeKuBhPAmxl4wlA")
+                )
+                context.startActivity(intent)
+            }) {
+            Text(text = stringResource(R.string.eula),
+                style = MaterialTheme.typography.bodyMedium)
         }
     }
+}
+
+
+@Composable
+fun SettingsRowText(
+    rowText: Int,
+    weightModifier: Modifier
+) {
+    Text(
+        text = stringResource(rowText),
+        textAlign = TextAlign.End,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = weightModifier
+            .padding(end = 8.dp)
+    )
 }
 
 

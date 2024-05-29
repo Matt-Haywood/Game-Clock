@@ -113,8 +113,8 @@ val defaultTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = Roboto,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 28.sp,
+        fontSize = 14.sp,
+        lineHeight = 16.sp,
 
     ),
     //Settings on/off
