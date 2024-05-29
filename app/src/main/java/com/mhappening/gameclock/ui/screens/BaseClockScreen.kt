@@ -169,7 +169,6 @@ fun BaseClockScreen(
         //Clock and button layout logic
         if (isLandscape) {
             LandscapeBaseClock(
-                clockViewModel = clockViewModel,
                 clockUiState = clockUiState,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
@@ -190,7 +189,6 @@ fun BaseClockScreen(
             )
         } else {
             PortraitBaseClock(
-                clockViewModel = clockViewModel,
                 clockUiState = clockUiState,
                 onBackClick = onBackClick,
                 onSettingsClick = onSettingsClick,
@@ -265,7 +263,6 @@ fun timerButtonOnClick(
 
 @Composable
 fun LandscapeBaseClock(
-    clockViewModel: ClockViewModel,
     clockUiState: ClockUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -362,7 +359,6 @@ fun LandscapeBaseClock(
 
 @Composable
 fun PortraitBaseClock(
-    clockViewModel: ClockViewModel,
     clockUiState: ClockUiState,
     onBackClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -558,7 +554,7 @@ mutableStateOf(
                     }
                 }
                 //clock suffix below clock for portrait
-                if (clockSuffix.isNotEmpty() && !isLandscape) {
+                if (clockSuffix.isNotEmpty() && !isLandscape && formatIsVertical) {
                     Row {
                         Text(
                             text = clockSuffix,
@@ -570,6 +566,22 @@ mutableStateOf(
                     }
                 }
             }
+        }
+        //clock suffix below clock for portrait
+        if (clockSuffix.isNotEmpty() && !isLandscape && !formatIsVertical) {
+            Text(
+                    text = clockSuffix,
+                    fontSize = (estimatedMaxTextSize * 0.4).sp,
+                    style = clockFont.textStyle,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .offset(y = -(estimatedMaxTextSize * clockFont.fontYOffsetPercentage * lines.size).dp)
+                        .constrainAs(suffix) {
+                            top.linkTo(text.bottom)
+                            start.linkTo(text.start)
+                            end.linkTo(text.end)
+                        }
+                )
         }
         //clock suffix to the right of clock for landscape
         if (clockSuffix.isNotEmpty() && isLandscape) {
