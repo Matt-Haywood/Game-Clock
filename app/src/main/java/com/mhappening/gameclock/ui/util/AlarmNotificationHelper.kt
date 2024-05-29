@@ -1,11 +1,12 @@
 package com.mhappening.gameclock.ui.util
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.NotificationChannelCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import android.graphics.drawable.Icon
 import com.mhappening.gameclock.MainActivity
 import com.mhappening.gameclock.R
 import com.mhappening.gameclock.data.alarms.ACTION_DISMISS
@@ -20,7 +21,7 @@ import javax.inject.Singleton
 class AlarmNotificationHelper @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
 ) {
-    private val notificationManager = NotificationManagerCompat.from(applicationContext)
+    private val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     private val alarmBroadcastReceiver = AlarmReceiver::class.java
 
@@ -55,36 +56,41 @@ class AlarmNotificationHelper @Inject constructor(
     }
 
     fun getAlarmBaseNotification(title: String) =
-        NotificationCompat.Builder(applicationContext, ALARM_WORKER_CHANNEL_ID)
+        Notification.Builder(applicationContext, ALARM_WORKER_CHANNEL_ID)
             .setContentTitle("Game Clock Alarm")
             .setContentText(title)
             .setSmallIcon(R.drawable.baseline_alarm_24)
             .setShowWhen(false)
             .setFullScreenIntent(openAlarmPendingIntent, true)
-            .addAction(R.drawable.baseline_close_24, "Dismiss", dismissIntentAction)
-            .addAction(R.drawable.baseline_snooze_24, "Snooze 10 mins", snoozeIntentAction)
+            .addAction(
+                Notification.Action.Builder(
+                    Icon.createWithResource(applicationContext, R.drawable.baseline_close_24),
+                    "Dismiss",
+                    dismissIntentAction
+                ).build()
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    Icon.createWithResource(applicationContext, R.drawable.baseline_snooze_24),
+                    "Snooze 10 mins",
+                    snoozeIntentAction
+                ).build()
+            )
+            .setDeleteIntent(dismissIntentAction)
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-//            .createBigContentView()
 
 
     private fun createAlarmNotificationChannels() {
-        val alarmWorkerChannel = NotificationChannelCompat.Builder(
+        val alarmWorkerChannel = NotificationChannel(
             ALARM_WORKER_CHANNEL_ID,
-            NotificationManagerCompat.IMPORTANCE_MAX,
-        )
-            .setName(applicationContext.getString(R.string.alarm_worker_channel_name))
-            .setDescription(applicationContext.getString(R.string.alarm_worker_channel_description))
-            .setSound(null, null)
-            .build()
+            applicationContext.getString(R.string.alarm_worker_channel_name),
+            NotificationManager.IMPORTANCE_HIGH,
+        ).apply {
+            description = applicationContext.getString(R.string.alarm_worker_channel_description)
+            setSound(null, null)
+        }
 
-
-
-        notificationManager.createNotificationChannelsCompat(
-            listOf(
-                alarmWorkerChannel,
-            ),
-        )
+        notificationManager.createNotificationChannel(alarmWorkerChannel)
     }
 
     fun removeAlarmWorkerNotification() {
