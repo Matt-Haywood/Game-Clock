@@ -40,7 +40,7 @@ class ClockViewModel @Inject constructor(
 
     private val backgroundCoroutineScope = CoroutineScope(Job() + Dispatchers.IO)
 
-    private var themesPreferencesList = mutableListOf<ClockThemePreferences>()
+//    private var themesPreferencesList = mutableListOf<ClockThemePreferences>()
 
     init {
         loadLastUsedTheme()
@@ -156,7 +156,8 @@ class ClockViewModel @Inject constructor(
                     showAlarmButton = clockUiState.value.showAlarmButton,
                     showTimerButton = clockUiState.value.showTimerButton,
                     clockFont = clockUiState.value.clockFont,
-                    thumbnail = themesPreferencesList.first { it.appTheme == clockUiState.value.theme }.thumbnail
+                    thumbnail = ClockThemeList().getThemeByAppTheme(clockUiState.value.theme).thumbnail
+//                    themesPreferencesList.first { it.appTheme == clockUiState.value.theme }.thumbnail
 
                 )
             )
