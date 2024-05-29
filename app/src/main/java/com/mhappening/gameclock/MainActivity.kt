@@ -20,18 +20,13 @@ class MainActivity : ComponentActivity() {
 
         val splashScreen = installSplashScreen()
         splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
-//            splashScreenViewProvider.view.animate().alpha(0f).withEndAction {
-                setContent {
-                    AppNavigation()
-                }
                 splashScreenViewProvider.remove()
-//            }
         }
         MobileAds.initialize(this) {}
 
-//        setContent {
-//            AppNavigation()
-//        }
+        setContent {
+            AppNavigation()
+        }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
