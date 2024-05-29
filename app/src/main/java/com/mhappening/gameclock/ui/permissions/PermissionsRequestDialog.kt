@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.mhappening.gameclock.R
 import com.mhappening.gameclock.ui.alarm.AlarmViewModel
 import com.mhappening.gameclock.ui.util.PermissionsHelper
 
@@ -47,13 +49,15 @@ fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
             ) {
                 Column(modifier = Modifier.padding(5.dp)) {
                     Text(
-                        text = "Permissions Request",
+                        text = stringResource(R.string.permissions_request),
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text(text = "Please grant the following permissions to use the alarm feature of the app:")
-                    Text(text = " - Notifications \nUsed to display the alarm notification, we will never send you any other kind of notification.")
+                    Text(text = stringResource(R.string.permission_request_text_1),
+                        style = MaterialTheme.typography.bodyMedium)
+                    Text(text = stringResource(R.string.permission_request_text_2),
+                        style = MaterialTheme.typography.bodyMedium)
 //                    Text(text = " - Set Alarms \nUsed to set the alarm.")
                 }
 
@@ -70,7 +74,8 @@ fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
                         ),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel),
+                            style = MaterialTheme.typography.bodyMedium)
                     }
                     Button(
                         onClick = {
@@ -80,7 +85,9 @@ fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
                         shape = RectangleShape,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Request Permissions")
+                        Text(
+                            stringResource(R.string.request_permissions),
+                            style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
