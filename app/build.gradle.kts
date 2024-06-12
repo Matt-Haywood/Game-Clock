@@ -94,6 +94,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.navigation.testing)
     androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.fragment.testing)
 
     androidTestImplementation(libs.androidx.junit)
 
@@ -125,6 +126,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
     kspTest(libs.hilt.compiler)
     testImplementation(libs.hilt.android.testing)
 

@@ -1,12 +1,14 @@
-package com.mhappening.gameclock
+package com.mhappening.gameclock.test
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.mhappening.gameclock.MainActivity
 import com.mhappening.gameclock.ui.AppNavigation
 import com.mhappening.gameclock.ui.AppScreen
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -26,12 +28,22 @@ class NavigationTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+
+    @get:Rule
+    val activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
+
     private lateinit var navController: TestNavHostController
+
 
     @Before
     fun setup() {
         hiltRule.inject()
         navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+
+        // Create a ComposeNavigator and set it as the navigator for your TestNavHostController
+        val composeNavigator = ComposeNavigator()
+        navController.navigatorProvider.addNavigator(composeNavigator)
+
         composeTestRule.setContent {
             AppNavigation(navController = navController)
         }
@@ -49,7 +61,7 @@ class NavigationTest {
     @Test
     fun testNavigationToHomeScreen() {
         // Perform click action on home button
-        composeTestRule.onNodeWithTag("homeButton").performClick()
+        composeTestRule.onNodeWithContentDescription("Theme choice").performClick()
 
         // Verify that we navigated to the settings screen
         assert(navController.currentDestination?.id == AppScreen.Home.title)
