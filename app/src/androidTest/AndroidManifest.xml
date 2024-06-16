@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <application>
-        <activity
-            android:name="dagger.hilt.android.testing.HiltTestApplication"
-            android:exported="false"
-            tools:replace="android:name" />
-    </application>
+<!--    <application>-->
+<!--        <activity-->
+<!--            android:name="dagger.hilt.android.testing.HiltTestApplication"-->
+<!--            android:exported="false"-->
+<!--            tools:replace="android:name" />-->
+<!--    </application>-->
 
 </manifest>
