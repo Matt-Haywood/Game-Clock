@@ -73,6 +73,10 @@ val TacOne = FontFamily(
     Font(R.font.tac_one_regular, FontWeight.Normal, FontStyle.Normal)
 )
 
+val Matrix = FontFamily(
+    Font(R.font.matrix_code_regular, FontWeight.Normal, FontStyle.Normal)
+)
+
 
 
 // default typography for the app

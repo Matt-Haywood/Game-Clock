@@ -28,7 +28,10 @@ fun BackgroundChooser(clockUiState: ClockUiState) {
         }
 
         AppTheme.CodeFall -> {
-            BackgroundDigitalRain(clockUiState = clockUiState)
+            BackgroundDigitalRain(
+                showAnimations = clockUiState.showAnimations,
+                isFullScreen = clockUiState.isFullScreen
+            )
         }
 
         AppTheme.Space -> {

@@ -1,7 +1,5 @@
 package com.mhappening.gameclock.ui.screens.backgrounds
 
-import android.graphics.RenderEffect
-import android.graphics.RuntimeShader
 import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -9,24 +7,21 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.withInfiniteAnimationFrameMillis
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,9 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -47,79 +42,51 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mhappening.gameclock.R
-import com.mhappening.gameclock.ui.ClockUiState
-import com.mhappening.gameclock.ui.screens.backgrounds.codefall_model.MatrixShader
 import com.mhappening.gameclock.ui.screens.backgrounds.utils.BackgroundUtilities
+import com.mhappening.gameclock.ui.theme.Matrix
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlin.math.max
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-/**
- * This composable function creates a background with a digital rain effect similar to the Matrix.
- * when landscape the effect displays an AGSL shader effect that has been tweeked from a shader toy shader.
- *
- * @param clockUiState The UI state of the clock.
- */
+val textSeedList = listOf(
+    "JDKAICEKTNASK",
+    "DFJEPTNMCLSEPSSDDFEURI",
+    "DFELKCPSIENTNSKSLLCKEKIXMLKAJDOIOWI",
+    "AJDFKDJELALXIXJHVHELSDIESORFRYTPQ",
+    "DAJEHRALKJDFHLAKJHDLFIJKCTYDRE",
+    "DFASJEIJXJEJAKXKEJTRHYTIOWIEGHIUSE",
+    "SPOEISLKANSKDHFGYEIESKOXJWOQIUEJSNCMLEJGSD"
+)
+
 @Composable
-fun BackgroundDigitalRain(clockUiState: ClockUiState) {
+fun BackgroundDigitalRain(isFullScreen: Boolean = false, showAnimations: Boolean = true) {
     // Get the screen dimensions
     val isLandscape = BackgroundUtilities().isLandscape()
-    val screenWidth = BackgroundUtilities().getScreenWidthDp(clockUiState.isFullScreen)
-    val screenHeight = BackgroundUtilities().getScreenHeightDp(clockUiState.isFullScreen)
+    val screenWidth = BackgroundUtilities().getScreenWidthDp(isFullScreen)
+    val screenHeight = BackgroundUtilities().getScreenHeightDp(isFullScreen)
 
-    // Calculate the max of the screen width and height
-    val maxScreenSize: Float = maxOf(screenWidth, screenHeight)
-
-    val time by produceState(0f) {
-        while (true) {
-            withInfiniteAnimationFrameMillis {
-                launch {
-                    value = if (clockUiState.showAnimations) {
-                        it / 1000f
-                    } else {
-                        delay(5000000)
-                        1000f
-                    }
-                }
-            }
-        }
-    }
-    val matrixShader = RuntimeShader(MatrixShader)
-
-    // Create the text to display
-    val binaryText =
-        "0110010101101010010101010001010110101101101110001010100101101001010100101101010101101101001001110101"
-
-//    val charText =
-//        "kfeokxhjslektgalszxzqqhwmkxsdfiajelkthakskflkerthalksdflktlaksdhthsasdlkdtkejriejskdjurtioqnsigfpakd"
     // Create an infinite transition that oscillates the radius between 0 and maxScreenSize
     val infiniteTransition =
         rememberInfiniteTransition(label = "Digital Rain Animation")
 
     val localContentDescription = stringResource(R.string.digital_rain_background)
 
-    Canvas(modifier =
-    Modifier
-        .fillMaxSize()
-        .semantics { contentDescription = localContentDescription }
-        .onSizeChanged { size ->
-            matrixShader.setFloatUniform(
-                "resolution", size.width.toFloat(), size.height.toFloat()
-            )
-        }
-        .graphicsLayer {
-            matrixShader.setFloatUniform("iTime", time)
-            renderEffect = RenderEffect
-                .createRuntimeShaderEffect(
-                    matrixShader,
-                    "contents"
-                )
-                .asComposeRenderEffect()
-        }
-    ) {
-        drawRect(Color.Red)
+    val cellsX = if (isLandscape) 11 else 7
+    val cellsZ = 5
+
+    val spacingX = screenWidth / cellsX
+    val cellMid = cellsX / 2
+
+    val delayList = List(cellsX * cellsZ + 1) { Random.nextInt(0..4000) }
+    val durationList = List(cellsX * cellsZ + 1) {
+        if (isLandscape) Random.nextInt(10000..25000) else Random.nextInt(15000..30000)
     }
+    val noAnimationYList = List(cellsX * cellsZ + 1) {
+        ((-0.2 * screenHeight).toInt()..<screenHeight.toInt()).random().toFloat()
+    }
+
+    val fontSize = if (isLandscape) 25 else 20
 
 
     Box(
@@ -127,150 +94,167 @@ fun BackgroundDigitalRain(clockUiState: ClockUiState) {
         modifier = Modifier
             .fillMaxSize()
             .semantics { contentDescription = localContentDescription }
-//            .background(
-//                brush =
-//                Brush.verticalGradient(
-//                    0.0f to MaterialTheme.colorScheme.background,
-//                    1f to Color.Black,
-//                )
-//            )
+            .background(color = Color.Black)
     ) {
-        Row(
-//            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            var columnSpaceCounter = 0
-            while (columnSpaceCounter < screenWidth) {
-                val delay = Random.nextInt(0..3000)
-                val duration = Random.nextInt(15000..30000)
-                val spacing =
-                    if (isLandscape) Random.nextInt(3..25) else Random.nextInt(-10..15) // -10 to 15 works well.
-                val fontSize = Random.nextInt(1..10)
-                columnSpaceCounter += (spacing * 2) + 5
-                val noAnimationY = (0..maxScreenSize.toInt()).random().toFloat()
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(spacing.dp)
-                )
+
+        for (x in 0..<cellsX) {
+            for (z in 0..<cellsZ) {
+                val index = x + (z * cellsX)
+
+                val textSeedIndex = Random.nextInt(textSeedList.indices)
+
+                val offsetX = if (x <= cellMid) {
+                    (spacingX * x) - (z * 14) + 14
+                } else {
+                    (spacingX * x) + (z * 14)
+                }
+
+                val scale = 1f - z * 0.2f
+                val textRotationY = 12f - ((12f - (-12f)) * ((offsetX - 0) / (screenWidth - 0)))
+
+
                 ColumnOfText(
-                    clockUiState = clockUiState,
+                    showAnimations = showAnimations,
                     infiniteTransition = infiniteTransition,
                     screenHeight = screenHeight,
-                    maxScreenSize = maxScreenSize,
-                    binaryText = binaryText,
+                    text = textSeedList[textSeedIndex],
                     fontSize = fontSize,
-                    duration = duration,
-                    delay = delay,
-                    noAnimationY = noAnimationY
-                )
-                Spacer(
+                    duration = durationList[index],
+                    delay = delayList[index],
+                    noAnimationY = noAnimationYList[index],
+                    zIndex = z,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(spacing.dp)
+                        .offset(x = offsetX.dp, y = 0.dp)
+                        .graphicsLayer {
+                            transformOrigin = TransformOrigin(0.5f, 0f)
+                            scaleX = scale
+                            scaleY = scale
+                            rotationY = textRotationY
+
+                        }
                 )
             }
         }
     }
 }
 
-/**
- * This composable function creates a column of text for the digital rain animation.
- *
- * @param clockUiState The UI state of the clock.
- * @param infiniteTransition The infinite transition for the animation.
- * @param screenHeight The height of the screen.
- * @param maxScreenSize The maximum size of the screen.
- * @param binaryText The text to display in the column.
- * @param fontSize The font size of the text.
- * @param duration The duration of the animation.
- * @param delay The delay before the animation starts.
- * @param noAnimationY The y-coordinate of the column when no animation is shown.
- */
+
 @Composable
 fun ColumnOfText(
-    clockUiState: ClockUiState,
+    showAnimations: Boolean,
     infiniteTransition: InfiniteTransition,
     screenHeight: Float,
-    maxScreenSize: Float,
-    binaryText: String,
+    text: String,
     fontSize: Int,
     duration: Int,
     delay: Int,
-    noAnimationY: Float
+    noAnimationY: Float,
+    zIndex: Int,
+    modifier: Modifier
 ) {
-    /*    val time by produceState(0f) {
-            while (true) {
-                withInfiniteAnimationFrameMillis {
-                    value = it / 1000f
-                }
-            }
-        }*/
-    // Animate the y-coordinate of each column
-    var yLocation by remember { mutableFloatStateOf(0f) }
-    yLocation = if (clockUiState.showAnimations) {
-        infiniteTransition.animateFloat(
-            initialValue = -maxScreenSize * 2.3f,
-            targetValue = screenHeight,
-            animationSpec = infiniteRepeatable(
-                animation = tween(duration, delay, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            ), label = "Digital Rain Animation"
-        ).value
-    } else {
-        (noAnimationY)
+
+    val textState = remember { mutableStateOf(text) }
+
+    LaunchedEffect(key1 = textState) {
+        while (showAnimations) {
+            delay(1000 + delay / 10L)
+            textState.value = generateNewText(textState.value)
+        }
     }
 
-//    val glitchShader = RuntimeShader(GlitchShader)
+    // Add a state variable to track the first iteration
+    var isFirstIteration by remember { mutableStateOf(true) }
 
+    // Animate the y-coordinate of each column
+    var yLocation by remember { mutableFloatStateOf(0f) }
+    yLocation = if (showAnimations) {
+        val initialValue = if (isFirstIteration) {
+            // If it's the first iteration, start from a random position
+            noAnimationY
+        } else {
+            // If it's not the first iteration, start from the top of the screen
+            -fontSize * text.length * 1.1f
+        }
+
+        val delayCalculated = if (isFirstIteration) {
+            0
+        } else {
+            delay
+        }
+
+        val distanceLeft = 1 - (noAnimationY / screenHeight)
+
+        val durationCalculated = if (isFirstIteration) {
+            max((duration * distanceLeft).toInt(), 1)
+        } else {
+            duration
+        }
+
+        val animation = infiniteTransition.animateFloat(
+            initialValue = initialValue,
+            targetValue = screenHeight,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationCalculated, delayCalculated, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart
+            ), label = "Digital Rain Animation"
+        )
+
+        // After the first iteration, set isFirstIteration to false
+        LaunchedEffect(animation) {
+            delay((durationCalculated + delayCalculated - 100).toLong())
+            isFirstIteration = false
+        }
+
+        animation.value
+    } else {
+        noAnimationY
+    }
 
     // Create a column with the generated properties
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .height((maxScreenSize * 2).dp)
+            .height((screenHeight * 2).dp)
             .width(3.dp)
-            .absoluteOffset(y = yLocation.dp)
-
-
+            .offset(x = 0.dp, y = yLocation.dp)
     ) {
         Text(
-            text = binaryText,
+            text = textState.value,
             style = TextStyle(
-//                shadow = Shadow(
-//                    color = MaterialTheme.colorScheme.surfaceDim,
-//                    offset = Offset(x = 100f, y = -200f),
-//                    blurRadius = fontSize / 9f
-//                ),
+                shadow = Shadow(
+                    color = Color.Green,
+                    offset = Offset(x = 0f, y = -2f),
+                    blurRadius = 20f
+                ),
                 brush = Brush.linearGradient(
                     0.0f to Color.Transparent,
-                    0.2f to Color(102, 177, 102, 120),
-                    0.8f to Color(101, 216, 101, 150),
-                    1f to Color(255, 255, 255, 120),
+                    0.2f to Color(102, 177, 102, 220),
+                    0.8f to Color(101, 216, 101, 255),
+                    1f to Color(255, 255, 255, 255),
                     start = Offset(0f, 0f),
                 ),
-
-                ),
-            color = Color.Green,
+                alpha = 1f - (zIndex * 0.12f),
+                fontFamily = Matrix,
+            ),
             fontSize = fontSize.sp,
             overflow = TextOverflow.Visible,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-//                .onSizeChanged { size ->
-//                    glitchShader.setFloatUniform(
-//                        "resolution", size.width.toFloat(), size.height.toFloat())
-//                }
-//                .graphicsLayer {
-//                    glitchShader.setFloatUniform("time", time)
-//                    renderEffect = android.graphics.RenderEffect
-//                        .createRuntimeShaderEffect(
-//                            glitchShader,
-//                            "contents"
-//                        )
-//                        .asComposeRenderEffect()
-//                }
+            modifier = modifier
         )
     }
 }
+
+fun generateNewText(currentText: String): String {
+    val newText = StringBuilder(currentText)
+    for (i in newText.indices) {
+        if (Random.nextFloat() < 0.15) { // 15% chance to change a character
+            newText[i] = textSeedList.random()
+                .random() // Replace the character with a random character from a random string in textSeedList
+        }
+    }
+    return newText.toString()
+}
+
 
 @Preview
 @Composable
@@ -279,7 +263,7 @@ fun BackgroundGreenNumbersPreviewP() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        BackgroundDigitalRain(ClockUiState(showAnimations = false))
+        BackgroundDigitalRain(showAnimations = true)
     }
 }
 
@@ -294,6 +278,6 @@ fun BackgroundGreenNumbersPreviewL() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        BackgroundDigitalRain(ClockUiState(showAnimations = false))
+        BackgroundDigitalRain(showAnimations = true)
     }
 }
