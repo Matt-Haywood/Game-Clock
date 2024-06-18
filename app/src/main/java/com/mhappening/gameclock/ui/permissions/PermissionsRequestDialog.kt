@@ -58,7 +58,6 @@ fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
                         style = MaterialTheme.typography.bodyMedium)
                     Text(text = stringResource(R.string.permission_request_text_2),
                         style = MaterialTheme.typography.bodyMedium)
-//                    Text(text = " - Set Alarms \nUsed to set the alarm.")
                 }
 
                 Row(
