@@ -51,7 +51,7 @@
     <string name="go">Go!</string>
     <string name="timers">Timers</string>
     <string name="permission_request_text_1">Please grant the following permissions to use the alarm feature of the app:</string>
-    <string name="permission_request_text_2">- Notifications \\nUsed to display the alarm notification, we will never send you any other kind of notification.</string>
-    <string name="permissions_request">Used to display the alarm notification, we will never send you any other kind of notification.</string>
+    <string name="permission_request_text_2">- Notifications - Used to display the alarm notification, we will never send you any other kind of notification.</string>
+    <string name="permissions_request">Permissions Request</string>
     <string name="request_permissions">Request Permissions</string>
 </resources>
