@@ -3,7 +3,8 @@ package com.mhappening.gameclock.ui.screens.backgrounds
 import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateValue
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -20,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,6 +59,8 @@ val textSeedList = listOf(
     "DFASJEIJXJEJAKXKEJTRHYTIOWIEGHIUSE",
     "SPOEISLKANSKDHFGYEIESKOXJWOQIUEJSNCMLEJGSD"
 )
+
+private const val permissableCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZbcdfgjklnopqsuvwyz?-&"
 
 @Composable
 fun BackgroundDigitalRain(isFullScreen: Boolean = false, showAnimations: Boolean = true) {
@@ -104,12 +107,12 @@ fun BackgroundDigitalRain(isFullScreen: Boolean = false, showAnimations: Boolean
                 val textSeedIndex = Random.nextInt(textSeedList.indices)
 
                 val offsetX = if (x <= cellMid) {
-                    (spacingX * x) - (z * 14) + 14
+                    (spacingX * x) - (z * (14 - z)) + 14
                 } else {
-                    (spacingX * x) + (z * 14)
+                    (spacingX * x) + (z * (14 - z))
                 }
 
-                val scale = 1f - z * 0.2f
+                val scale = 1f - z * 0.15f
                 val textRotationY = 12f - ((12f - (-12f)) * ((offsetX - 0) / (screenWidth - 0)))
 
 
@@ -155,10 +158,12 @@ fun ColumnOfText(
 
     val textState = remember { mutableStateOf(text) }
 
-    LaunchedEffect(key1 = textState) {
-        while (showAnimations) {
-            delay(1000 + delay / 10L)
-            textState.value = generateNewText(textState.value)
+    if (showAnimations) {
+        LaunchedEffect(key1 = textState) {
+            while (true) {
+                delay(1000 + delay / 10L)
+                textState.value = generateNewText(textState.value)
+            }
         }
     }
 
@@ -166,14 +171,14 @@ fun ColumnOfText(
     var isFirstIteration by remember { mutableStateOf(true) }
 
     // Animate the y-coordinate of each column
-    var yLocation by remember { mutableFloatStateOf(0f) }
+    var yLocation by remember { mutableIntStateOf(0) }
     yLocation = if (showAnimations) {
         val initialValue = if (isFirstIteration) {
             // If it's the first iteration, start from a random position
             noAnimationY
         } else {
             // If it's not the first iteration, start from the top of the screen
-            -fontSize * text.length * 1.1f
+            -fontSize * text.length * 1.15f
         }
 
         val delayCalculated = if (isFirstIteration) {
@@ -190,24 +195,26 @@ fun ColumnOfText(
             duration
         }
 
-        val animation = infiniteTransition.animateFloat(
-            initialValue = initialValue,
-            targetValue = screenHeight,
+        val steppedAnimation = infiniteTransition.animateValue(
+            initialValue = (initialValue / fontSize).toInt(),
+            targetValue = (screenHeight / fontSize).toInt(),
+            typeConverter = Int.VectorConverter,
             animationSpec = infiniteRepeatable(
                 animation = tween(durationCalculated, delayCalculated, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
-            ), label = "Digital Rain Animation"
+            ),
+            label = "Digital Rain Animation",
         )
 
         // After the first iteration, set isFirstIteration to false
-        LaunchedEffect(animation) {
+        LaunchedEffect(steppedAnimation) {
             delay((durationCalculated + delayCalculated - 100).toLong())
             isFirstIteration = false
         }
 
-        animation.value
+        steppedAnimation.value
     } else {
-        noAnimationY
+        noAnimationY.toInt()
     }
 
     // Create a column with the generated properties
@@ -216,7 +223,7 @@ fun ColumnOfText(
         modifier = Modifier
             .height((screenHeight * 2).dp)
             .width(3.dp)
-            .offset(x = 0.dp, y = yLocation.dp)
+            .offset(x = 0.dp, y = (yLocation * fontSize).dp)
     ) {
         Text(
             text = textState.value,
@@ -224,7 +231,7 @@ fun ColumnOfText(
                 shadow = Shadow(
                     color = Color.Green,
                     offset = Offset(x = 0f, y = -2f),
-                    blurRadius = 20f
+                    blurRadius = 50f
                 ),
                 brush = Brush.linearGradient(
                     0.0f to Color.Transparent,
@@ -233,7 +240,7 @@ fun ColumnOfText(
                     1f to Color(255, 255, 255, 255),
                     start = Offset(0f, 0f),
                 ),
-                alpha = 1f - (zIndex * 0.12f),
+                alpha = 0.98f - (zIndex * 0.12f),
                 fontFamily = Matrix,
             ),
             fontSize = fontSize.sp,
@@ -247,8 +254,8 @@ fun ColumnOfText(
 fun generateNewText(currentText: String): String {
     val newText = StringBuilder(currentText)
     for (i in newText.indices) {
-        if (Random.nextFloat() < 0.15) { // 15% chance to change a character
-            newText[i] = textSeedList.random()
+        if (Random.nextFloat() < 0.17) { // 17% chance to change a character
+            newText[i] = permissableCharacters
                 .random() // Replace the character with a random character from a random string in textSeedList
         }
     }
