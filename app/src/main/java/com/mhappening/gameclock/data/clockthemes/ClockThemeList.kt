@@ -57,6 +57,12 @@ class ClockThemeList {
             appTheme = AppTheme.Cat,
             thumbnail = R.drawable.thumbnail_cat,
             clockFont = ClockFont.WELLFLEET
+        ),
+        ClockThemePreferences(
+            appTheme = AppTheme.Vaporwave,
+            thumbnail = R.drawable.thumbnail_vaporwave,
+            clockFont = ClockFont.TIMES_NEW_ROMAN,
+            clockFormat = ClockFormat.TWENTY_FOUR_HOUR
         )
     )
 

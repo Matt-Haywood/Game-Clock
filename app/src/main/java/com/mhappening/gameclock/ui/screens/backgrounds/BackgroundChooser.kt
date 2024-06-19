@@ -66,6 +66,12 @@ fun BackgroundChooser(clockUiState: ClockUiState) {
                 isFullscreen = clockUiState.isFullScreen
             )
         }
+        AppTheme.Vaporwave -> {
+            BackgroundVaporwave(
+                showAnimations = clockUiState.showAnimations,
+                isFullscreen = clockUiState.isFullScreen
+            )
+        }
 
         else -> {
             BackgroundBreathingEllipse(clockUiState = clockUiState)

@@ -217,6 +217,19 @@ enum class ClockFont(
         fontTotalHeightPercentage = 1.4f
     ),
 
+    TIMES_NEW_ROMAN(
+        fontName = "Times New Roman",
+        textStyle = TextStyle(
+            fontFamily = TimesNewRoman,
+            fontWeight = FontWeight.Normal,
+        ),
+        fontScale = 1.0f,
+        textBoxHeight = 1.0f,
+        textBoxWidthHeightRatio = 0.6f,
+        fontYOffsetPercentage = 0.1f,
+        fontTotalHeightPercentage = 1.4f
+    ),
+
 
 /*    HONK(
         fontName = "Honk",

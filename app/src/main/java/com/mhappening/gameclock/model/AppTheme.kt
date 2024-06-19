@@ -8,6 +8,7 @@ enum class AppTheme(
     Light("Light"),
     Dark("Dark"),
     Black("Black"),
+    Vaporwave("Vaporwave"),
     Fire("Fire"),
     CodeFall("CodeFall"),
     Space("Space"),
