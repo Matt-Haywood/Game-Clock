@@ -74,10 +74,6 @@ import java.util.Date
 
 @Composable
 fun BaseClockScreen(
-//    clockViewModel: ClockViewModel,
-//    alarmViewModel: AlarmViewModel,
-//    timerViewModel: TimerViewModel,
-
     clockUiState: ClockUiState,
     alarmUiState: AlarmUiState,
     timerUiState: TimerUiState,
@@ -96,9 +92,8 @@ fun BaseClockScreen(
     onAlarmUpdateConfirm: () -> Unit,
     alarmButtonOnClick: (Boolean) -> Unit,
 
-    onPermissionsRequest: () -> Unit,
+//    onPermissionsRequest: () -> Unit,
     onPermissionsRequestDismiss: () -> Unit,
-
 
     timerButtonOnClick: (Boolean) -> Unit,
     onTimerDismissRequest: () -> Unit,
@@ -119,13 +114,11 @@ fun BaseClockScreen(
     isLandscape: Boolean = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
 ) {
     val TAG = "BaseClockScreen"
-    BackHandler(onBack = onBackClick)
-    val clockUiState by clockViewModel.clockUiState.collectAsState()
-    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
-    val timerUiState by timerViewModel.uiState.collectAsState()
-//    val clockUiState by clockViewModel.clockUiState.collectAsState()
-//    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
-//    val timerUiState by timerViewModel.uiState.collectAsState()
+    val evenMoreLocalContext = LocalContext.current as Activity
+    BackHandler(onBack = {
+        evenMoreLocalContext.finishAffinity()
+    })
+
     val alarmList = alarmUiState.alarmsList
     val appHasPermissions = remember { mutableStateOf(false) }
     if (!appHasPermissions.value) {
@@ -801,7 +794,7 @@ fun PTTwelveHrPreview() {
             onAlarmUpdateCancel = {},
             onAlarmUpdateConfirm = {},
             alarmButtonOnClick = {},
-            onPermissionsRequest = {},
+//            onPermissionsRequest = {},
             onPermissionsRequestDismiss = {},
             timerButtonOnClick = {},
             onTimerDismissRequest = {},
