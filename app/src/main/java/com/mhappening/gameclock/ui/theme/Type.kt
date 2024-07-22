@@ -73,8 +73,8 @@ val TacOne = FontFamily(
     Font(R.font.tac_one_regular, FontWeight.Normal, FontStyle.Normal)
 )
 
-val TimesNewRoman = FontFamily(
-    Font(R.font.times_new_roman_bold_italic, FontWeight.Bold, FontStyle.Italic)
+val Vaporwave = FontFamily(
+    Font(R.font.vaporwave_bold_italic, FontWeight.Bold, FontStyle.Italic)
 )
 
 val Matrix = FontFamily(

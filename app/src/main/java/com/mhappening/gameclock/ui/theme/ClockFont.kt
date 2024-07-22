@@ -217,10 +217,10 @@ enum class ClockFont(
         fontTotalHeightPercentage = 1.4f
     ),
 
-    TIMES_NEW_ROMAN(
-        fontName = "Times New Roman",
+    VAPORWAVE(
+        fontName = "Vaporwave",
         textStyle = TextStyle(
-            fontFamily = TimesNewRoman,
+            fontFamily = Vaporwave,
             fontWeight = FontWeight.Normal,
         ),
         fontScale = 1.0f,

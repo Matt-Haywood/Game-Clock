@@ -51,18 +51,16 @@ fun BackgroundVaporwave(
     val isLandscape = BackgroundUtilities().isLandscape()
 
     val transition = rememberInfiniteTransition()
-    val animateValue by animateValueAsState(
-        targetValue = if (showAnimations) {
-            transition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(durationMillis = 2000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart
-                ), label = "Grid Animation"
-            ).value
-        } else 0f,
-        typeConverter = Float.VectorConverter,
+
+    val animateValue by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = if (showAnimations) 1f else 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 2000,
+                easing = LinearEasing
+            ), repeatMode = RepeatMode.Restart
+        ),
         label = "Grid Animation"
     )
 
@@ -111,7 +109,7 @@ fun BackgroundVaporwave(
         val numberOfLinesHorizontal = if (isLandscape) 20 else 25
         val lineSpacingHorizontal = (size.height / 2) / numberOfLinesHorizontal
         val numberOfLinesVertical = if (isLandscape) 20 else 20
-        val lineSpacingVertical = (size.width ) / numberOfLinesVertical
+        val lineSpacingVertical = (size.width) / numberOfLinesVertical
 
         withTransform({
             val depth = if (isLandscape) {
@@ -272,16 +270,6 @@ fun DrawScope.drawGlowingLine(
         this.strokeWidth = strokeWidth
         this.blendMode = BlendMode.Plus
         this.alpha = alpha
-
-
-//        this.shader = android.graphics.RadialGradient(
-//            end.x - start.x,
-//            start.y,
-//            blurRadius,
-//            color.toArgb(),
-//            Color.Transparent.toArgb(),
-//            android.graphics.Shader.TileMode.CLAMP
-//        )
     }
 
     val glowPaint = Paint().apply {

@@ -43,10 +43,6 @@ enum class AppScreen(@StringRes val title: Int) {
     Settings(title = R.string.settings)
 }
 
-
-//TODO: Add navigation tests + testTags
-
-
 @Composable
 fun AppNavigation(
     navController: NavHostController = rememberNavController(),
@@ -109,10 +105,6 @@ fun AppNavigation(
                 }
                 composable(route = AppScreen.Clock.name) {
                     BaseClockScreen(
-//                        clockViewModel = clockViewModel,
-//                        alarmViewModel = alarmViewModel,
-//                        timerViewModel = timerViewModel,
-
                         clockUiState = clockUiState,
                         alarmUiState = alarmUiState,
                         timerUiState = timerUiState,
@@ -143,7 +135,7 @@ fun AppNavigation(
                             ) { alarmViewModel.openPermissionsRequestPopup() }
                         },
 
-                        onPermissionsRequest = { alarmViewModel.openPermissionsRequestPopup() },
+//                        onPermissionsRequest = { alarmViewModel.openPermissionsRequestPopup() },
                         onPermissionsRequestDismiss = { alarmViewModel.dismissPermissionsRequestPopup() },
 
                         timerButtonOnClick = { appHasPermission ->

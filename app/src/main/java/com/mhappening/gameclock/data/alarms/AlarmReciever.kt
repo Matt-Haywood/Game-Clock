@@ -53,7 +53,6 @@ class AlarmReceiver : BroadcastReceiver() {
                         ACTION_DISMISS -> {
                             // Cancel the alarm worker and remove the notification when the alarm is dismissed
                             workRequestManager.cancelWorker(ALARM_TAG)
-//                            alarmNotificationHelper.removeScheduledAlarmNotification()  // Remove the AlarmCheckerWorker notification
                         }
 
                         ACTION_SNOOZE -> {
@@ -63,7 +62,6 @@ class AlarmReceiver : BroadcastReceiver() {
                         }
 
                         else -> {
-//                            val shouldStartWorker = alarmIsToday(intent)
                             val inputData = Data.Builder()
                                 .putInt(ALARM_ID, intent.getIntExtra(ALARM_ID, 0))
                                 .putString(TITLE, intent.getStringExtra(TITLE))
@@ -75,7 +73,6 @@ class AlarmReceiver : BroadcastReceiver() {
                                     intent.getStringExtra(TITLE)
                                 } date: ${intent.getLongExtra(DATE, 1L)}"
                             )
-//                            if (shouldStartWorker) {
                             workRequestManager.enqueueWorker<AlarmWorker>(
                                 ALARM_TAG,
                                 inputData,
