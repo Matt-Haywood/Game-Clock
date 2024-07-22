@@ -44,9 +44,9 @@ import kotlin.math.roundToInt
 @Composable
 fun TimerRunningDraggableSurface(
     timer: Timer = Timer(endTime = Date(1716745489814L), isEnabled = true),
-    onTimerPausePlay: () -> Unit = {},
-    onTimerCancel: () -> Unit = {},
-    onTimerMinimise: () -> Unit = {},
+    onDraggableTimerPausePlay: () -> Unit = {},
+    onDraggableTimerCancel: () -> Unit = {},
+    onDraggableTimerMinimise: () -> Unit = {},
 ) {
 
     var remainingDuration by remember { mutableLongStateOf(0L) }
@@ -99,7 +99,7 @@ fun TimerRunningDraggableSurface(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(5.dp)
         ) {
-            IconButton(onClick = onTimerMinimise) {
+            IconButton(onClick = onDraggableTimerMinimise) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_close_fullscreen_24),
                     contentDescription = "Cancel Timer"
@@ -112,7 +112,7 @@ fun TimerRunningDraggableSurface(
             ) {
                 Text(text = timerFormat.format(remainingDuration))
             }
-            IconButton(onClick = onTimerPausePlay) {
+            IconButton(onClick = onDraggableTimerPausePlay) {
                 if (timer.isEnabled) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_pause_24),
@@ -126,7 +126,7 @@ fun TimerRunningDraggableSurface(
                 }
 
             }
-            IconButton(onClick = onTimerCancel) {
+            IconButton(onClick = onDraggableTimerCancel) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_close_24),
                     contentDescription = "Cancel Timer"

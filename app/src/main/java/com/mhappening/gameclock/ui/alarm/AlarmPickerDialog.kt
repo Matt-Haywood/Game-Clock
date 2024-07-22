@@ -48,6 +48,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.mhappening.gameclock.R
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Date
 import java.util.Locale
 
 /**
@@ -67,12 +68,13 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmPickerDialog(
-    alarmViewModel: AlarmViewModel,
+    alarmUiState: AlarmUiState,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     onConfirmText: String = stringResource(R.string.set_alarm),
-) {
-    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
+    canNewAlarmBeSet: Boolean,
+    addDatesToAlarmSetList: (Date?) -> Unit,
+    ) {
     val alarmTimePickerState = alarmUiState.timePickerState
     val dateListState = alarmUiState.dateListState
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -115,9 +117,10 @@ fun AlarmPickerDialog(
                         TimePicker(state = alarmTimePickerState)
 
                         DateSelector(
+                            alarmUiState = alarmUiState,
                             dateListState = dateListState,
 //                                dateList = alarmUiState.dateList,
-                            alarmViewModel = alarmViewModel
+                            addDatesToAlarmSetList = addDatesToAlarmSetList,
                         )
 
                     }
@@ -142,7 +145,7 @@ fun AlarmPickerDialog(
                                 containerColor = MaterialTheme.colorScheme.secondary,
                                 contentColor = MaterialTheme.colorScheme.onSecondary
                             ),
-                            enabled = alarmViewModel.canNewAlarmBeSet()
+                            enabled = canNewAlarmBeSet
                         ) {
                             Text(onConfirmText)
                         }
@@ -164,11 +167,13 @@ fun AlarmPickerDialog(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DateSelector(
-    alarmViewModel: AlarmViewModel,
+//    alarmViewModel: AlarmViewModel,
+    alarmUiState: AlarmUiState,
+    addDatesToAlarmSetList: (Date?) -> Unit,
     dateListState: LazyListState,
 ) {
     val TAG = "DateSelector"
-    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
+//    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
     var dateList = alarmUiState.dateList
 
     val calenderNext = Calendar.getInstance()
@@ -208,7 +213,7 @@ fun DateSelector(
                                 )
                                 calenderNext.time = lastDate
                                 calenderNext.add(Calendar.DAY_OF_MONTH, 1)
-                                alarmViewModel.addToDateList(calenderNext.time)
+                                addDatesToAlarmSetList(calenderNext.time)
                                 dateList = alarmUiState.dateList
                             }
                         }

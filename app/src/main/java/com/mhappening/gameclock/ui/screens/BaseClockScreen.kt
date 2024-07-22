@@ -1,5 +1,6 @@
 package com.mhappening.gameclock.ui.screens
 
+import android.app.Activity
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -28,13 +29,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -51,9 +51,9 @@ import com.mhappening.gameclock.model.AppTheme
 import com.mhappening.gameclock.model.ClockFormat
 import com.mhappening.gameclock.model.Timer
 import com.mhappening.gameclock.ui.ClockUiState
-import com.mhappening.gameclock.ui.ClockViewModel
 import com.mhappening.gameclock.ui.alarm.AlarmListDialog
 import com.mhappening.gameclock.ui.alarm.AlarmPickerDialog
+import com.mhappening.gameclock.ui.alarm.AlarmUiState
 import com.mhappening.gameclock.ui.alarm.AlarmViewModel
 import com.mhappening.gameclock.ui.permissions.PermissionsRequestDialog
 import com.mhappening.gameclock.ui.screens.backgrounds.BackgroundChooser
@@ -62,20 +62,59 @@ import com.mhappening.gameclock.ui.theme.GameClockTheme
 import com.mhappening.gameclock.ui.timer.TimerListDialog
 import com.mhappening.gameclock.ui.timer.TimerPickerDialog
 import com.mhappening.gameclock.ui.timer.TimerRunningDraggableSurface
+import com.mhappening.gameclock.ui.timer.TimerUiState
 import com.mhappening.gameclock.ui.timer.TimerViewModel
 import com.mhappening.gameclock.ui.util.PermissionsHelper
 import kotlinx.coroutines.delay
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 
 @Composable
 fun BaseClockScreen(
-    clockViewModel: ClockViewModel,
-    alarmViewModel: AlarmViewModel,
-    timerViewModel: TimerViewModel,
-    onBackClick: () -> Unit,
+//    clockViewModel: ClockViewModel,
+//    alarmViewModel: AlarmViewModel,
+//    timerViewModel: TimerViewModel,
+
+    clockUiState: ClockUiState,
+    alarmUiState: AlarmUiState,
+    timerUiState: TimerUiState,
+
+    showButtons: () -> Unit,
+
+    onAlarmDismissRequest: () -> Unit,
+    alarmOnClick: (Alarm) -> Unit,
+    deleteAlarm: (Alarm) -> Unit,
+    openSetAlarmPopup: () -> Unit,
+    canNewAlarmBeSet: Boolean,
+    addDatesToAlarmSetList: (Date?) -> Unit,
+    onAlarmSetCancel: () -> Unit,
+    onAlarmSetConfirm: () -> Unit,
+    onAlarmUpdateCancel: () -> Unit,
+    onAlarmUpdateConfirm: () -> Unit,
+    alarmButtonOnClick: (Boolean) -> Unit,
+
+    onPermissionsRequest: () -> Unit,
+    onPermissionsRequestDismiss: () -> Unit,
+
+
+    timerButtonOnClick: (Boolean) -> Unit,
+    onTimerDismissRequest: () -> Unit,
+    onTimerSet: () -> Unit,
+    isSetTimerEnabled: Boolean,
+    onDraggableTimerPausePlay: () -> Unit = {},
+    onDraggableTimerCancel: () -> Unit = {},
+    onDraggableTimerMinimise: () -> Unit = {},
+    updateTimerEndTime: () -> Unit,
+    timerListDialogOnDismiss: () -> Unit,
+    onTimerPausePlay: (Timer) -> Unit = {},
+    onTimerCancel: (Timer) -> Unit = {},
+    onTimerMaximise: (Timer) -> Unit = {},
+    addTimerOnClick: () -> Unit = {},
+
+    onHomeClick: () -> Unit,
     onSettingsClick: () -> Unit,
     isLandscape: Boolean = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE,
 ) {
@@ -84,6 +123,9 @@ fun BaseClockScreen(
     val clockUiState by clockViewModel.clockUiState.collectAsState()
     val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
     val timerUiState by timerViewModel.uiState.collectAsState()
+//    val clockUiState by clockViewModel.clockUiState.collectAsState()
+//    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
+//    val timerUiState by timerViewModel.uiState.collectAsState()
     val alarmList = alarmUiState.alarmsList
     val appHasPermissions = remember { mutableStateOf(false) }
     if (!appHasPermissions.value) {
@@ -100,7 +142,7 @@ fun BaseClockScreen(
         modifier = Modifier
             .fillMaxSize()
             .clickable {  // Detect taps and show the buttons again
-                clockViewModel.showButtons()
+                showButtons()
 //                Log.i(
 //                    TAG,
 //                    "BaseClockScreen: Clicked on the screen. Buttons are visible again."
@@ -112,39 +154,44 @@ fun BaseClockScreen(
         // Alarm List dialog
         AnimatedVisibility(visible = alarmUiState.showAlarmListPopup) {
             AlarmListDialog(
-                alarmViewModel = alarmViewModel,
+                onAlarmDismissRequest = onAlarmDismissRequest,
+                deleteAlarm = deleteAlarm,
+                openSetAlarmPopup = openSetAlarmPopup,
+//                alarmViewModel = alarmViewModel,
                 alarmList = alarmList,
-                alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) })
+                alarmOnClick = alarmOnClick)
         }
 
         // Set new alarm dialog
         AnimatedVisibility(visible = alarmUiState.showSetAlarmPopup) {
             AlarmPickerDialog(
-                alarmViewModel = alarmViewModel,
-                onCancel = { alarmViewModel.dismissAlarmPickerPopup() },
-                onConfirm = {
-                    alarmViewModel.setNewAlarm()
-                    alarmViewModel.dismissAlarmPickerPopup()
-                },
+//                alarmViewModel = alarmViewModel,
+                alarmUiState = alarmUiState,
+                onCancel = onAlarmSetCancel,
+                onConfirm = onAlarmSetConfirm,
+                canNewAlarmBeSet = canNewAlarmBeSet,
+                addDatesToAlarmSetList = addDatesToAlarmSetList
             )
         }
 
         // Update Existing alarm dialog
         AnimatedVisibility(visible = alarmUiState.showAlarmUpdatePopup) {
             AlarmPickerDialog(
-                alarmViewModel = alarmViewModel,
-                onCancel = { alarmViewModel.dismissAlarmUpdatePopup() },
-                onConfirm = {
-                    alarmViewModel.updateAlarm()
-                    alarmViewModel.dismissAlarmUpdatePopup()
-                },
-                onConfirmText = stringResource(R.string.updateAlarm)
+//                alarmViewModel = alarmViewModel,
+                alarmUiState = alarmUiState,
+                onCancel = onAlarmUpdateCancel,
+                onConfirm = onAlarmUpdateConfirm,
+                onConfirmText = stringResource(R.string.updateAlarm),
+                canNewAlarmBeSet = canNewAlarmBeSet,
+                addDatesToAlarmSetList = addDatesToAlarmSetList
             )
         }
 
         // Permissions Request dialog
         AnimatedVisibility(visible = alarmUiState.showPermissionsRequestPopup) {
-            PermissionsRequestDialog(alarmViewModel = alarmViewModel)
+            PermissionsRequestDialog(
+                onPermissionsRequestDismiss = onPermissionsRequestDismiss,
+            )
         }
 
         //TODO: timer dialog.
@@ -152,16 +199,11 @@ fun BaseClockScreen(
 
         AnimatedVisibility(visible = timerUiState.showTimerPickerPopup) {
             TimerPickerDialog(
-                onDismissRequest = {
-                    timerViewModel.dismissTimerPickerPopup()
-                    timerViewModel.resetNewTimerState()
-                },
-                timerViewModel = timerViewModel,
-                onTimerSet = {
-                    timerViewModel.setNewTimer()
-                    timerViewModel.dismissTimerPickerPopup()
-                },
-                isSetTimerEnabled = timerViewModel.isSetTimerEnabled()
+                onDismissRequest = { onTimerDismissRequest() },
+                timerUiState = timerUiState,
+                onTimerSet = { onTimerSet() },
+                isSetTimerEnabled = isSetTimerEnabled,
+                updateTimerEndTime = updateTimerEndTime
             )
         }
 
@@ -170,57 +212,39 @@ fun BaseClockScreen(
         if (isLandscape) {
             LandscapeBaseClock(
                 clockUiState = clockUiState,
-                onBackClick = onBackClick,
+                onHomeClick = onHomeClick,
                 onSettingsClick = onSettingsClick,
-                alarmButtonOnClick = {
-                    alarmButtonOnClick(
-                        alarmViewModel,
-                        alarmList,
-                        appHasPermissions.value
-                    ) { alarmViewModel.openPermissionsRequestPopup() }
-                },
-                timerButtonOnClick = {
-                    timerButtonOnClick(
-                        timerViewModel,
-                        timerUiState.timerList,
-                        appHasPermissions.value
-                    ) { alarmViewModel.openPermissionsRequestPopup() }
-                }
+                alarmButtonOnClick = { alarmButtonOnClick(appHasPermissions.value) },
+                timerButtonOnClick = { timerButtonOnClick(appHasPermissions.value) },
             )
         } else {
             PortraitBaseClock(
                 clockUiState = clockUiState,
-                onBackClick = onBackClick,
+                onHomeClick = onHomeClick,
                 onSettingsClick = onSettingsClick,
-                alarmButtonOnClick = {
-                    alarmButtonOnClick(
-                        alarmViewModel,
-                        alarmList,
-                        appHasPermissions.value
-                    ) { alarmViewModel.openPermissionsRequestPopup() }
-                },
-                timerButtonOnClick = {
-                    timerButtonOnClick(
-                        timerViewModel,
-                        timerUiState.timerList,
-                        appHasPermissions.value
-                    ) { alarmViewModel.openPermissionsRequestPopup() }
-                }
+                alarmButtonOnClick = { alarmButtonOnClick(appHasPermissions.value) },
+                timerButtonOnClick = { timerButtonOnClick(appHasPermissions.value) },
             )
         }
 
         AnimatedVisibility(visible = timerUiState.showSmallTimerRunning) {
             TimerRunningDraggableSurface(
                 timer = timerUiState.smallTimerRunning,
-                onTimerPausePlay = { timerViewModel.toggleTimerPausePlay(timerUiState.smallTimerRunning) },
-                onTimerCancel = { timerViewModel.cancelTimer(timerUiState.smallTimerRunning)},
-                onTimerMinimise = { timerViewModel.dismissSmallTimerRunning()})
+                onDraggableTimerPausePlay = onDraggableTimerPausePlay,
+                onDraggableTimerCancel = onDraggableTimerCancel,
+                onDraggableTimerMinimise = onDraggableTimerMinimise
+            )
         }
         AnimatedVisibility(visible = timerUiState.showTimerListPopup) {
             TimerListDialog(
-                timerViewModel = timerViewModel,
                 timerList = timerUiState.timerList,
-                onTimerClick = {})
+                onTimerClick = {},
+                timerListDialogOnDismiss = timerListDialogOnDismiss,
+                onTimerPausePlay = onTimerPausePlay,
+                onTimerCancel = onTimerCancel,
+                onTimerMaximise = onTimerMaximise,
+                addTimerOnClick = addTimerOnClick,
+                )
         }
     }
 }
@@ -264,7 +288,7 @@ fun timerButtonOnClick(
 @Composable
 fun LandscapeBaseClock(
     clockUiState: ClockUiState,
-    onBackClick: () -> Unit,
+    onHomeClick: () -> Unit,
     onSettingsClick: () -> Unit,
     alarmButtonOnClick: () -> Unit,
     timerButtonOnClick: () -> Unit,
@@ -314,7 +338,7 @@ fun LandscapeBaseClock(
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
-                HomeButton(onBackClick = onBackClick, buttonScale = buttonScale)
+                HomeButton(onClick = onHomeClick, buttonScale = buttonScale)
             }
             AnimatedVisibility(
                 visible = buttonsVisible,
@@ -360,7 +384,7 @@ fun LandscapeBaseClock(
 @Composable
 fun PortraitBaseClock(
     clockUiState: ClockUiState,
-    onBackClick: () -> Unit,
+    onHomeClick: () -> Unit,
     onSettingsClick: () -> Unit,
     alarmButtonOnClick: () -> Unit,
     timerButtonOnClick: () -> Unit,
@@ -384,7 +408,7 @@ fun PortraitBaseClock(
             enter = scaleIn(),
             exit = scaleOut()
         ) {
-            HomeButton(onBackClick = onBackClick)
+            HomeButton(onClick = onHomeClick)
         }
         AnimatedVisibility(
             visible = buttonsVisible,
@@ -684,11 +708,11 @@ fun BackButton(
 
 @Composable
 fun HomeButton(
-    onBackClick: () -> Unit,
+    onClick: () -> Unit,
     buttonScale: Float = 1f
 ) {
     IconButton(
-        onClick = onBackClick,
+        onClick = onClick,
         modifier = Modifier.size(60.dp * buttonScale)
     ) {
         Icon(
@@ -761,18 +785,33 @@ val previewFont: ClockFont = ClockFont.TAC_ONE
 @Composable
 fun PTTwelveHrPreview() {
     GameClockTheme(AppTheme.Light) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            ClockText(
-                clockFormat = ClockFormat.TWELVE_HOUR,
-                clockSize = previewFontScale,
-                isLandscape = false,
-                clockFont = previewFont
-            )
-        }
+        BaseClockScreen(
+            clockUiState = ClockUiState(),
+            alarmUiState = AlarmUiState(),
+            timerUiState = TimerUiState(),
+            showButtons = {},
+            onAlarmDismissRequest = {},
+            alarmOnClick = {},
+            deleteAlarm = {},
+            openSetAlarmPopup = {},
+            canNewAlarmBeSet = true,
+            addDatesToAlarmSetList = {},
+            onAlarmSetCancel = {},
+            onAlarmSetConfirm = {},
+            onAlarmUpdateCancel = {},
+            onAlarmUpdateConfirm = {},
+            alarmButtonOnClick = {},
+            onPermissionsRequest = {},
+            onPermissionsRequestDismiss = {},
+            timerButtonOnClick = {},
+            onTimerDismissRequest = {},
+            onTimerSet = {},
+            isSetTimerEnabled = true,
+            updateTimerEndTime = {},
+            timerListDialogOnDismiss = {},
+            onHomeClick = {},
+            onSettingsClick = {}
+        )
     }
 }
 

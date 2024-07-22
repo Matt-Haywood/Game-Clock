@@ -47,13 +47,13 @@ import java.util.Locale
 
 @Composable
 fun TimerPickerDialog(
-    timerViewModel: TimerViewModel,
+    timerUiState: TimerUiState,
     onDismissRequest: () -> Unit = {},
     onTimerSet: () -> Unit = {},
-    isSetTimerEnabled: Boolean = false
+    isSetTimerEnabled: Boolean = false,
+    updateTimerEndTime: () -> Unit,
 ) {
 
-    val timerUiState by timerViewModel.uiState.collectAsState()
     val localContentDescription = stringResource(R.string.timer_picker_dialog)
 
 
@@ -100,7 +100,8 @@ fun TimerPickerDialog(
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(2.dp)
             ) {
 
@@ -130,8 +131,8 @@ fun TimerPickerDialog(
                         value = newTimerDurationHours.value,
                         onValueChange = {
                             newTimerDurationHours.value = it
-                            timerViewModel.updateEndTime()
-                                        },
+                            updateTimerEndTime()
+                        },
                         allowedFirstValue = Regex(ZeroToNine),
                         allowedSecondValue = Regex(ZeroToNine),
                         onNext = {
@@ -147,8 +148,10 @@ fun TimerPickerDialog(
                     TimeSplitter()
                     FilteredNumberField(
                         value = newTimerDurationMinutes.value,
-                        onValueChange = { newTimerDurationMinutes.value = it
-                            timerViewModel.updateEndTime()},
+                        onValueChange = {
+                            newTimerDurationMinutes.value = it
+                            updateTimerEndTime()
+                        },
                         allowedFirstValue = Regex(ZeroToFive),
                         allowedSecondValue = Regex(ZeroToNine),
                         onNext = {
@@ -164,8 +167,10 @@ fun TimerPickerDialog(
                     TimeSplitter()
                     FilteredNumberField(
                         value = newTimerDurationSeconds.value,
-                        onValueChange = { newTimerDurationSeconds.value = it
-                            timerViewModel.updateEndTime()},
+                        onValueChange = {
+                            newTimerDurationSeconds.value = it
+                            updateTimerEndTime()
+                        },
                         allowedFirstValue = Regex(ZeroToFive),
                         allowedSecondValue = Regex(ZeroToNine),
                         onNext = {
@@ -320,5 +325,5 @@ fun TimeSplitter() {
         style = MaterialTheme.typography.displayLarge,
         modifier = Modifier.padding(2.dp)
 
-        )
+    )
 }

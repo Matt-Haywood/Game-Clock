@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -39,11 +37,14 @@ import com.mhappening.gameclock.model.Alarm
 
 @Composable
 fun AlarmListDialog(
-    alarmViewModel: AlarmViewModel,
+//    alarmViewModel: AlarmViewModel,
+    onAlarmDismissRequest: () -> Unit,
+    deleteAlarm: (Alarm) -> Unit,
+    openSetAlarmPopup: () -> Unit,
     alarmList: List<Alarm>,
     alarmOnClick: (Alarm) -> Unit,
 ) {
-    Dialog(onDismissRequest = { alarmViewModel.dismissAlarmListPopup() }) {
+    Dialog(onDismissRequest = { onAlarmDismissRequest() }) {
         Surface(
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
             shape = MaterialTheme.shapes.large,
@@ -63,7 +64,9 @@ fun AlarmListDialog(
 
                 )
                 AlarmList(
-                    alarmViewModel = alarmViewModel,
+//                    alarmViewModel = alarmViewModel,
+                    deleteAlarm = deleteAlarm,
+                    openSetAlarmPopup = openSetAlarmPopup,
                     alarmList = alarmList,
                     alarmOnClick = alarmOnClick
                 )
@@ -76,7 +79,9 @@ fun AlarmListDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmList(
-    alarmViewModel: AlarmViewModel,
+//    alarmViewModel: AlarmViewModel,
+    deleteAlarm: (Alarm) -> Unit,
+    openSetAlarmPopup: () -> Unit,
     alarmList: List<Alarm>,
     alarmOnClick: (Alarm) -> Unit
 ) {
@@ -87,7 +92,7 @@ fun AlarmList(
             val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = {
                     if (it == SwipeToDismissBoxValue.EndToStart || it == SwipeToDismissBoxValue.StartToEnd) {
-                        alarmViewModel.deleteAlarm(alarm)
+                        deleteAlarm(alarm)
                         isDismissed = true
                     }
                     true
@@ -148,7 +153,7 @@ fun AlarmList(
         }
         item {
             Spacer(modifier = Modifier.padding(10.dp))
-            FilledIconButton(onClick = { alarmViewModel.openSetAlarmPopup() }) {
+            FilledIconButton(onClick = { openSetAlarmPopup() }) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_add_alarm_24),
                     contentDescription = "Add Alarm",

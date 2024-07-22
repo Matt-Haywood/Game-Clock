@@ -28,11 +28,13 @@ import com.mhappening.gameclock.ui.alarm.AlarmViewModel
 import com.mhappening.gameclock.ui.util.PermissionsHelper
 
 @Composable
-fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
+fun PermissionsRequestDialog(
+    onPermissionsRequestDismiss: () -> Unit
+) {
     val context = LocalContext.current
 
     Dialog(
-        onDismissRequest = { alarmViewModel.dismissPermissionsRequestPopup() },
+        onDismissRequest = onPermissionsRequestDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Surface(
@@ -65,7 +67,7 @@ fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
-                        onClick = { alarmViewModel.dismissPermissionsRequestPopup() },
+                        onClick = onPermissionsRequestDismiss,
                         shape = RectangleShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.surface,
@@ -79,7 +81,7 @@ fun PermissionsRequestDialog(alarmViewModel: AlarmViewModel) {
                     Button(
                         onClick = {
                             PermissionsHelper().requestPermissionsRedirect(context = context)
-                            alarmViewModel.dismissPermissionsRequestPopup()
+                            onPermissionsRequestDismiss()
                         },
                         shape = RectangleShape,
                         modifier = Modifier.weight(1f)

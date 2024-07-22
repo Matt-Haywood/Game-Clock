@@ -29,17 +29,20 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mhappening.gameclock.R
+import com.mhappening.gameclock.data.clockthemes.ClockThemeList
 import com.mhappening.gameclock.model.AppTheme
 import com.mhappening.gameclock.model.ClockThemePreferences
 import com.mhappening.gameclock.ui.screens.backgrounds.HomeBackground
+import com.mhappening.gameclock.ui.theme.GameClockTheme
 
 
 @Composable
 fun HomeScreen(
     clockThemeList: List<ClockThemePreferences>,
-    onThemeClick: (AppTheme) -> Unit
+    onThemeClick: (AppTheme) -> Unit,
 ) {
     val isLandscape: Boolean =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -138,13 +141,13 @@ fun UiCard(
     }
 }
 
-/*
 @Preview(
     showSystemUi = true,
+    device = "spec:width=411dp,height=891dp,dpi=420,isRound=false,chinSize=0dp,orientation=portrait"
 )
 @Composable
 fun PortraitPreview() {
-    GameClockTheme(appTheme = AppTheme.Default) {
+    GameClockTheme(appTheme = AppTheme.Light) {
         HomeScreen(clockThemeList = ClockThemeList().loadThemes()) {}
     }
 
@@ -156,8 +159,8 @@ fun PortraitPreview() {
 )
 @Composable
 fun LandscapePreview() {
-    GameClockTheme(appTheme = AppTheme.Default) {
+    GameClockTheme(appTheme = AppTheme.Dark) {
         HomeScreen(clockThemeList = ClockThemeList().loadThemes()) {}
     }
 
-}*/
+}

@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +32,8 @@ import com.mhappening.gameclock.ui.alarm.AlarmViewModel
 import com.mhappening.gameclock.ui.screens.BaseClockScreen
 import com.mhappening.gameclock.ui.screens.HomeScreen
 import com.mhappening.gameclock.ui.screens.SettingsScreen
+import com.mhappening.gameclock.ui.screens.alarmButtonOnClick
+import com.mhappening.gameclock.ui.screens.timerButtonOnClick
 import com.mhappening.gameclock.ui.theme.GameClockTheme
 import com.mhappening.gameclock.ui.timer.TimerViewModel
 
@@ -55,6 +58,10 @@ fun AppNavigation(
     val context = LocalContext.current
     val window = remember { (context as Activity).window }
     val isFullscreen = clockViewModel.clockUiState.collectAsState().value.isFullScreen
+
+    val clockUiState by clockViewModel.clockUiState.collectAsState()
+    val alarmUiState by alarmViewModel.alarmUiState.collectAsState()
+    val timerUiState by timerViewModel.uiState.collectAsState()
 
     LaunchedEffect(isFullscreen) {
         WindowCompat.setDecorFitsSystemWindows(window, !isFullscreen)
@@ -102,10 +109,74 @@ fun AppNavigation(
                 }
                 composable(route = AppScreen.Clock.name) {
                     BaseClockScreen(
-                        clockViewModel = clockViewModel,
-                        alarmViewModel = alarmViewModel,
-                        timerViewModel = timerViewModel,
-                        onBackClick = {
+//                        clockViewModel = clockViewModel,
+//                        alarmViewModel = alarmViewModel,
+//                        timerViewModel = timerViewModel,
+
+                        clockUiState = clockUiState,
+                        alarmUiState = alarmUiState,
+                        timerUiState = timerUiState,
+
+                        showButtons = { clockViewModel.showButtons() },
+
+                        onAlarmDismissRequest = { alarmViewModel.dismissAlarmListPopup() },
+                        alarmOnClick = { alarm -> alarmViewModel.openAlarmUpdatePopup(alarm) },
+                        deleteAlarm = { alarm -> alarmViewModel.deleteAlarm(alarm) },
+                        openSetAlarmPopup = { alarmViewModel.openSetAlarmPopup() },
+                        canNewAlarmBeSet = alarmViewModel.canNewAlarmBeSet(),
+                        addDatesToAlarmSetList = { date -> alarmViewModel.addToDateList(date) },
+                        onAlarmSetCancel = { alarmViewModel.dismissAlarmPickerPopup() },
+                        onAlarmSetConfirm = {
+                            alarmViewModel.setNewAlarm()
+                            alarmViewModel.dismissAlarmPickerPopup()
+                        },
+                        onAlarmUpdateCancel = { alarmViewModel.dismissAlarmUpdatePopup() },
+                        onAlarmUpdateConfirm = {
+                            alarmViewModel.updateAlarm()
+                            alarmViewModel.dismissAlarmUpdatePopup()
+                        },
+                        alarmButtonOnClick = { appHasPermission ->
+                            alarmButtonOnClick(
+                                alarmViewModel,
+                                alarmUiState.alarmsList,
+                                appHasPermission
+                            ) { alarmViewModel.openPermissionsRequestPopup() }
+                        },
+
+                        onPermissionsRequest = { alarmViewModel.openPermissionsRequestPopup() },
+                        onPermissionsRequestDismiss = { alarmViewModel.dismissPermissionsRequestPopup() },
+
+                        timerButtonOnClick = { appHasPermission ->
+                            timerButtonOnClick(
+                                timerViewModel,
+                                timerUiState.timerList,
+                                appHasPermission
+                            ) { alarmViewModel.openPermissionsRequestPopup() }
+                        },
+                        onTimerDismissRequest = {
+                            timerViewModel.dismissTimerPickerPopup()
+                            timerViewModel.resetNewTimerState()
+                        },
+                        onTimerSet = {
+                            timerViewModel.setNewTimer()
+                            timerViewModel.dismissTimerPickerPopup()
+                        },
+                        isSetTimerEnabled = timerViewModel.isSetTimerEnabled(),
+                        onDraggableTimerPausePlay = { timerViewModel.toggleTimerPausePlay(timerUiState.smallTimerRunning) },
+                        onDraggableTimerCancel = { timerViewModel.cancelTimer(timerUiState.smallTimerRunning)},
+                        onDraggableTimerMinimise = { timerViewModel.dismissSmallTimerRunning()},
+                        updateTimerEndTime = {timerViewModel.updateEndTime()},
+                        timerListDialogOnDismiss  = { timerViewModel.dismissTimerListPopup() },
+                        onTimerPausePlay = { timer -> timerViewModel.toggleTimerPausePlay(timer) },
+                        onTimerCancel = { timer -> timerViewModel.cancelTimer(timer) },
+                        onTimerMaximise = { timer -> timerViewModel.setSmallTimerRunning(timer) },
+                        addTimerOnClick = {
+                            timerViewModel.toggleTimerPickerPopup()
+                            timerViewModel.dismissTimerListPopup()
+                        },
+
+
+                        onHomeClick = {
                             navController.navigate(AppScreen.Home.name)
                         },
                         onSettingsClick = { navController.navigate(AppScreen.Settings.name) }

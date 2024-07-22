@@ -44,11 +44,16 @@ import java.util.TimeZone
 
 @Composable
 fun TimerListDialog(
-    timerViewModel: TimerViewModel,
     timerList: List<Timer>,
     onTimerClick: (Timer) -> Unit = {},
-) {
-    CustomDialog(onDismissRequest = { timerViewModel.dismissTimerListPopup() }) {
+    timerListDialogOnDismiss: () -> Unit,
+    onTimerPausePlay: (Timer) -> Unit = {},
+    onTimerCancel: (Timer) -> Unit = {},
+    onTimerMaximise: (Timer) -> Unit = {},
+    addTimerOnClick: () -> Unit = {},
+
+    ) {
+    CustomDialog(onDismissRequest = timerListDialogOnDismiss) {
         Surface(
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
             shape = MaterialTheme.shapes.large,
@@ -70,13 +75,10 @@ fun TimerListDialog(
                 TimerList(
                     timerList = timerList,
                     onTimerClick = onTimerClick,
-                    onTimerPausePlay = { timer -> timerViewModel.toggleTimerPausePlay(timer) },
-                    onTimerCancel = { timer -> timerViewModel.cancelTimer(timer) },
-                    onTimerMaximise = { timer -> timerViewModel.setSmallTimerRunning(timer) },
-                    addTimerOnClick = {
-                        timerViewModel.toggleTimerPickerPopup()
-                        timerViewModel.dismissTimerListPopup()
-                    }
+                    onTimerPausePlay = onTimerPausePlay,
+                    onTimerCancel = onTimerCancel,
+                    onTimerMaximise = onTimerMaximise,
+                    addTimerOnClick = addTimerOnClick,
                 )
             }
         }
