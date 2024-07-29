@@ -3,7 +3,7 @@
     <string name="clock" translatable="false">Clock</string>
     <string name="settings" translatable="false">Settings</string>
     <string name="settings_bottom_bar" translatable="false">Matt Haywood 2024</string>
-    <string name="version_number" translatable="false">1.5</string>
+    <string name="version_number" translatable="false">1.6</string>
     <string name="back_button">Back</string>
     <string name="settings_button">Settings</string>
     <string name="alarms_button">Alarms</string>
